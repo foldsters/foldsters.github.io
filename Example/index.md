@@ -1,8 +1,3 @@
----
-title: Projects
----
-
-
 # Project 3
 
 ### Matt Giallourakis
