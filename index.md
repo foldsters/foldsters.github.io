@@ -19,10 +19,10 @@ I am currently a graduate student studying robotics. I have interests in pretty 
 
 **Twitter** - @theFoldster
 
-**Twitch** - twitch.tv/foldster
+**Twitch** - <twitch.tv/foldster>
 
-**Youtube** - https://www.youtube.com/channel/UCYPwQ25XxdMwhKeq9rBQJAQ
+**Youtube** - <https://www.youtube.com/channel/UCYPwQ25XxdMwhKeq9rBQJAQ>
 
-**Instagram** - instagram.com/thefoldster/
+**Instagram** - <instagram.com/thefoldster/>
 
 
