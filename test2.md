@@ -1,5 +1,5 @@
 ---
-title: test2
+title: Test 2
 ---
 
 # This is a test
