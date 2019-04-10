@@ -1,3 +1,7 @@
+---
+title: test2
+---
+
 # This is a test
 
 I want to see if I can get a jupyter notebook to be hosted on my github pages site
