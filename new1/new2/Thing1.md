@@ -1,5 +1,5 @@
 ---
-title: thing1
+title: Thing 1
 ---
 
 Hello 1
