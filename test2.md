@@ -65,8 +65,3 @@ plt.imshow(pic, cmap='gray');
 
 
 $ \LARGE x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$
-
-
-```python
-
-```
