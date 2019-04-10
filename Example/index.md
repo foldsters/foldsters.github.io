@@ -1,6 +1,3 @@
----
-title: Homework
----
 
 # Project 3
 
