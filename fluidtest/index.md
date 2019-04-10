@@ -1,5 +1,5 @@
 ---
-my_number: 5
+title: fluidtest
 ---
 
 {{ page.my_number}}
