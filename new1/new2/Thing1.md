@@ -4,4 +4,6 @@ has_children: true
 nav_order: 3
 ---
 
-Hello 1
+# Hello
+
+This is an example of a page that has a subpage.
