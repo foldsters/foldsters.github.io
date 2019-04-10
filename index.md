@@ -2,7 +2,7 @@
 title: hello
 ---
 
-## Welcome to Foldster's Projects
+## Welcome to Foldster's Projects!
 
 This is where I will be hosting all of my content for now.
 
