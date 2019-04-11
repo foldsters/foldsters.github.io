@@ -1,6 +1,7 @@
 ---
 title: Project 3
 parent: Digital Image Processing
+grand_parent: Class Spring 2019
 nav_order: 1
 ---
 
