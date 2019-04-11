@@ -1,6 +1,7 @@
 ---
 title: Project 3
-nav_order: 4
+parent: Digital Image Processing
+nav_order: 1
 ---
 
 
