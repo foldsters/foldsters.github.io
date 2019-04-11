@@ -1,4 +1,3 @@
-
 ---
 title: Digital Image Processing
 has_children: true
