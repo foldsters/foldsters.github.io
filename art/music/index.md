@@ -1,6 +1,7 @@
 ---
 title: Music
 parent: Art
+has_children: false
 nav_order: 2
 ---
 
