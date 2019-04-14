@@ -1,6 +1,6 @@
 ---
 title: Art
-has_childern: true
+has_children: true
 nav_order: 4
 ---
 
