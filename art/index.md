@@ -1,7 +1,7 @@
 ---
 title: Art
 has_childern: true
-nav-order: 5
+nav_order: 5
 ---
 
 # Art
