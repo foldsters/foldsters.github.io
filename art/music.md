@@ -1,7 +1,7 @@
 ---
 title: Music
-nav_order: 2
 parent: Art
+nav_order: 2
 ---
 
 # Music
