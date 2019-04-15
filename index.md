@@ -5,6 +5,8 @@ nav_order: 1
 
 ## Welcome to Foldster's Projects!
 
+![jpg](https://pbs.twimg.com/profile_images/1033816840030625793/j8mdJ51U.jpg)
+
 This is where I will be hosting all of my content for now.
 
 ### Who I am
