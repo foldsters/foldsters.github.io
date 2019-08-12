@@ -31,7 +31,7 @@ I can work on and build this entire website in Jupyter Lab (my preferred IDE/cod
 
 **Email** - Foldsters@gmail.com
 
-**Twitter** - @theFoldster
+**Twitter** - [@theFoldster](https://twitter.com/theFoldster).
 
 **Twitch** - <https://www.twitch.tv/foldster>
 
