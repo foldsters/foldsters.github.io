@@ -7,7 +7,7 @@ nav_order: 4
 
 # Music
 
-Here's a collection of songs that I wrote and made myself. I usually make all my music using the Caustic3 mobile or desktop app.
+Here's a collection of songs that I wrote and made myself. I usually make all my music using the Caustic3 mobile or desktop app. My music tends to be loosely 8-bit or electronic.
 
 ## Album-a-Day 1: Vising Day
 
