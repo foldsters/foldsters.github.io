@@ -27,6 +27,11 @@ I work on a lot of projects that I will update this page with.
 I can work on and build this entire website in Jupyter Lab (my preferred IDE/code studio), so it works best for me.
 
 
+### Where should I get updates from you and contact you?
+
+I am most active on twitter, and I accept DMs. For non-collaborative business offers, please email me.
+
+
 ### Contacts and Social Media
 
 **Email** - Foldsters@gmail.com
