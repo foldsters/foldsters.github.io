@@ -1,6 +1,7 @@
 ---
 title: Analysis of Polymer Opal
 parent: Academic Research
+grand_parent: Research
 nav_order: 6
 has_children: false
 ---
