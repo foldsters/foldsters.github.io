@@ -1,6 +1,6 @@
 ---
 title: Datasaurus Dozen
-parent: Undergraduate Research
+parent: Academic Research
 nav_order: 5
 has_children: false
 ---
