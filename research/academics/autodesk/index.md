@@ -1,6 +1,6 @@
 ---
 title: Project Autodesk
-parent: Undergraduate Research
+parent: Academic Research
 nav_order: 1
 has_children: false
 ---
