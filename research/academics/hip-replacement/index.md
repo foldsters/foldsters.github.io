@@ -1,6 +1,6 @@
 ---
 title: Hip Replacement Manufacturing
-parent: Undergraduate Research
+parent: Academic Research
 nav_order: 4
 has_children: false
 ---
