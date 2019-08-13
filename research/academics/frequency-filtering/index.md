@@ -1,6 +1,6 @@
 ---
 title: Frequency Filtering
-parent: Undergraduate Research
+parent: Academic Research
 nav_order: 3
 has_children: false
 ---
