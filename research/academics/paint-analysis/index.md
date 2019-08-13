@@ -1,6 +1,6 @@
 ---
 title: Paint Color Analysis
-parent: Undergraduate Research
+parent: Academic Research
 nav_order: 7
 has_children: false
 ---
