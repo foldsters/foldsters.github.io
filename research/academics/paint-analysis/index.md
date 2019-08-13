@@ -3,6 +3,7 @@ title: Paint Color Analysis
 parent: Academic Research
 nav_order: 7
 has_children: false
+grand_parent: Research
 ---
 
 # Analysis of the Spectral Power Distributions of Mixed Paints under Different Light Sources
