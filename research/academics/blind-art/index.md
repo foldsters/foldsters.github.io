@@ -1,6 +1,7 @@
 ---
 title: Blind Art Exhibit
 parent: Academic Research
+grand_parent: Research
 nav_order: 2
 has_children: false
 ---
