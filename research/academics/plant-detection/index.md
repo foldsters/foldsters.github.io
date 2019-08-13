@@ -1,6 +1,7 @@
 ---
 title: Plant Detection
 parent: Academic Research
+grand_parent: Research
 nav_order: 8
 has_children: false
 ---
