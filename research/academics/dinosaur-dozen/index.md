@@ -2,6 +2,7 @@
 title: Datasaurus Dozen
 parent: Academic Research
 nav_order: 5
+grand_parent: Research
 has_children: false
 ---
 
