@@ -1,3 +1,11 @@
+---
+title: Exact Cover
+parent: Independent Research
+grand_parent: Research
+nav_order: 1
+has_children: false
+---
+
 
 # Tone Row Chord Progressions as an Exact Cover Problem with Preference
 
