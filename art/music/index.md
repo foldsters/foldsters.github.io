@@ -20,3 +20,7 @@ An album following the [Crap Art](http://crapart.spacebar.org/aad/) rules, altho
 [![jpg](croutone-cover.jpg)](https://soundcloud.com/croutone)
 
 I used to post music under the name Croutone on soundcloud before I started putting all of my projects in the same place, so if you want some of my older work, click the croutone.
+
+Experimental Soundcloud Embed 
+
+{% include soundcloud.html %}
