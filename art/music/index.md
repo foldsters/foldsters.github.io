@@ -23,4 +23,4 @@ I used to post music under the name Croutone on soundcloud before I started putt
 
 Experimental Soundcloud Embed 
 
-{% include soundcloud.html %}
+{% include soundcloud.html id="525344790" %}
