@@ -35,10 +35,10 @@ For the purposes of of the implementation in this paper, we will explain Algorit
 
 First each chord is represented as an array of binary values based on the notes it occupies. Our octave starts at C, so the C major (notes C, E, D) and F minor (notes F, G#, C) chords would be represented as:
 
-Chord     | C  | C# | D | D# | E | F | F# | G | G# | A | A# | B
-----------|----|----|---|----|---|---|----|---|----|---|----|----
-C Major   | 1  | 0  | 0 | 0  | 1 | 0 | 0  | 1 | 0  | 0 | 0  | 0
-F Minor   | 1  | 0  | 0 | 0  | 0 | 1 | 0  | 0 | 1  | 0 | 0  | 0
+Chord     | C | C# | D | D# | E | F | F# | G | G# | A | A# | B
+---|---|---|---|---|---|---|---|---|---|---|---|---
+C Major | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0  | 0 | 0 | 0
+F Minor | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1  | 0 | 0 | 0
 
 The chords naturally form a table. We select the column that has the least number of `1`s. All solutions require exactly one of the chords that have a note in this column, so we can branch the search space by these chords. To select a chord, add the chord to a running partial solution set, remove the note columns that the chord notes are in, and remove all chords that have any notes in those columns as well, since those chords cannot be in the same solution as the selected chord. This produces a smaller table in which more selections can take place. If a selection produces a table with no columns, then the running partial solution is a valid solution to the exact cover problem. If no more selections can take place, the last selected chord in the running partial solution is removed, and the table reverts back to the previous state. If there is no previous state, the algorithm returns all of the valid solutions. Thus, Algorithm X is a backtracking depth-first searching algorithm that finds all solutions to the exact cover problem.
 
