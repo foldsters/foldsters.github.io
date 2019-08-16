@@ -6,6 +6,6 @@ nav_order: 4
 
 # Testing
 
-## Signalpattern Embedding Testing 570
+## Signalpattern Embedding Testing
 
 {% include signalpattern2.html height="570" signal="iframetest" cell="calculate" %}
