@@ -6,4 +6,4 @@ nav_order: 4
 
 # Testing Signalpattern Object
 
-{% include signalpattern2.html %}
+{% include signalpattern2.html signal="iframetest" cell="calculate" %}
