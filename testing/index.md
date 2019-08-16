@@ -6,6 +6,6 @@ nav_order: 4
 
 # Testing Signalpattern Object
 
-## Height Test 500b
+## Height Test 550
 
-{% include signalpattern2.html height="500" signal="iframetest" cell="calculate" %}
+{% include signalpattern2.html height="550" signal="iframetest" cell="calculate" %}
