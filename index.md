@@ -5,7 +5,7 @@ nav_order: 1
 
 # Welcome to Foldster's Projects!
 
-![jpg](https://pbs.twimg.com/profile_images/1033816840030625793/j8mdJ51U.jpg)
+![](https://i.imgur.com/pNfj9ew.png)
 
 ### Who I am
 
