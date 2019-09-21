@@ -6,4 +6,4 @@ nav_order: 5
 
 # Resume
 
-![](resume.pdf)
+{% inlcude pef_viewer.html pdf="https://foldsters.github.io/resume/resume.pdf" %}
