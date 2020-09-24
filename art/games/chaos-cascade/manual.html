@@ -23,6 +23,8 @@
         var mySnows;
         var mySnows2;
         
+        var myMouse;
+        
         // STARTUP
         function startAnim() {
             myAnim  = new component(1920/2, 980/2, 0.75);
@@ -38,7 +40,9 @@
             mySnows =  new snowList(900, 820+1080, 150, 630+1080, -1, 0);
             mySnows2 = new snowList(990, 900+1080, 1700, 1100+1080, 2, 0);
             mySnows.setup();
-            mySnows2.setup();}
+            mySnows2.setup();
+            myMouse = new mouse();
+            myMouse.setup();}
         
         // CANVAS
         var myCanvas = {
@@ -241,6 +245,7 @@
                 myBullets.cascade();
             }
             myBullets.update();
+            myMouse.update();
         }
         
         function bullet(x, y, c, t) {
@@ -419,7 +424,33 @@
                 this.snow_buffer = [];
             }
         }
-
+        
+        // Mouse
+        function mouse() {
+            this.x = 0;
+            this.y = 0;
+            this.clicked_ever = false;
+            this.in_title_box = false;
+            this.setup = function() {
+                document.onmousemove = this.mousemove;
+                document.onclick = this.click;
+            }
+            this.click = function() {
+                myMouse.clicked_ever = true;
+                if (myMouse.in_title_box)   {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/title-screen.html"};
+            }
+            this.mousemove = function(event) {
+                myMouse.x = event.pageX;
+                myMouse.y = event.pageY;
+            }
+            this.update = function() {
+                if (this.x > 20 && this.y > 20 && this.x < 20+250 && this.y < 20+40){
+                    this.in_title_box = true;
+                } else {
+                    this.in_title_box = false;
+                }
+            }
+        }
         
         // HEADS UP DISPLAY
         function hud() {
@@ -718,7 +749,8 @@
                          ["Q",       704,  428+1080*3,   6, 1],
                          ["WINNING", 360,  280+1080*3,   8, 1],
                          ["LOSING", 1300,  280+1080*3,   8, 1],
-                         ["MADE BY @THEFOLDSTER", 1100,  1000+1080*4,   10, 1]];
+                         ["MADE BY @THEFOLDSTER", 1100,  1000+1080*4,   10, 1],
+                         ["TITLE SCREEN ", 25,   25,   5,  1-myMouse.in_title_box]];
                 
                 for (let w=0;w<words.length;w++) {
                 
@@ -778,6 +810,9 @@
                 
                 ctx.beginPath();
                 ctx.rect(980, 350 + 3*1080, 830, 440);
+                ctx.stroke();
+                
+                ctx.rect(15, 15, 265, 45);
                 ctx.stroke();
                 
                 offset_x = 80;
