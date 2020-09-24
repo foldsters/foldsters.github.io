@@ -513,8 +513,8 @@
             }
             this.click = function() {
                 myMouse.clicked_ever = true;
-                if (myMouse.in_title_box)   {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/title-screen.html"};
-                if (myMouse.in_refresh_box) {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/game.html"};
+                if (myMouse.in_title_box && myAnim.dead)   {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/title-screen.html"};
+                if (myMouse.in_refresh_box && myAnim.dead) {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/game.html"};
             }
             this.mousemove = function(event) {
                 myMouse.x = event.pageX;
