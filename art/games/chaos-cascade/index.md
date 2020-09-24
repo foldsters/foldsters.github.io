@@ -22,3 +22,9 @@ Some of the things I've learned will probably change my programming toolkit and 
 You may have to resize the browser window for the manual and game to fit the screen properly.
 
 [Play the game Here!](https://foldsters.github.io/art/games/chaos-cascade/title-screen)
+
+## Commentary
+
+Questions? Comments? Read and comment on this twitter thread below!
+
+{% include swcc_tweet.html %}
