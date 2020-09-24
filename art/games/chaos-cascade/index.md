@@ -5,7 +5,7 @@ nav_order: 6
 has_children: false
 ---
 
-#Spacewar!: Chaos Cascade
+# Spacewar!: Chaos Cascade
 
 ![](https://i.imgur.com/O8WiLs2.png)
 
@@ -21,4 +21,4 @@ Some of the things I've learned will probably change my programming toolkit and 
 
 You may have to resize the browser window for the manual and game to fit the screen properly.
 
-[Download the Manual and Game!] (https://drive.google.com/file/d/1912ctp_A7qYxhP801G_fjt7ph5zNZEQ1)
+![Download the Manual and Game!](https://drive.google.com/file/d/1912ctp_A7qYxhP801G_fjt7ph5zNZEQ1)
