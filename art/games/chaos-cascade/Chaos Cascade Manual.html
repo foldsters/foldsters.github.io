@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
+</head>
+                                                                                     
+<body onload="startAnim()" style="background-color:black;">
+    
+    <script>
+        
+        var myAnim;
+        var myShip2;
+        var myEnemy;
+        var myStar;
+        var myHud;
+        var myBullets;
+        var mySnows;
+        var mySnows2;
+        
+        // STARTUP
+        function startAnim() {
+            myAnim  = new component(1920/2, 980/2, 0.75);
+            myShip2 = new component(300, 720+1080, 0);
+            myEnemy = new component(1350, 1000+1080, 1);
+            myEnemy2 = new component(600, 392+3*1080, 1.5);
+            myStar = new star();
+            myStar.setup();
+            myCanvas.start();
+            myHud = new hud();
+            myBullets = new bulletList();
+            myBullets.setup();
+            mySnows =  new snowList(900, 820+1080, 150, 630+1080, -1, 0);
+            mySnows2 = new snowList(990, 900+1080, 1700, 1100+1080, 2, 0);
+            mySnows.setup();
+            mySnows2.setup();}
+        
+        // CANVAS
+        var myCanvas = {
+            canvas : document.createElement("canvas"),
+            start : function() {
+                this.canvas.width = 1920;
+                this.canvas.height = 1080*5;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                this.t = 0;
+                this.interval = setInterval(updateCanvas, 20);
+            },
+            clear : function() {
+                this.context.fillStyle = R(0, 0, 0);
+                this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+        
+        function R(r,g,b,a) {
+            a = a === undefined ? 1 : a;
+            return "rgba("+(r|0)+","+(g|0)+","+(b|0)+","+a+")";
+        }
+        
+        var S = Math.sin;
+        var C = Math.cos;
+        var T = Math.tan;
+        var pi = Math.PI;
+        
+        function RA() {
+            return Math.random()*2*pi;
+        }
+        
+        // PLAYER
+        function component(x, y, theta) {
+            this.theta  = theta;
+            this.x = x;
+            this.y = y;
+            this.headingX = 0;
+            this.headingY = 0;
+            this.update = function() {
+                
+                ctx = myCanvas.context;
+                ctx.fillStyle = R(255, 255, 255);
+                
+                this.headingX = Math.cos(2*pi*this.theta);
+                this.headingY = Math.sin(2*pi*this.theta);
+                
+                let m = 10;
+                
+                ctx.beginPath();
+                ctx.moveTo(this.x + 2*m*this.headingX,   this.y + 2*m*this.headingY);
+                ctx.lineTo(this.x - m*this.headingY - m*this.headingX, this.y + m*this.headingX - m*this.headingY);
+                ctx.lineTo(this.x + m*this.headingY - m*this.headingX, this.y - m*this.headingX - m*this.headingY);
+                ctx.fill();
+                
+            }
+            this.update2 = function() {
+                
+                this.x += Math.sin(myCanvas.t);
+                this.y += Math.cos(myCanvas.t*3)/3;
+                
+                ctx = myCanvas.context;
+                ctx.fillStyle = R(255, 255, 255);
+                
+                this.theta += Math.cos(myCanvas.t*3)/1000;
+                
+                this.headingX = Math.cos(2*pi*this.theta);
+                this.headingY = Math.sin(2*pi*this.theta);
+                
+                let m = 20;
+                
+                ctx.beginPath();
+                ctx.moveTo(this.x + 2*m*this.headingX,   this.y + 2*m*this.headingY);
+                ctx.lineTo(this.x - m*this.headingY - m*this.headingX, this.y + m*this.headingX - m*this.headingY);
+                ctx.lineTo(this.x + m*this.headingY - m*this.headingX, this.y - m*this.headingX - m*this.headingY);
+                ctx.fill();
+                
+            }
+            this.update3 = function() {
+                
+                ctx = myCanvas.context;
+                ctx.fillStyle = R(255, 255, 255);
+                
+                let m = 20;
+                
+                ctx.beginPath();
+                ctx.fillStyle = R(255, 255, 255);
+                ctx.arc(this.x, this.y, 20/this.theta, 0, 2 * pi, false);
+                ctx.fill();
+                
+            }
+            
+        }
+        
+        // STAR
+        function star() {
+            this.t = 0;
+            this.size = 10;
+            this.size_buffer = 0;
+            this.setup = function() {
+                
+                A = nj.array([RA(), RA(), RA(), RA(),   0,   0, 255]);
+                B = nj.array([RA(), RA(), RA(), RA(),   0, 255, 255]);
+                C = nj.array([RA(), RA(), RA(), RA(), 255,   0, 255]);
+                D = nj.array([RA(), RA(), RA(), RA(), 255, 255,   0]);
+                
+                choices = [A, B, C, D];
+                points = [];
+                
+                P = A;
+                for(let i=0;i<90;i++) {
+                    choice = choices[(Math.random()*4)|0]
+                    P = choice.add(P).divide(2);
+                    points.push(P.tolist());
+                }
+                
+                nj_points = nj.array(points);
+                
+                this.P1 = nj.array(nj_points.slice(0, [0, 1]).T.tolist()[0]);
+                this.P2 = nj.array(nj_points.slice(0, [1, 2]).T.tolist()[0]);
+                this.P3 = nj.array(nj_points.slice(0, [2, 3]).T.tolist()[0]);
+                this.P4 = nj.array(nj_points.slice(0, [3, 4]).T.tolist()[0]);
+                this.R  = nj_points.slice(0, [4, 5]).T.tolist()[0]
+                this.G  = nj_points.slice(0, [5, 6]).T.tolist()[0]
+                this.B  = nj_points.slice(0, [6, 7]).T.tolist()[0]
+                
+            }
+            this.update = function() {
+                
+                if (this.size_buffer > 0) {
+                    this.size_buffer -= 0.01;
+                    this.size += 0.01;
+                }
+                
+                ctx = myCanvas.context;
+                
+                this.t += 0.001
+                
+                Xs = nj.cos(this.P1.add(2*this.t)).add(nj.sin(this.P2.add(7*this.t)));
+                Ys = nj.sin(this.P3.add(5*this.t)).add(nj.cos(this.P4.add(3*this.t)));
+                Rs = nj.sqrt(Xs.multiply(Xs).add(Ys.multiply(Ys)));
+                
+                Ts = arctan2(Ys, Xs);//nj.arctan(Ys.divide(Xs));
+                
+                table = nj.array([Xs.tolist(), Ys.tolist(), Rs.tolist(), Ts.tolist()]);
+                
+                
+                ctx.fillStyle = R(0,0,0,0.7);
+                
+                ctx.beginPath();
+                ctx.arc(770, 720 + 1080, 40, 0, 2 * pi, false);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(1120, 1000 + 1080, 40, 0, 2 * pi, false);
+                ctx.fill();
+                
+                for (let i=0;i<6;i++) {
+                    
+                    n = 2*pi*i/5;
+                    x = Rs.multiply(nj.cos(Ts.add(n)));
+                    y = Rs.multiply(nj.sin(Ts.add(n)));
+                    
+                    for (let j=0;j<90;j++) {
+                        ctx.fillStyle = R(this.R[j], this.G[j], this.B[j]);
+                        cx = this.size*x.get(j);
+                        cy = this.size*y.get(j);
+                        sx = 1920/2 + cx;
+                        sy = 980/2 + cy;
+                        t = 1000/((sx-myAnim.x)**2 + (sy-myAnim.y)**2);
+                        ctx.fillRect(sx*(1-t) + myAnim.x*(t), sy*(1-t) + myAnim.y*(t), 2, 2);
+                        
+                        ctx.fillRect(770 + cx*2, 720 + 1080 + cy*2, 1.5, 1.5);
+                        ctx.fillRect(1120 + cx*2, 1000 + 1080 + cy*2, 1.5, 1.5);
+                        ctx.fillRect(320 + cx/1.5, 442 + 1080*3 + cy/1.5, 1, 1);
+                    }
+                }
+            }
+        
+        }
+        
+        function arctan2(Ys, Xs) {
+            return nj.negative(Xs.divide(nj.abs(Xs))).add(1).multiply(Ys).multiply(pi/2).divide(nj.abs(Ys)).add(nj.arctan(Ys.divide(Xs)));
+        }
+        
+        // UPDATES
+        function updateCanvas() {
+            myCanvas.clear();
+            myCanvas.t += 0.01;
+            
+            mySnows.update();
+            mySnows2.update();
+            myStar.update();
+            myAnim.update();
+            myShip2.update2();
+            myEnemy.update3();
+            myEnemy2.update3();
+            myHud.update();
+            if ((myCanvas.t%4) <= 0.01 || (myCanvas.t+.5)%4 <= 0.01 || (myCanvas.t+1)%4 <= 0.01 || (myCanvas.t+1.5)%4 <= 0.01 || (myCanvas.t+2)%4 <= 0.01) {
+                myBullets.cascade();
+            }
+            myBullets.update();
+        }
+        
+        function bullet(x, y, c, t) {
+            this.x = x;
+            this.y = y;
+            this.c  = c;
+            this.t  = t;
+            this.colors = [[  0,   0, 255], 
+                           [  0, 255, 255],
+                           [255, 255,   0],
+                           [255,   0, 255]];
+            
+            color_t  = Math.random()*4;
+            color_t0 = color_t | 0;
+            color_t1 = (color_t0 + 1)%4;
+            
+            if (this.c == 0) {
+                this.r = ((this.colors[color_t0])[0])*(1 - (color_t - color_t0)) + ((this.colors[color_t1])[0])*(color_t - color_t0);
+                this.g = ((this.colors[color_t0])[1])*(1 - (color_t - color_t0)) + ((this.colors[color_t1])[1])*(color_t - color_t0);
+                this.b = ((this.colors[color_t0])[2])*(1 - (color_t - color_t0)) + ((this.colors[color_t1])[2])*(color_t - color_t0);
+            }
+            
+            this.update = function() {
+                
+                ctx = myCanvas.context;
+                if (this.c !== 0) {this.t -= 0.02;}
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3*Math.max(0, 2*this.t/(1+this.c)), 0, 2 * pi, false);
+                ctx.fillStyle = R(this.r, this.g, this.b);
+                ctx.fill();
+            }
+        }
+        
+        function bulletList() {
+            this.primary_bullets = [];
+            this.secondary_bullets = [];
+            this.setup = function() {
+                
+                let B1 = new bullet(1000, 480+1080, 0, 4);
+                let B2 = new bullet(1700, 480+1080, 0, 4);
+                let B3 = new bullet(1250, 230+1080, 0, 4);
+                this.primary_bullets.push(B1);
+                this.primary_bullets.push(B2);
+                this.primary_bullets.push(B3);
+                
+            };
+            this.cascade = function () {
+                new_bullet_count = 0;
+                if (true) {
+                    new_secondary_bullets = []
+                    for (let i=0;i<this.primary_bullets.length;i++) {
+                        secondary_bullet_count = this.secondary_bullets.length
+                        if (secondary_bullet_count > 0) {
+                            for (let j=0;j<secondary_bullet_count;j++) {
+                                if ((secondary_bullet_count + new_bullet_count) > 200) {break;}
+                                b1 = this.primary_bullets[i];
+                                b2 = this.secondary_bullets[j];
+                                if (b2.c <= 4 && b2.t > 0.5) {
+                                    new_bullet = new bullet((b1.x + b2.x)/2, (b1.y + b2.y)/2, b2.c+1, 4);
+                                    new_bullet.r = (b1.r + b2.r)/2;
+                                    new_bullet.g = (b1.g + b2.g)/2;
+                                    new_bullet.b = (b1.b + b2.b)/2;
+                                    new_secondary_bullets.push(new_bullet);
+                                    new_bullet_count += 1;
+                                }
+                            }
+                        } else {
+                            for (let j=i+1;j<this.primary_bullets.length;j++) {
+                                b1 = this.primary_bullets[i];
+                                b2 = this.primary_bullets[j];
+                                new_bullet = new bullet((b1.x + b2.x)/2, (b1.y + b2.y)/2, Math.max(b1.c, b2.c)+1, 4);
+                                new_bullet.r = (b1.r + b2.r)/2;
+                                new_bullet.g = (b1.g + b2.g)/2;
+                                new_bullet.b = (b1.b + b2.b)/2;
+                                new_secondary_bullets.push(new_bullet);
+                                new_bullet_count += 1;
+                            }
+                        }
+                    }
+                this.secondary_bullets = this.secondary_bullets.concat(new_secondary_bullets);
+                }
+            }
+            this.update = function() {
+                
+                for (let i=0;i<this.primary_bullets.length;i++) {
+                    let b = this.primary_bullets[i];
+                    b.update();
+                }
+                
+                let new_secondary_bullets = [];
+                for (let i=0;i<this.secondary_bullets.length;i++) {
+                    let b = this.secondary_bullets[i];
+                    if (b.t > 0) {
+                        b.update();
+                        new_secondary_bullets.push(b);
+                    }
+                }
+                this.secondary_bullets = new_secondary_bullets;
+                
+            }
+        }
+        
+        function snow(x_start, y_start, x_end, y_end, vx, vy) {
+            this.x_start = x_start;
+            this.y_start = y_start;
+            this.x_end = x_end;
+            this.y_end = y_end;
+            this.vx = vx;
+            this.vy = vy;
+            this.dead = false;
+            this.setup = function() {
+                this.x = this.x_start;
+                let l = Math.random();
+                this.y = this.y_start*l + this.y_end*(1-l);
+                this.vx -= l;
+            }
+            this.update = function() {
+                
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.vx<0 && (this.x<this.x_end || this.y<this.y_end)) {
+                    this.dead = true;
+                    mySnows.add_snow();
+                    return;
+                }
+                
+                if (this.vx>0 && (this.x>this.x_end || this.y>this.y_end)) {
+                    this.dead = true;
+                    mySnows2.add_snow();
+                    return;
+                }
+                
+                ctx = myCanvas.context;
+                ctx.beginPath();
+                ctx.fillStyle = R(255, 255, 255);
+                ctx.fillRect(this.x, this.y, 5, 1);
+                ctx.fill();
+            }
+        }
+        
+        function snowList(x_start, y_start, x_end, y_end, vx, vy) {
+            this.x_start = x_start;
+            this.y_start = y_start;
+            this.x_end = x_end;
+            this.y_end = y_end;
+            this.vx = vx;
+            this.vy = vy;
+            this.snows = [];
+            this.snow_buffer = [];
+            this.setup = function() {
+                for (let i=0;i<20;i++) {
+                    let l = Math.random();
+                    let mx = this.x_start*l + this.x_end*(1-l);
+                    let s = new snow(mx, this.y_start, this.x_end, this.y_end, this.vx, this.vy);
+                    s.setup();
+                    this.snows.push(s);
+                }
+            }
+            this.add_snow = function() {
+                let s = new snow(this.x_start, this.y_start, this.x_end, this.y_end, this.vx, this.vy);
+                s.setup();
+                this.snow_buffer.push(s);
+            }
+            this.update = function() {
+                for(let i=0;i<this.snows.length;i++)
+                {
+                    this_snow = this.snows[i];
+                    this_snow.update();
+                    if (!this_snow.dead) {
+                        this.snow_buffer.push(this_snow);
+                    }
+                }
+                this.snows = this.snow_buffer;
+                this.snow_buffer = [];
+            }
+        }
+
+        
+        // HEADS UP DISPLAY
+        function hud() {
+            this.update = function() {
+                
+                ctx = myCanvas.context;
+                
+                colors = [[128, 128, 255], 
+                          [  0, 255, 255],
+                          [255, 255,   0],
+                          [255,   0, 255]];
+            
+                color_t  = (myCanvas.t/10)%4;
+                color_t0 = color_t | 0;
+                color_t1 = (color_t0 + 1)%4;
+                
+                r = ((colors[color_t0])[0])*(1 - (color_t - color_t0)) + ((colors[color_t1])[0])*(color_t - color_t0);
+                g = ((colors[color_t0])[1])*(1 - (color_t - color_t0)) + ((colors[color_t1])[1])*(color_t - color_t0);
+                b = ((colors[color_t0])[2])*(1 - (color_t - color_t0)) + ((colors[color_t1])[2])*(color_t - color_t0);
+                
+                ctx.lineWidth = "4";
+                
+                
+                ctx.font = "28px Arial";
+                x = 150;
+                y = 250 + 1080;
+                            // text, line, x_offset, color
+                script = [['Scientists have discovered a revolutionary new', 0, 0, 0],
+                          ['form of matter and energy from another dimension!', 1, 0, 0],
+                          ['When this newly discovered', 2, 0, 0], ["Cascading Matter", 2, 360, 1], ['is', 2, 608, 0],
+                          ['charged with', 3, 0, 0], ["Chaos Energy,", 3, 170, 1], ['each alpha particle', 3, 380, 0], 
+                          ['cascades, spawning a beta particle at the geometric', 4, 0, 0],
+                          ['midpoints between it and all other near-by particles', 5, 0, 0], 
+                          ['of cascading matter!', 6, 0, 0]];
+                
+                for (let s=0;s<script.length;s++) {
+                    ctx.fillStyle = script[s][3]?R(r, g, b):R(255, 255, 255);
+                    ctx.font      = script[s][3]?"30px Arial":"28px Arial";
+                    ctx.fillText(script[s][0], x+script[s][2], y+40*script[s][1]);
+                }
+                
+                x = 990;
+                y = 680 + 1080;
+                
+                script = ['You work on a classified military vessel S. S. Sierpinski',
+                          '(nicknamed "the wedge") researching how to use the chaos',
+                          'energy eminating from a nearby chaos star for advanced', 
+                          'weapons warfare.']
+
+
+                for (let s=0;s<script.length;s++) {
+                    ctx.fillText(script[s], x, y);
+                    y += 40;
+                }
+                
+                x = 150;
+                y = 950 + 1080;
+                
+                script = ['Watch out! Chaos energy creatures from fractal space have',
+                          "projected themselves into our universe! It's up to you keep",
+                          'them from consuming the chaos star!']
+                
+                for (let s=0;s<script.length;s++) {
+                    ctx.fillText(script[s], x, y);
+                    y += 40;
+                }
+                
+                
+                // OBJECTIVE
+                
+                x = 100;
+                y = 400 + 3*1080;
+                
+                ctx.font = "30px Arial";
+                
+                script = ['Your goal is to prevent the enemies (   ) from reaching',
+                          'the chaos star (   ) by firing [   ] or cascading [   ] bullets', 
+                          'into them!', '',
+                          'As with many arcade games, there is no in-game win state.',
+                          'You win by beating your previous high score!', '',
+                          'You obtain one point for each enemy destroyed.']
+                
+                for (let s=0;s<script.length;s++) {
+                    ctx.fillText(script[s], x, y);
+                    y += 50;
+                }
+                
+                x = 1000;
+                y = 400 + 3*1080;
+                
+                ctx.font = "30px Arial";
+                
+                script = ['The game ends if:', '', '',
+                          '   (1)   An enemy reaches the chaos star.',
+                          '   (2)   You fall into the chaos star.']
+                
+                for (let s=0;s<script.length;s++) {
+                    ctx.font = s>0?"40px Arial":"30px Arial";
+                    ctx.fillText(script[s], x, y);
+                    y += 50;
+                }
+                
+                
+                
+                // Regain Chaos
+                x = 100;
+                y = 4*1080;
+                
+                ctx.font = "30px Arial";
+                
+                script = ['Chaos energy is a limited resource!',
+                          'You can only cascade matter if you have enough,',
+                          'and you can only regain it by destroying enemies.']
+                
+                for (let s=0;s<script.length;s++) {
+                    ctx.fillText(script[s], x, y);
+                    y += 50;
+                }
+                
+                // Bullet Cap
+                x = 1000;
+                y = 4*1080;
+                
+                ctx.font = "30px Arial";
+                
+                script = ['Your ship can only cascade so many bullets at once,',
+                          'and cascading matter only has a lifetime of 4 seconds,',
+                          'so save some cascading potantial for when you need it most!']
+                
+                for (let s=0;s<script.length;s++) {
+                    ctx.fillText(script[s], x, y);
+                    y += 50;
+                }
+                
+                // Star gravity + thrust
+                x = 100;
+                y = 300 + 4*1080;
+                
+                ctx.font = "30px Arial";
+                
+                script = ['The chaos star has its own gravity well!',
+                          'Use your limited thrust wisely to get yourself',
+                          'in a stable orbit while it regenerates.']
+                
+                for (let s=0;s<script.length;s++) {
+                    ctx.fillText(script[s], x, y);
+                    y += 50;
+                }
+                
+                // Star gets bigger
+                x = 1000;
+                y = 300 + 4*1080;
+                
+                ctx.font = "30px Arial";
+                
+                script = ['The chaos star becomes bigger with each defeated enemy!',
+                          'Maintain your momentum and make use of the screen wrap.']
+                
+                for (let s=0;s<script.length;s++) {
+                    ctx.fillText(script[s], x, y);
+                    y += 50;
+                }
+                
+                // Harder every 10 points
+                x = 1000;
+                y = 600 + 4*1080;
+                
+                ctx.font = "30px Arial";
+                
+                script = ['As more enemies are defeated, their spawn rate increases,',
+                          'and they approach the chaos star ever faster! This means',
+                          'you can be more widespread with your shots.']
+                
+                for (let s=0;s<script.length;s++) {
+                    ctx.fillText(script[s], x, y);
+                    y += 50;
+                }
+                
+                // Hyperspace
+                x = 100;
+                y = 600 + 4*1080;
+                
+                ctx.font = "30px Arial";
+                
+                script = ["If you're helplessly falling towards the star,",
+                          "Use all of your chaos to activate hyperspace",
+                          "to warp to a random point of the screen!"]
+                
+                for (let s=0;s<script.length;s++) {
+                    ctx.fillText(script[s], x, y);
+                    y += 50;
+                }
+                
+                
+                
+                
+                
+                
+                space_char = {
+                
+                    'S' : [[0,0], [2,0], [3,1], [3,2], [2,3], [1,3], [1,4], [2,4], 
+                           [3,5], [1,5], [0,4], [0,3], [1,2], [2,2], [2,1], [1,1]],
+
+                    'P' : [[0,0], [1,1], [1,4], [2,4], [2,2], [3,3], [3,4], [2,5], 
+                           [1,5], [0,4]],
+
+                    'A' : [[0,0], [1,1], [1,2], [2,2], [2,0], [3,1], [3,4], [2,4],
+                           [2,3], [1,3], [1,4], [2,4], [3,5], [1,5], [0,4]],
+
+                    'C' : [[1,0], [2,0], [3,1], [1,1], [1,4], [2,4], [3,5], [1,5], 
+                           [0,4], [0,1]],
+
+                    'E' : [[1,0], [2,0], [3,1], [1,1], [1,2], [2,3], [1,3], [1,4], 
+                           [2,4], [3,5], [1,5], [0,4], [0,1]],
+
+                    'W' : [[1,0], [2,1], [3,0], [4,1], [4,5], [3,4], [3,1], [2,2],
+                           [1,1], [1,5], [0,4], [0,1]],
+
+                    'R' : [[0,0], [1,1], [1,2], [3,0], [3,1], [1,3], [1,4], [2,4],
+                           [2,2], [3,3], [3,4], [2,5], [1,5], [0,4]],
+
+                    'H' : [[0,0], [1,1], [1,2], [2,3], [2,0], [3,1], [3,5], [2,4],
+                           [2,3], [1,3], [1,5], [0,4]],
+
+                    'O' : [[1,0], [2,0], [3,1], [3,4], [2,4], [2,1], [1,1], [1,4], 
+                           [2,4], [3,5], [1,5], [0,4], [0,1]],
+
+                    'D' : [[0,0], [2,0], [3,1], [3,3], [2,4], [2,1], [1,1], [1,4], 
+                           [2,4], [1,5], [0,5]],
+
+                    'T' : [[1,0], [2,1], [2,4], [3,5], [1,5], [0,4], [1,4]],
+
+                    'Y' : [[1,0], [2,1], [2,2], [3,3], [3,5], [2,4], [2,3], [1,2],
+                           [1,5], [0,4], [0,3], [1,2]],
+
+                    'N' : [[0,0], [1,1], [1,3], [3,0], [4,1], [4,5], [3,4], [3,1],
+                           [1,5], [0,4]],
+
+                    'L' : [[0,0], [2,0], [3,1], [1,1], [1,5], [0,4]],
+
+                    'B' : [[0,0], [2,0], [3,1], [2,2], [2,1], [1,1], [1,2], [2,2],
+                           [3,3], [2,4], [2,3], [1,3], [1,4], [2,4], [1,5], [0,5]],
+
+                    'J' : [[0,0], [1,0], [2,1], [2,4], [3,5], [1,5], [0,4], [1,4], [1,1]],
+
+                    'V' : [[2,0], [3,1], [3,5], [2,4], [2,1], [1,2], [1,5], [0,4], [0,2]],
+                    
+                    'I' : [[0,0], [2,0], [3,1], [2,1], [2,4], [3,5], [1,5], [0,4], 
+                           [1,4], [1,1]],
+                    
+                    'Q' : [[2,0], [3,0], [2,1], [3,2], [3,4], [2,5], [1,5], [0,4], 
+                           [0,2], [1,1], [1,4], [2,4], [2,2], [1,1]],
+                    
+                    'F' : [[0,0], [1,1], [1,2], [2,3], [1,3], [1,4], [2,4], [3,5], 
+                           [1,5], [0,4]],
+                    
+                    '-' : [[0,2], [2,2], [3,3], [1,3]],
+                    
+                    'U' : [[0,0], [2,0], [3,1], [3,5], [2,4], [2,1], [1,1], [1,5], [0,4]],
+                    
+                    'G' : [[1,0], [2,0], [3,1], [3,2], [2,3], [1,3], [2,2], [2,1], [1,1],
+                           [1,4], [3,4], [2,5], [1,5], [0,4], [0,1]], 
+                    
+                    'M' : [[3,5], [2,4], [1,5], [0,4], [0,0], [1,1], [1,4], [2,3],
+                           [3,4], [3,0], [4,1], [4,4]],
+                    
+                    ' ' : [[0,0]],
+                    
+                    '@' : [[1,0], [3,0], [2,1], [1,1], [1,2], [2,2], [2,1], [3,2],
+                           [2,3], [1,3], [0,2], [0,1]],
+                }
+                
+                words = [["SPACEWAR", 650,        100,   20, 1],
+                         ["CHAOS",    650,        800, 12.9, 1],
+                         ["CASCADE",  940,        800, 12.9, 1],
+                         ["STORY",     50,    50+1080,   10, 1],
+                         ["CONTROLS",  50, 100+1080*2,   10, 1],
+                         ["OBJECTIVE", 50, 100+1080*3,   10, 1],
+                         ["TIPS",      50, 900+1080*3,   10, 1],
+                         ["Q",        660, 430+1080*2,   30, 1],
+                         ["W",        885, 430+1080*2,   30, 1],
+                         ["E",       1140, 430+1080*2,   30, 1],
+                         ["A",        660, 670+1080*2,   30, 1],
+                         ["S",        900, 670+1080*2,   30, 1],
+                         ["D",       1140, 670+1080*2,   30, 1],
+                         ["CASCADE",  602, 340+1080*2,  7.5, 1],
+                         ["THRUST",   865, 340+1080*2,  7.5, 1],
+                         ["FIRE",    1130, 340+1080*2,  7.5, 1],
+                         ["TURN",     645, 870+1080*2,  7.5, 1],
+                         ["HYPER-",   850, 870+1080*2,  7.5, 1],
+                         ["TURN",    1120, 870+1080*2,  7.5, 1],
+                         ["LEFT",     650, 920+1080*2,  7.5, 1],
+                         ["SPACE",    890, 920+1080*2,  7.5, 1],
+                         ["RIGHT",   1115, 920+1080*2,  7.5, 1],
+                         ["E",       475,  428+1080*3,   6, 1],
+                         ["Q",       704,  428+1080*3,   6, 1],
+                         ["WINNING", 360,  280+1080*3,   8, 1],
+                         ["LOSING", 1300,  280+1080*3,   8, 1],
+                         ["MADE BY @THEFOLDSTER", 1100,  1000+1080*4,   10, 1]];
+                
+                for (let w=0;w<words.length;w++) {
+                
+                    word = words[w][0];
+
+                    width_pointer = 0;
+
+                    offset_x = words[w][1];
+                    offset_y = words[w][2];
+                    
+                    letter_scale = words[w][3];
+                    
+                    if (words[w][4]) {
+                        ctx.fillStyle = R(r, g, b);
+                    } else {
+                        ctx.fillStyle = R(255, 255, 255);
+                    }
+
+                    for (let l=0;l<word.length;l++) {
+                        ctx.beginPath();
+                        letter = space_char[word[l]];
+                        lx = offset_x + letter_scale*(width_pointer+letter[0][0]);
+                        ly = offset_y + letter_scale*(5-(letter[0][1]));
+                        ctx.moveTo(lx, ly);
+                        for (let p=1;p<letter.length;p++) {
+                            lx = offset_x + letter_scale*(width_pointer+letter[p][0]);
+                            ly = offset_y + letter_scale*(5-letter[p][1]);
+                            ctx.lineTo(lx, ly);
+                        }
+                        width_pointer += word[l]=='W'||word[l]=='N'||word[l]=='M'?5:4;
+                        ctx.fill();
+                    }
+                }
+                
+                ctx.lineWidth = "4";
+                ctx.strokeStyle = R(r, g, b);
+                
+                offset_x = 600;
+                offset_y = 1080*2 + 400;
+                scale = 30;
+                
+                for (let i=0;i<3;i++) {
+                    for (let j=0;j<2;j++) {
+                        ctx.beginPath();
+                        x = offset_x + i*scale*8;
+                        y = offset_y + j*scale*8;
+                        w = scale*7;
+                        h = scale*7;
+                        ctx.rect(x, y, w, h);
+                        ctx.stroke();
+                    }
+                }
+                
+                ctx.beginPath();
+                ctx.rect(75, 350 + 3*1080, 830, 440);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.rect(980, 350 + 3*1080, 830, 440);
+                ctx.stroke();
+                
+                offset_x = 80;
+                offset_y = 1080*4 - 50;
+                scale = 30;
+                
+                for (let i=0;i<2;i++) {
+                    for (let j=0;j<3;j++) {
+                        ctx.beginPath();
+                        x = offset_x + i*scale*30;
+                        y = offset_y + j*scale*10;
+                        w = scale*24 + i*140;
+                        h = scale*6;
+                        ctx.rect(x, y, w, h);
+                        ctx.stroke();
+                    }
+                }
+                
+            }
+        }
+        
+        
+    </script>
+</body>
+
+</html>
