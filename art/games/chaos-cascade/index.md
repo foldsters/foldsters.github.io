@@ -7,7 +7,7 @@ has_children: false
 
 # Spacewar! Chaos Cascade
 
-{% include swcc_inline_anim.html %}
+![](https://i.imgur.com/Iz9Y4ar.png)
 
 This game was made for Pirate Software's 2020 Game Jam.
 
