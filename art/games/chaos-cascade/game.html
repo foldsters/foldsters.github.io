@@ -521,13 +521,13 @@
                 myMouse.y = event.pageY;
             }
             this.update = function() {
-                if (this.x > 20 && this.y > 20 && this.x < 20+300 && this.y < 20+50){
+                if (this.x > 20 && this.y > 20 && this.x < 20+250 && this.y < 20+40){
                     this.in_title_box = true;
                 } else {
                     this.in_title_box = false;
                 }
                 
-                if (this.x > 350 && this.y > 20 && this.x < 350+400 && this.y < 20+50){
+                if (this.x > 300 && this.y > 20 && this.x < 300+250 && this.y < 20+40){
                     this.in_refresh_box = true;
                 } else {
                     this.in_refresh_box = false;
@@ -758,10 +758,10 @@
                     ctx.lineWidth = "4";
                     ctx.strokeStyle = R(r, g, b);
 
-                    ctx.rect(20, 20, 400, 200);
+                    ctx.rect(20, 20, 250, 40);
                     ctx.stroke();
 
-                    ctx.rect(440, 20, 400, 200);
+                    ctx.rect(300, 20, 250, 40);
                     ctx.stroke();
                 }
             }
