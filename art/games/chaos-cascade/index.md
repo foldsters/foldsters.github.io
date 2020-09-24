@@ -5,7 +5,7 @@ nav_order: 6
 has_children: false
 ---
 
-# Spacewar!: Chaos Cascade
+# Spacewar! Chaos Cascade
 
 ![](https://i.imgur.com/O8WiLs2.png)
 
