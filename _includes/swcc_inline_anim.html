@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
+</head>
+                                                                                     
+<body onload="startAnim()">
+    
+    <script>
+        
+        var myAnim;
+        var myStar;
+        var myHud;
+        
+        // STARTUP
+        function startAnim() {
+            myAnim  = new component(1920/2, 980/2-100, 0.75);
+            myStar = new star();
+            myMusic.setup();
+            myStar.setup();
+            myCanvas.start();
+            myHud = new hud();
+            myMouse = new mouse();
+            myMouse.setup();}
+        
+        // CANVAS
+        var myCanvas = {
+            canvas : document.createElement("canvas"),
+            start : function() {
+                this.canvas.width = 400;
+                this.canvas.height = 600;
+                this.context = this.canvas.getContext("2d");
+                document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+                this.t = 0;
+                this.interval = setInterval(updateCanvas, 20);
+            },
+            clear : function() {
+                this.context.fillStyle = R(255, 255, 255);
+                this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+        
+        function R(r,g,b,a) {
+            a = a === undefined ? 1 : a;
+            return "rgba("+(r|0)+","+(g|0)+","+(b|0)+","+a+")";
+        }
+        
+        var S = Math.sin;
+        var C = Math.cos;
+        var T = Math.tan;
+        var pi = Math.PI;
+        
+        function RA() {
+            return Math.random()*2*pi;
+        }
+        
+        // PLAYER
+        function component(x, y, theta) {
+            this.theta  = theta;
+            this.x = x;
+            this.y = y;
+            this.headingX = 0;
+            this.headingY = 0;
+            this.update = function() {
+                
+                ctx = myCanvas.context;
+                ctx.fillStyle = R(255, 255, 255);
+                
+                this.headingX = Math.cos(2*pi*this.theta);
+                this.headingY = Math.sin(2*pi*this.theta);
+                
+                let m = 10;
+                
+                ctx.beginPath();
+                ctx.moveTo(this.x + 2*m*this.headingX,   this.y + 2*m*this.headingY);
+                ctx.lineTo(this.x - m*this.headingY - m*this.headingX, this.y + m*this.headingX - m*this.headingY);
+                ctx.lineTo(this.x + m*this.headingY - m*this.headingX, this.y - m*this.headingX - m*this.headingY);
+                ctx.fill();
+                
+            }
+        }
+        
+        // STAR
+        function star() {
+            this.t = 0;
+            this.size = 10;
+            this.size_buffer = 0;
+            this.setup = function() {
+                
+                A = nj.array([RA(), RA(), RA(), RA(),   0,   0, 255]);
+                B = nj.array([RA(), RA(), RA(), RA(),   0, 255, 255]);
+                C = nj.array([RA(), RA(), RA(), RA(), 255,   0, 255]);
+                D = nj.array([RA(), RA(), RA(), RA(), 255, 255,   0]);
+                
+                choices = [A, B, C, D];
+                points = [];
+                
+                P = A;
+                for(let i=0;i<90;i++) {
+                    choice = choices[(Math.random()*4)|0]
+                    P = choice.add(P).divide(2);
+                    points.push(P.tolist());
+                }
+                
+                nj_points = nj.array(points);
+                
+                this.P1 = nj.array(nj_points.slice(0, [0, 1]).T.tolist()[0]);
+                this.P2 = nj.array(nj_points.slice(0, [1, 2]).T.tolist()[0]);
+                this.P3 = nj.array(nj_points.slice(0, [2, 3]).T.tolist()[0]);
+                this.P4 = nj.array(nj_points.slice(0, [3, 4]).T.tolist()[0]);
+                this.R  = nj_points.slice(0, [4, 5]).T.tolist()[0]
+                this.G  = nj_points.slice(0, [5, 6]).T.tolist()[0]
+                this.B  = nj_points.slice(0, [6, 7]).T.tolist()[0]
+                
+            }
+            this.update = function() {
+                
+                if (this.size_buffer > 0) {
+                    this.size_buffer -= 0.01;
+                    this.size += 0.01;
+                }
+                
+                ctx = myCanvas.context;
+                
+                this.t += 0.001
+                
+                Xs = nj.cos(this.P1.add(2*this.t)).add(nj.sin(this.P2.add(7*this.t)));
+                Ys = nj.sin(this.P3.add(5*this.t)).add(nj.cos(this.P4.add(3*this.t)));
+                Rs = nj.sqrt(Xs.multiply(Xs).add(Ys.multiply(Ys)));
+                
+                Ts = arctan2(Ys, Xs);//nj.arctan(Ys.divide(Xs));
+                
+                table = nj.array([Xs.tolist(), Ys.tolist(), Rs.tolist(), Ts.tolist()]);
+                
+                
+                ctx.fillStyle = R(0,0,0,0.7);
+                
+                ctx.beginPath();
+                ctx.arc(770, 720 + 1080, 40, 0, 2 * pi, false);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(1120, 1000 + 1080, 40, 0, 2 * pi, false);
+                ctx.fill();
+                
+                for (let i=0;i<6;i++) {
+                    
+                    n = 2*pi*i/5;
+                    x = Rs.multiply(nj.cos(Ts.add(n)));
+                    y = Rs.multiply(nj.sin(Ts.add(n)));
+                    
+                    for (let j=0;j<90;j++) {
+                        ctx.fillStyle = R(this.R[j], this.G[j], this.B[j]);
+                        cx = this.size*x.get(j);
+                        cy = this.size*y.get(j);
+                        sx = 1920/2 + cx;
+                        sy = 980/2 + cy - 100;
+                        t = 1000/((sx-myAnim.x)**2 + (sy-myAnim.y)**2);
+                        ctx.fillRect(sx*(1-t) + myAnim.x*(t), sy*(1-t) + myAnim.y*(t), 2, 2);
+                        
+                        ctx.fillRect(770 + cx*2, 720 + 1080 + cy*2, 1.5, 1.5);
+                    }
+                }
+            }
+        }
+        
+        function arctan2(Ys, Xs) {
+            return nj.negative(Xs.divide(nj.abs(Xs))).add(1).multiply(Ys).multiply(pi/2).divide(nj.abs(Ys)).add(nj.arctan(Ys.divide(Xs)));
+        }
+        
+        // UPDATES
+        function updateCanvas() {
+            myCanvas.clear();
+            myCanvas.t += 0.01;
+            
+            myStar.update();
+            myAnim.update();
+            
+            myHud.update();
+        }
+        
+       
+        // HEADS UP DISPLAY
+        function hud() {
+            this.update = function() {
+                
+                ctx = myCanvas.context;
+                
+                colors = [[128, 128, 255], 
+                          [  0, 255, 255],
+                          [255, 255,   0],
+                          [255,   0, 255]];
+            
+                color_t  = (myCanvas.t/10)%4;
+                color_t0 = color_t | 0;
+                color_t1 = (color_t0 + 1)%4;
+                
+                r = ((colors[color_t0])[0])*(1 - (color_t - color_t0)) + ((colors[color_t1])[0])*(color_t - color_t0);
+                g = ((colors[color_t0])[1])*(1 - (color_t - color_t0)) + ((colors[color_t1])[1])*(color_t - color_t0);
+                b = ((colors[color_t0])[2])*(1 - (color_t - color_t0)) + ((colors[color_t1])[2])*(color_t - color_t0);
+                
+                ctx.lineWidth = "4";
+                
+                space_char = {
+                
+                    'S' : [[0,0], [2,0], [3,1], [3,2], [2,3], [1,3], [1,4], [2,4], 
+                           [3,5], [1,5], [0,4], [0,3], [1,2], [2,2], [2,1], [1,1]],
+
+                    'P' : [[0,0], [1,1], [1,4], [2,4], [2,2], [3,3], [3,4], [2,5], 
+                           [1,5], [0,4]],
+
+                    'A' : [[0,0], [1,1], [1,2], [2,2], [2,0], [3,1], [3,4], [2,4],
+                           [2,3], [1,3], [1,4], [2,4], [3,5], [1,5], [0,4]],
+
+                    'C' : [[1,0], [2,0], [3,1], [1,1], [1,4], [2,4], [3,5], [1,5], 
+                           [0,4], [0,1]],
+
+                    'E' : [[1,0], [2,0], [3,1], [1,1], [1,2], [2,3], [1,3], [1,4], 
+                           [2,4], [3,5], [1,5], [0,4], [0,1]],
+
+                    'W' : [[1,0], [2,1], [3,0], [4,1], [4,5], [3,4], [3,1], [2,2],
+                           [1,1], [1,5], [0,4], [0,1]],
+
+                    'R' : [[0,0], [1,1], [1,2], [3,0], [3,1], [1,3], [1,4], [2,4],
+                           [2,2], [3,3], [3,4], [2,5], [1,5], [0,4]],
+
+                    'H' : [[0,0], [1,1], [1,2], [2,3], [2,0], [3,1], [3,5], [2,4],
+                           [2,3], [1,3], [1,5], [0,4]],
+
+                    'O' : [[1,0], [2,0], [3,1], [3,4], [2,4], [2,1], [1,1], [1,4], 
+                           [2,4], [3,5], [1,5], [0,4], [0,1]],
+
+                    'D' : [[0,0], [2,0], [3,1], [3,3], [2,4], [2,1], [1,1], [1,4], 
+                           [2,4], [1,5], [0,5]],
+
+                    'T' : [[1,0], [2,1], [2,4], [3,5], [1,5], [0,4], [1,4]],
+
+                    'Y' : [[1,0], [2,1], [2,2], [3,3], [3,5], [2,4], [2,3], [1,2],
+                           [1,5], [0,4], [0,3], [1,2]],
+
+                    'N' : [[0,0], [1,1], [1,3], [3,0], [4,1], [4,5], [3,4], [3,1],
+                           [1,5], [0,4]],
+
+                    'L' : [[0,0], [2,0], [3,1], [1,1], [1,5], [0,4]],
+
+                    'B' : [[0,0], [2,0], [3,1], [2,2], [2,1], [1,1], [1,2], [2,2],
+                           [3,3], [2,4], [2,3], [1,3], [1,4], [2,4], [1,5], [0,5]],
+
+                    'J' : [[0,0], [1,0], [2,1], [2,4], [3,5], [1,5], [0,4], [1,4], [1,1]],
+
+                    'V' : [[2,0], [3,1], [3,5], [2,4], [2,1], [1,2], [1,5], [0,4], [0,2]],
+                    
+                    'I' : [[0,0], [2,0], [3,1], [2,1], [2,4], [3,5], [1,5], [0,4], 
+                           [1,4], [1,1]],
+                    
+                    'Q' : [[2,0], [3,0], [2,1], [3,2], [3,4], [2,5], [1,5], [0,4], 
+                           [0,2], [1,1], [1,4], [2,4], [2,2], [1,1]],
+                    
+                    'F' : [[0,0], [1,1], [1,2], [2,3], [1,3], [1,4], [2,4], [3,5], 
+                           [1,5], [0,4]],
+                    
+                    '-' : [[0,2], [2,2], [3,3], [1,3]],
+                    
+                    'U' : [[0,0], [2,0], [3,1], [3,5], [2,4], [2,1], [1,1], [1,5], [0,4]],
+                    
+                    'G' : [[1,0], [2,0], [3,1], [3,2], [2,3], [1,3], [2,2], [2,1], [1,1],
+                           [1,4], [3,4], [2,5], [1,5], [0,4], [0,1]], 
+                    
+                    'M' : [[3,5], [2,4], [1,5], [0,4], [0,0], [1,1], [1,4], [2,3],
+                           [3,4], [3,0], [4,1], [4,4]],
+                    
+                    ' ' : [[0,0]],
+                    
+                    '@' : [[1,0], [3,0], [2,1], [1,1], [1,2], [2,2], [2,1], [3,2],
+                           [2,3], [1,3], [0,2], [0,1]],
+                }
+                
+                
+                words = [["SPACEWAR",   650,   100,   20, 1],
+                         ["CHAOS",      650,   600, 12.9, 1],
+                         ["CASCADE",    940,   600, 12.9, 1]];
+                
+                for (let w=0;w<words.length;w++) {
+                
+                    word = words[w][0];
+
+                    width_pointer = 0;
+
+                    offset_x = words[w][1];
+                    offset_y = words[w][2];
+                    
+                    letter_scale = words[w][3];
+                    
+                    if (words[w][4]) {
+                        ctx.fillStyle = R(r, g, b);
+                    } else {
+                        ctx.fillStyle = R(255, 255, 255);
+                    }
+
+                    for (let l=0;l<word.length;l++) {
+                        ctx.beginPath();
+                        letter = space_char[word[l]];
+                        lx = offset_x + letter_scale*(width_pointer+letter[0][0]);
+                        ly = offset_y + letter_scale*(5-(letter[0][1]));
+                        ctx.moveTo(lx, ly);
+                        for (let p=1;p<letter.length;p++) {
+                            lx = offset_x + letter_scale*(width_pointer+letter[p][0]);
+                            ly = offset_y + letter_scale*(5-letter[p][1]);
+                            ctx.lineTo(lx, ly);
+                        }
+                        width_pointer += word[l]=='W'||word[l]=='N'||word[l]=='M'?5:4;
+                        ctx.fill();
+                    }
+                }
+            }
+        }
+        
+        
+    </script>
+</body>
+
+</html>
