@@ -513,7 +513,7 @@
             }
             this.click = function() {
                 myMouse.clicked_ever = true;
-                if   (myMouse.in_title_box)   {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/title-screen.html"};
+                if (myMouse.in_title_box)   {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/title-screen.html"};
                 if (myMouse.in_refresh_box) {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/game.html"};
             }
             this.mousemove = function(event) {
@@ -521,16 +521,16 @@
                 myMouse.y = event.pageY;
             }
             this.update = function() {
-                if (this.x > 20 && this.y > 20 && this.x < 20+400 && this.y < 20+200){
+                if (this.x > 20 && this.y > 20 && this.x < 20+300 && this.y < 20+50){
                     this.in_title_box = true;
                 } else {
-                    this.in_manual_box = false;
+                    this.in_title_box = false;
                 }
                 
-                if (this.x > 440 && this.y > 20 && this.x < 440+400 && this.y < 20+200){
-                    this.in_game_box = true;
+                if (this.x > 350 && this.y > 20 && this.x < 350+400 && this.y < 20+50){
+                    this.in_refresh_box = true;
                 } else {
-                    this.in_game_box = false;
+                    this.in_refresh_box = false;
                 }
             }
         }
@@ -720,7 +720,7 @@
                 if (myAnim.dead)
                 {
                     words = [["TITLE SCREEN", 25,   25,   5,  1-myMouse.in_title_box],
-                             ["RESTART GAME",  25,   420,   5, 1-myMouse.in_refresh_box]];
+                             ["RESTART GAME",  325,   25,   5, 1-myMouse.in_refresh_box]];
 
                     for (let w=0;w<words.length;w++) {
 
