@@ -19,12 +19,9 @@
         function startAnim() {
             myAnim  = new component(1920/2, 980/2-100, 0.75);
             myStar = new star();
-            myMusic.setup();
             myStar.setup();
             myCanvas.start();
-            myHud = new hud();
-            myMouse = new mouse();
-            myMouse.setup();}
+            myHud = new hud();}
         
         // CANVAS
         var myCanvas = {
