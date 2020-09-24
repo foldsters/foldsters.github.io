@@ -398,27 +398,48 @@
             return nj.negative(Xs.divide(nj.abs(Xs))).add(1).multiply(Ys).multiply(pi/2).divide(nj.abs(Ys)).add(nj.arctan(Ys.divide(Xs)));
         }
         
+        var keyLayout = {
+            set : false,
+            keys : [81, 87, 69, 65, 83, 68]
+        }
+        
         // UPDATES
         function updateCanvas() {
             myCanvas.clear();
             myCanvas.t += 0.01;
             
-            // turn left
-            if (myCanvas.keys && myCanvas.keys[65]) {myAnim.theta -= 0.01; }
+            // set QWERTY
+            if (myCanvas.keys && myCanvas.keys[87] && !keyLayout.set) {
+                keyLayout.set = true;}
             
-            // turn right
-            if (myCanvas.keys && myCanvas.keys[68]) {myAnim.theta += 0.01; }
+            // set AZERTY
+            if (myCanvas.keys && myCanvas.keys[90] && !keyLayout.set) {
+                keyLayout.keys = [65, 90, 69, 81, 83, 68];
+                keyLayout.set = true;}
             
-            // thrust
-            if (myCanvas.keys && myCanvas.keys[87]) {myAnim.thrust = true; }
-            
-            // fire
-            if (myCanvas.keys && myCanvas.keys[69]) {myAnim.fire   = true; }
+            // set Dvorak
+            if (myCanvas.keys && myCanvas.keys[44] && !keyLayout.set) {
+                keyLayout.keys = [39, 44, 46, 65, 79, 69];
+                keyLayout.set = true;}
             
             // cascade
-            if (myCanvas.keys && myCanvas.keys[81]) {myAnim.cascade(); }
+            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[0]]) {myAnim.cascade(); }
             
-            if (myCanvas.keys && myCanvas.keys[83]) {myAnim.hyperspace();}
+            // thrust
+            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[1]]) {myAnim.thrust = true; }
+            
+            // fire
+            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[2]]) {myAnim.fire   = true; }
+            
+            // turn left
+            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[3]]) {myAnim.theta -= 0.01; }
+            
+            // hyperspace
+            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[4]]) {myAnim.hyperspace();}
+            
+            // turn right
+            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[5]]) {myAnim.theta += 0.01; }
+            
             
             myStar.update();
             myAnim.update();
