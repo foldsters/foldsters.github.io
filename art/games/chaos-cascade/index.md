@@ -21,4 +21,4 @@ Some of the things I've learned will probably change my programming toolkit and 
 
 You may have to resize the browser window for the manual and game to fit the screen properly.
 
-[Download the Manual and Game!] ()
+[Download the Manual and Game!] (https://drive.google.com/file/d/1912ctp_A7qYxhP801G_fjt7ph5zNZEQ1)
