@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
+</head>
+                                                                                     
+<body onload="startAnim()" style="background-color:black;">
+    <script>
+        
+    function R(r,g,b,a) {
+        a = a === undefined ? 1 : a;
+        return "rgba("+(r|0)+","+(g|0)+","+(b|0)+","+a+")";
+    }
+        
+    var pi = Math.PI
+        
+    function startAnim() 
+        {myCanvas.start();}
+        
+    var myCanvas = {
+        canvas : document.createElement("canvas"),
+        start : function() {
+            this.canvas.width = 1400;
+            this.canvas.height = 1200;
+            this.context = this.canvas.getContext("2d");
+            document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+            this.t = 0;
+            this.interval = setInterval(updateCanvas, 10);
+        },
+        clear : function() {
+            this.context.fillStyle = R(0, 0, 0);
+            this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+    }
+    
+    function updateCanvas() {
+        
+        myCanvas.clear();
+        for (let i=0; i<8; i++) 
+        {
+            loop(myCanvas.t+i*(pi/2), i);
+        }
+        myCanvas.t += 0.01;
+            
+    }
+        
+    function draw_circle(x, y, r, outline=false) {
+        ctx = myCanvas.context;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, 2 * pi, false);
+        if (outline) {
+            ctx.stroke();    
+        } else {
+            ctx.fill();
+        }
+    }
+        
+    function lerp(a, b, l) {
+            return a*(1-l) + b*l
+    }
+        
+        
+    function draw_grid(cx, cy, ux, uy, vx, vy, s, center=false) {
+        ctx = myCanvas.context;
+        
+        dux = ux - cx;
+        duy = uy - cy;
+        dvx = vx - cx;
+        dvy = vy - cy;
+        
+        if (center)
+        {
+            l = -1;
+            dl = 2/s;
+        } else {
+            l = 0;
+            dl = 1/s;
+        }
+        
+        while (l <= 1) {
+            sux = lerp(cx, ux, l);
+            suy = lerp(cy, uy, l);
+            svx = lerp(cx, vx, l);
+            svy = lerp(cy, vy, l);
+            
+            l += dl;
+            
+            ctx.beginPath();
+            ctx.moveTo(sux-(center?dvx:0), suy-(center?dvy:0));
+            ctx.lineTo(sux+dvx, suy+dvy);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(svx-(center?dux:0), svy-(center?duy:0));
+            ctx.lineTo(svx+dux, svy+duy);
+            ctx.stroke();
+        }
+    }
+        
+    function loop(t, color) {
+        ctx = myCanvas.context;
+        
+        colors = [[64, 0, 0],
+                  [196, 0, 0],
+                  [255, 64, 0],
+                  [255, 128, 0],
+                  [255, 255, 128],
+                  [255, 255, 255],
+                  [196, 196, 255],
+                  [64, 64, 128]]
+        
+        scale = t%(4*pi)
+        wscale = 800
+        
+        x = 800 + 800*Math.cos(t)/scale
+        r = 300/scale
+        y = 1000 - (300*Math.sin(t)/scale + r)
+        
+        cscale = scale<1?1/scale:scale
+        
+        ctx.lineWidth = "4";
+        cr = colors[7-color][0];
+        cg = colors[7-color][1];
+        
+        console.log(color, colors)
+        cb = colors[7-color][2];
+        ctx.fillStyle = R(cr, cg, cb, (1/scale)**(scale/4));
+        ctx.strokeStyle = R(255, 255, 255, 0.5/cscale);
+        
+        gscale = scale/2
+        
+        draw_grid(wscale, 1000, 
+                  wscale+wscale*Math.cos(t)/gscale, 1000-(300*Math.sin(t))/gscale, 
+                  wscale+wscale*Math.cos(t+pi/2)/gscale, 1000-(300*Math.sin(t+pi/2))/gscale, 8, true)
+        
+        draw_circle(x, y, r);
+        ctx.lineWidth = 20/scale;
+        ctx.strokeStyle = R(cr, cg, cb, 2/cscale);
+        draw_circle(x, y, r, true);
+        
+    }
+        
+    </script>
+</body>
