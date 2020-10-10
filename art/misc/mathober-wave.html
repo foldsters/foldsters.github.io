@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
+</head>
+                                                                                     
+<body onload="startAnim()" style="background-color:black;">
+    <script>
+        
+    function R(r,g,b,a) {
+        a = a === undefined ? 1 : a;
+        return "rgba("+(r|0)+","+(g|0)+","+(b|0)+","+a+")";
+    }
+        
+    var pi = Math.PI
+        
+    function startAnim() 
+        {myCanvas.start();}
+        
+    var myCanvas = {
+        canvas : document.createElement("canvas"),
+        start : function() {
+            this.canvas.width = 400;
+            this.canvas.height = 200;
+            this.context = this.canvas.getContext("2d");
+            document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+            this.t = 0;
+            this.interval = setInterval(updateCanvas, 10);
+        },
+        clear : function() {
+            this.context.fillStyle = R(0, 0, 0);
+            this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+    }
+    
+    function updateCanvas() {
+        
+        //myCanvas.clear();
+        loop(myCanvas.t);
+        myCanvas.t += 0.1;
+            
+    }
+        
+    function lerp(a, b, l) {
+            return a*(1-l) + b*l
+    }
+        
+    function loop(t, color) {
+        ctx = myCanvas.context;
+        
+        for (let h=200; h>=0; h-=20)
+        {
+            for (let x=0; x<400; x+=1)
+            {
+                cg = lerp(0, 128, h/100);
+                
+                ctx.fillStyle = R(128, cg, 255);
+                ctx.fillRect(x, 200, 1, -h+10*Math.cos(t+h*(x+100)/1000))
+            }
+        }
+        
+    }
+        
+    </script>
+</body>
