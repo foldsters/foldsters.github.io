@@ -6,6 +6,12 @@
 pathname = window.location.href;
 param_string = pathname.split("?")[1];
 if (param_string !== undefined) {
-   document.getElementById("text").innerHTML = param_string;
+   param_json = {};
+   param_list = param_string.split("&");
+   for (let i=0;i<param_string.length;i++) {
+     [key, val] = param_list[i].split('=');
+     param_json[key] = value;
+   }
+   document.getElementById("text").innerHTML = JSON.stringify(param_json);
 }
 </script>
