@@ -4,5 +4,8 @@
 
 <script>
 pathname = window.location.href;
-document.getElementById("text").innerHTML = pathname;
+param_string = pathname.split("?")[1];
+if (param_string !== undefined) {
+   document.getElementById("text").innerHTML = param_string;
+}
 </script>
