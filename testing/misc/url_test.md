@@ -3,5 +3,6 @@
 <div id="text"></div>
 
 <script>
-document.getElementById("text").innerHTML = "ref placeholder";
+pathname = window.location.pathname;
+document.getElementById("text").innerHTML = pathname;
 </script>
