@@ -33,19 +33,10 @@ Right now I'm using ko-fi for commisions and exclusive content.
 
 ### Contacts and Social Media
 ---
-**Email** : Foldsters@gmail.com
-**Twitter** : Projects: [@FoldsterProject](https://twitter.com/FoldsterProject)
----
+**Email** - Foldsters@gmail.com
 
 **Twitter** - Projects: [@FoldsterProject](https://twitter.com/FoldsterProject)
-              Personal: [@theFoldster](https://twitter.com/theFoldster)
-              
-|-----------------+------------+-----------------+----------------|
-| Default aligned |Left aligned| Center aligned  | Right aligned  |
-|-----------------|:-----------|:---------------:|---------------:|
-| First body part |Second cell | Third cell      | fourth cell    |
-| Second line     |foo         | **strong**      | baz            |
-| Third line      |quux        | baz             | bar            |
+`            `Personal: [@theFoldster](https://twitter.com/theFoldster)
 
 **Twitch** - <https://www.twitch.tv/foldster>
 
