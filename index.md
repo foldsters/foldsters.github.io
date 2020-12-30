@@ -32,8 +32,8 @@ Right now I'm using ko-fi for commisions and exclusive content.
 
 
 ### Contacts and Social Media
-
-**Email** - Foldsters@gmail.com
+|----------|--------------------|
+|**Email** |Foldsters@gmail.com |
 
 **Twitter** - Projects: [@FoldsterProject](https://twitter.com/FoldsterProject)
               Personal: [@theFoldster](https://twitter.com/theFoldster)
