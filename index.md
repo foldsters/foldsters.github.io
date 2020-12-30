@@ -36,7 +36,7 @@ Right now I'm using ko-fi for commisions and exclusive content.
 **Email** - Foldsters@gmail.com
 
 **Twitter** - Projects: [@FoldsterProject](https://twitter.com/FoldsterProject)<br />
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Personal: [@theFoldster](https://twitter.com/theFoldster)
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Personal: [@theFoldster](https://twitter.com/theFoldster)
 
 **Twitch** - <https://www.twitch.tv/foldster>
 
