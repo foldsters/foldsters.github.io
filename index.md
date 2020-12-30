@@ -5,7 +5,7 @@ nav_order: 1
 
 # Welcome to Foldster's Projects!
 
-![](https://i.imgur.com/pNfj9ew.png)
+![](https://i.imgur.com/xLlC4pI.png)
 
 ### Who I am
 
@@ -38,7 +38,7 @@ I am most active on twitter, and I accept DMs. For non-collaborative business of
 
 **Email** - Foldsters@gmail.com
 
-**Twitter** - [@theFoldster](https://twitter.com/theFoldster).
+**Twitter** - Projects: [@FoldsterProject](https://twitter.com/FoldsterProject), Personal: [@theFoldster](https://twitter.com/theFoldster)
 
 **Twitch** - <https://www.twitch.tv/foldster>
 
