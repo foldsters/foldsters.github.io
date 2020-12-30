@@ -28,7 +28,7 @@ I am most active on twitter, and I accept DMs. For non-collaborative business of
 
 Right now I'm using ko-fi for commisions and exclusive content.
 
-Check it out here!
+Check it out here! [![ko-fi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/B0B12PL3S)
 
 
 ### Contacts and Social Media
