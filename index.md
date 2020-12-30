@@ -13,15 +13,6 @@ My name is Matthew Giallourakis, but I go by Foldster online. I have a Master's 
 My main area of research is computational origami, and I have interests in pretty much everything in the STEM and Art fields. 
 I work on a lot of projects that I will update this page with.
 
-### Current Interests
-
-* Computational Origami
-
-* Home Automation
-
-* Category Theory
-
-
 ### Why Github Pages?
 
 I can work on and build this entire website in Jupyter Lab (my preferred IDE/code studio), so it works best for me.
@@ -33,12 +24,19 @@ I can work on and build this entire website in Jupyter Lab (my preferred IDE/cod
 
 I am most active on twitter, and I accept DMs. For non-collaborative business offers, please email me.
 
+### Where can I support your work?
+
+Right now I'm using ko-fi for commisions and exclusive content.
+
+Check it out here!
+
 
 ### Contacts and Social Media
 
 **Email** - Foldsters@gmail.com
 
-**Twitter** - Projects: [@FoldsterProject](https://twitter.com/FoldsterProject), Personal: [@theFoldster](https://twitter.com/theFoldster)
+**Twitter** - Projects: [@FoldsterProject](https://twitter.com/FoldsterProject)
+              Personal: [@theFoldster](https://twitter.com/theFoldster)
 
 **Twitch** - <https://www.twitch.tv/foldster>
 
