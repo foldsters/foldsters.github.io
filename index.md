@@ -39,6 +39,13 @@ Right now I'm using ko-fi for commisions and exclusive content.
 
 **Twitter** - Projects: [@FoldsterProject](https://twitter.com/FoldsterProject)
               Personal: [@theFoldster](https://twitter.com/theFoldster)
+              
+|-----------------+------------+-----------------+----------------|
+| Default aligned |Left aligned| Center aligned  | Right aligned  |
+|-----------------|:-----------|:---------------:|---------------:|
+| First body part |Second cell | Third cell      | fourth cell    |
+| Second line     |foo         | **strong**      | baz            |
+| Third line      |quux        | baz             | bar            |
 
 **Twitch** - <https://www.twitch.tv/foldster>
 
