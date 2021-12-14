@@ -1,3 +1,9 @@
+---
+layout: default
+title: Bit Zoom Sierpinski
+nav_exclude: true
+---
+
 # Imports
 
 
