@@ -1,7 +1,6 @@
 ---
 title: Welcome!
 nav_order: 1
-has_children: true
 ---
 
 # Welcome to Foldster's Projects!
@@ -12,6 +11,7 @@ has_children: true
 
 My name is Matthew Giallourakis, but I go by Foldster online. I have a Master's degree in Electrical Robotics and a Bachelor's in Mechanical Engineering. 
 My main area of research is computational origami, and I have interests in pretty much everything in the STEM and Art fields. 
+
 I work on a lot of projects that I will update this page with.
 
 <!-- ### Why Github Pages?
@@ -33,7 +33,7 @@ Right now I'm using ko-fi for commisions and exclusive content.
 
 
 ### Contacts and Social Media
----
+
 **Email** - foldsters@gmail.com
 
 **Twitter/X** 
