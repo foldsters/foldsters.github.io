@@ -13,11 +13,11 @@ My name is Matthew Giallourakis, but I go by Foldster online. I have a Master's 
 My main area of research is computational origami, and I have interests in pretty much everything in the STEM and Art fields. 
 I work on a lot of projects that I will update this page with.
 
-### Why Github Pages?
+<!-- ### Why Github Pages?
 
 I can work on and build this entire website in Jupyter Lab (my preferred IDE/code studio), so it works best for me.
 
-<small>Link to the project [here](https://github.com/foldsters/foldsters.github.io)</small>
+<small>Link to the project [here](https://github.com/foldsters/foldsters.github.io)</small> -->
 
 
 ### Where should I get updates from you and contact you?
@@ -33,10 +33,11 @@ Right now I'm using ko-fi for commisions and exclusive content.
 
 ### Contacts and Social Media
 ---
-**Email** - Foldsters@gmail.com
+**Email** - foldsters@gmail.com
 
-**Twitter** - Projects: [@FoldsterProject](https://twitter.com/FoldsterProject)<br />
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Personal: [@theFoldster](https://twitter.com/theFoldster)
+**Twitter/X** 
+- Projects: [@FoldsterProject](https://twitter.com/FoldsterProject)
+- Personal: [@theFoldster](https://twitter.com/theFoldster)
 
 **Twitch** - <https://www.twitch.tv/foldster>
 
