@@ -3,11 +3,18 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=1000px, initial-scale=2.0">
+    <meta name="viewport" content="width=1000px, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
+    <style>
+        canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
 </head>
                                                                                      
 <body onload="startAnim()" style="background-color:black;">
@@ -227,8 +234,12 @@
                 if (myMouse.in_manual_box) {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/manual.html"};
             }
             this.mousemove = function(event) {
-                myMouse.x = event.pageX;
-                myMouse.y = event.pageY;
+                const rect = myCanvas.canvas.getBoundingClientRect();
+                const scaleX = myCanvas.canvas.width / rect.width;
+                const scaleY = myCanvas.canvas.height / rect.height;
+                
+                myMouse.x = (event.clientX - rect.left) * scaleX;
+                myMouse.y = (event.clientY - rect.top) * scaleY;
             }
             this.update = function() {
                 if (this.x > 80 && this.y > 820 && this.x < 80+740 && this.y < 820+140){
