@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
 
     <style>
+        /* Make the canvas responsive */
         canvas {
             width: 100%;
             height: 100%;
@@ -30,6 +31,7 @@
         var myStar;
         var myHud;
         var myMouse;
+        var scaleX, scaleY;
         
         var audioB1 = document.getElementById('audioB1');
         var audioB2 = document.getElementById('audioB2');
@@ -71,10 +73,24 @@
                 document.body.insertBefore(this.canvas, document.body.childNodes[0]);
                 this.t = 0;
                 this.interval = setInterval(updateCanvas, 20);
+                window.addEventListener('resize', this.resize.bind(this));
+                this.resize(); // Initial resize
+            },
+            resize: function() {
+                // Calculate scaling factors based on window size
+                scaleX = window.innerWidth / this.canvas.width;
+                scaleY = window.innerHeight / this.canvas.height;
+
+                // Set transformation scale for the canvas context
+                this.context.setTransform(scaleX, scaleY);
+
+                // You can apply uniform scaling by taking the smaller of the two scales
+                // If you want to preserve aspect ratio:
+                // let scale = Math.min(scaleX, scaleY);
+                // this.context.setTransform(scale, scale);
             },
             clear : function() {
-                this.context.fillStyle = R(0, 0, 0);
-                this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             }
         }
         
