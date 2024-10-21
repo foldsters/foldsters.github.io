@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=1000px, initial-scale=2.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -43,7 +43,7 @@
         
         // STARTUP
         function startAnim() {
-            myAnim  = new component(1920/2, 980/2-100, 0.75);
+            myAnim  = new component(window.innerWidth / 2, window.innerHeight / 2 - 100, 0.75);
             myStar = new star();
             myMusic.setup();
             myStar.setup();
@@ -56,12 +56,16 @@
         var myCanvas = {
             canvas : document.createElement("canvas"),
             start : function() {
-                this.canvas.width = 1920;
-                this.canvas.height = 1080;
+                this.resize();
                 this.context = this.canvas.getContext("2d");
                 document.body.insertBefore(this.canvas, document.body.childNodes[0]);
                 this.t = 0;
                 this.interval = setInterval(updateCanvas, 20);
+                window.addEventListener('resize', this.resize.bind(this));
+            },
+            resize: function() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
             },
             clear : function() {
                 this.context.fillStyle = R(0, 0, 0);
@@ -115,7 +119,6 @@
             this.size = 10;
             this.size_buffer = 0;
             this.setup = function() {
-                
                 A = nj.array([RA(), RA(), RA(), RA(),   0,   0, 255]);
                 B = nj.array([RA(), RA(), RA(), RA(),   0, 255, 255]);
                 C = nj.array([RA(), RA(), RA(), RA(), 255,   0, 255]);
@@ -182,8 +185,8 @@
                         ctx.fillStyle = R(this.R[j], this.G[j], this.B[j]);
                         cx = this.size*x.get(j);
                         cy = this.size*y.get(j);
-                        sx = 1920/2 + cx;
-                        sy = 980/2 + cy - 100;
+                        sx = window.innerWidth / 2 + cx;
+                        sy = window.innerHeight / 2 + cy - 100;
                         t = 1000/((sx-myAnim.x)**2 + (sy-myAnim.y)**2);
                         ctx.fillRect(sx*(1-t) + myAnim.x*(t), sy*(1-t) + myAnim.y*(t), 2, 2);
                         
