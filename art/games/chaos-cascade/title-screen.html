@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=1000px, initial-scale=2.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -12,49 +12,28 @@
                                                                                      
 <body onload="startAnim()" style="background-color:black;">
     
-    <audio id="audioB0" src="https://raw.githubusercontent.com/foldsters/foldsters.github.io/master/art/games/chaos-cascade/sounds/B0.wav"></audio>
     <audio id="audioB1" src="https://raw.githubusercontent.com/foldsters/foldsters.github.io/master/art/games/chaos-cascade/sounds/B1.wav"></audio>
     <audio id="audioB2" src="https://raw.githubusercontent.com/foldsters/foldsters.github.io/master/art/games/chaos-cascade/sounds/B2.wav"></audio>
-    <audio id="audioB3" src="https://raw.githubusercontent.com/foldsters/foldsters.github.io/master/art/games/chaos-cascade/sounds/B3.wav"></audio>
-    <audio id="audioB4" src="https://raw.githubusercontent.com/foldsters/foldsters.github.io/master/art/games/chaos-cascade/sounds/B4.wav"></audio>
-    <audio id="audioB5" src="https://raw.githubusercontent.com/foldsters/foldsters.github.io/master/art/games/chaos-cascade/sounds/B5.wav"></audio>
-    <audio id="audioB6" src="https://raw.githubusercontent.com/foldsters/foldsters.github.io/master/art/games/chaos-cascade/sounds/B6.wav"></audio>
-    
     <audio loop id="audioMusic" src="https://raw.githubusercontent.com/foldsters/foldsters.github.io/master/art/games/chaos-cascade/sounds/Chaos%20Cascade.wav"></audio>
     
     <script>
         
-        var audioB0 = document.getElementById('audioB0');
+        var myAnim;
+        var myStar;
+        var myHud;
+        var myMouse;
+        
         var audioB1 = document.getElementById('audioB1');
         var audioB2 = document.getElementById('audioB2');
-        var audioB3 = document.getElementById('audioB3');
-        var audioB4 = document.getElementById('audioB4');
-        var audioB5 = document.getElementById('audioB5');
-        var audioB6 = document.getElementById('audioB6');
         
         var audioMusic = document.getElementById('audioMusic');
         
-        var audioList = [audioB0, audioB1, audioB2, audioB3, audioB4, audioB5, audioB6];
-        var nopromise = {catch : new Function()};
-
-        function playAudio(id) {
-            aud = audioList[id];
-            (aud.play() || nopromise).catch(function(){});
-        } 
-
-        function stopAudio(id) {
-            aud = audioList[id];
-            aud.pause();
-            aud.currentTime = 0;
-        }
-        
         var myMusic = {
             setup : function() {
-                this.playable = false;
                 this.played = false;
             },
             update  : function() {
-                if (this.playable && !this.played)
+                if (myMouse.clicked_ever && !this.played)
                 {
                     audioMusic.play();
                     this.played = true;
@@ -62,27 +41,14 @@
             }
         }
         
-        var myAnim;
-        var myStar;
-        var myCollision;
-        var myHud;
-        var myEnemies;
-        var myScraps;
-        
-        var myMouse;
-        
         // STARTUP
         function startAnim() {
-            myAnim  = new component(30, 30);
+            myAnim  = new component(1920/2, 980/2-100, 0.75);
             myStar = new star();
-            myStar.setup();
             myMusic.setup();
+            myStar.setup();
             myCanvas.start();
             myHud = new hud();
-            myScraps = new scrapList();
-            myEnemies = new enemyList();
-            myEnemies.setup();
-            myCollision = new collisionMap();
             myMouse = new mouse();
             myMouse.setup();}
         
@@ -95,50 +61,12 @@
                 this.context = this.canvas.getContext("2d");
                 document.body.insertBefore(this.canvas, document.body.childNodes[0]);
                 this.t = 0;
-                this.key_active = false;
-                this.interval = setInterval(updateCanvas, 10);
-                window.addEventListener('keydown', function (e) {
-                    myCanvas.keys = (myCanvas.keys || []);
-                    myCanvas.keys[e.keyCode] = true;
-                    myMusic.playable = true;
-                })
-                window.addEventListener('keyup', function (e) {
-                    myCanvas.keys[e.keyCode] = false;
-                })
+                this.interval = setInterval(updateCanvas, 20);
             },
             clear : function() {
-                this.context.fillStyle = R(0, 0, 0, 0.15);
+                this.context.fillStyle = R(0, 0, 0);
                 this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
             }
-        }
-        
-        // COLLISION MAP
-        function collisionMap() {
-            this.map = [];
-            this.res = 10;
-            this.Qy = Math.floor(1080/this.res);
-            this.register = function(x, y, e) {
-                qx = Math.floor(x/this.res);
-                qy = Math.floor(y/this.res);
-                for (let xi=-1;xi<2;xi++) {
-                    for (let yi=-1;yi<2;yi++) {
-                        if (qx+xi>=0 && qy+yi>=0) {
-                        let index = (qx+xi) + this.Qy*(qy+yi);
-                        let maybe_array = this.map[index] === undefined?[]:this.map[index];
-                        maybe_array.push(e);
-                        this.map[index] = maybe_array; }
-                    }
-                }
-            };
-            this.get = function(x, y) {
-                let qx = Math.floor(x/this.res);
-                let qy = Math.floor(y/this.res);
-                index = qx + this.Qy*qy;
-                return this.map[index];
-            };
-            this.clear = function() {
-                this.map = [];
-            };
         }
         
         function R(r,g,b,a) {
@@ -156,77 +84,19 @@
         }
         
         // PLAYER
-        function component(x, y) {
-            this.t = 0;
-            this.vx = 0;
-            this.vy = 0;
-            this.theta  = 0;
-            this.thrust = false;
-            this.thrust_meter = 1;
-            this.recovered = true;
-            this.chaos_meter  = 1;
+        function component(x, y, theta) {
+            this.theta  = theta;
             this.x = x;
             this.y = y;
             this.headingX = 0;
             this.headingY = 0;
-            this.fire_cooldown = 0.25;
-            this.cascade_cooldown = 0.5;
-            this.primary_bullets = [];
-            this.secondary_bullets = [];
-            this.dead = false;
-            this.hyperspace = function() {
-                if (this.chaos_meter > 0)
-                {
-                    this.x = Math.random() * 1920;
-                    this.y = Math.random() * 990;
-                    this.chaos_meter = 0;
-                }
-            }
             this.update = function() {
                 
                 ctx = myCanvas.context;
+                ctx.fillStyle = R(255, 255, 255);
                 
-                c = 0.01;
                 this.headingX = Math.cos(2*pi*this.theta);
                 this.headingY = Math.sin(2*pi*this.theta);
-                
-                if (this.thrust && (this.thrust_meter > 0) && this.recovered) {
-                    this.vx += c*this.headingX;
-                    this.vy += c*this.headingY;
-                    this.thrust   = false;
-                    this.thrust_meter -= 0.002;
-                    if (this.thrust_meter <= 0) {
-                        this.thrust_meter = -0.25;
-                        this.recovered = false;
-                    }
-                }
-                
-                if (this.thrust_meter < 1)   {this.thrust_meter += 0.0008;}
-                if (this.thrust_meter > 0.1) {this.recovered = true;}
-                
-                center_heading = Math.atan2(this.y - 980/2, this.x - 1920/2);
-                center_distance = ((this.y - 980/2)**2 + (this.x - 1920/2)**2)**(1/2);
-                
-                if (center_distance < 2*myStar.size) {
-                    this.x = this.x*.99 + 0.01*1920/2;
-                    this.y = this.y*.99 + 0.01*980/2;
-                    this.dead = true;
-                    return;
-                }
-                
-                this.vx -= Math.cos(center_heading)/100;
-                this.vy -= Math.sin(center_heading)/100;
-                
-                this.vx *= 0.999;
-                this.vy *= 0.999;
-                
-                this.x += this.vx;
-                this.y += this.vy;
-                
-                this.x = (this.x+1920)%1920;
-                this.y = (this.y+980)%980;
-                
-                ctx.fillStyle = R(255, 255, 255);
                 
                 let m = 10;
                 
@@ -236,95 +106,6 @@
                 ctx.lineTo(this.x + m*this.headingY - m*this.headingX, this.y - m*this.headingX - m*this.headingY);
                 ctx.fill();
                 
-                this.fire_cooldown  -= 0.01;
-                this.cascade_cooldown -= 0.01;
-                
-                
-                if (this.fire && this.fire_cooldown<0) {
-                    let new_bullet = new bullet(this.x, this.y, this.headingX, this.headingY, 0, 4);
-                    this.primary_bullets.push(new_bullet);
-                    this.fire_cooldown = 0.25;
-                    audioB0.pause();
-                    audioB0.currentTime = 0;
-                    audioB0.play();
-                }
-                
-                this.fire = false;
-                
-                let new_primary_bullets = [];
-                for (let i=0;i<this.primary_bullets.length;i++) {
-                    let b = this.primary_bullets[i];
-                    if (b.t > 0) {
-                        b.update();
-                        new_primary_bullets.push(b);
-                    }
-                }
-                this.primary_bullets = new_primary_bullets;
-                
-                let new_secondary_bullets = [];
-                for (let i=0;i<this.secondary_bullets.length;i++) {
-                    let b = this.secondary_bullets[i];
-                    if (b.t > 0) {
-                        b.update();
-                        new_secondary_bullets.push(b);
-                    }
-                }
-                this.secondary_bullets = new_secondary_bullets;
-            }
-            
-            this.cascade = function () {
-                new_bullet_count = 0;
-                if (this.cascade_cooldown < 0 && this.chaos_meter > 0) {
-                    new_secondary_bullets = []
-                    let max_c = -1;
-                    for (let i=0;i<this.primary_bullets.length;i++) {
-                        secondary_bullet_count = this.secondary_bullets.length
-                        if (secondary_bullet_count > 0) {
-                            for (let j=0;j<secondary_bullet_count;j++) {
-                                if ((secondary_bullet_count + new_bullet_count) > 300) {break;}
-                                b1 = this.primary_bullets[i];
-                                b2 = this.secondary_bullets[j];
-                                if (b2.c <= 4 && b2.t > 0.5) {
-                                    max_c = Math.max(max_c, b2.c);
-                                    new_bullet = new bullet((b1.x + b2.x)/2, (b1.y + b2.y)/2, 
-                                                            (b1.vx + b2.vx)/2, (b1.vy + b2.vy)/2, 
-                                                             b2.c+1, 4);
-                                    new_bullet.r = (b1.r + b2.r)/2;
-                                    new_bullet.g = (b1.g + b2.g)/2;
-                                    new_bullet.b = (b1.b + b2.b)/2;
-                                    new_secondary_bullets.push(new_bullet);
-                                    new_bullet_count += 1;
-                                }
-                            }
-                        } else {
-                            max_c = 0;
-                            for (let j=i+1;j<this.primary_bullets.length;j++) {
-                                b1 = this.primary_bullets[i];
-                                b2 = this.primary_bullets[j];
-                                new_bullet = new bullet((b1.x + b2.x)/2, (b1.y + b2.y)/2, 
-                                                        (b1.vx + b2.vx)/2, (b1.vy + b2.vy)/2, 
-                                                         Math.max(b1.c, b2.c)+1, 4);
-                                new_bullet.r = (b1.r + b2.r)/2;
-                                new_bullet.g = (b1.g + b2.g)/2;
-                                new_bullet.b = (b1.b + b2.b)/2;
-                                new_secondary_bullets.push(new_bullet);
-                                new_bullet_count += 1;
-                            }
-                        }
-                    }
-                    if (max_c >= 0 && max_c <=4)
-                    {               
-                        stopAudio(1);
-                        stopAudio(2);
-                        stopAudio(3);
-                        stopAudio(4);
-                        stopAudio(5);
-                        playAudio(max_c+1);
-                    }
-                this.secondary_bullets = this.secondary_bullets.concat(new_secondary_bullets);
-                this.cascade_cooldown = 0.5;
-                this.chaos_meter -= new_bullet_count/1000;
-                }
             }
         }
         
@@ -344,7 +125,7 @@
                 points = [];
                 
                 P = A;
-                for(let i=0;i<100;i++) {
+                for(let i=0;i<90;i++) {
                     choice = choices[(Math.random()*4)|0]
                     P = choice.add(P).divide(2);
                     points.push(P.tolist());
@@ -380,31 +161,40 @@
                 
                 table = nj.array([Xs.tolist(), Ys.tolist(), Rs.tolist(), Ts.tolist()]);
                 
+                
+                ctx.fillStyle = R(0,0,0,0.7);
+                
+                ctx.beginPath();
+                ctx.arc(770, 720 + 1080, 40, 0, 2 * pi, false);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(1120, 1000 + 1080, 40, 0, 2 * pi, false);
+                ctx.fill();
+                
                 for (let i=0;i<6;i++) {
                     
                     n = 2*pi*i/5;
                     x = Rs.multiply(nj.cos(Ts.add(n)));
                     y = Rs.multiply(nj.sin(Ts.add(n)));
                     
-                    for (let j=0;j<100;j++) {
+                    for (let j=0;j<90;j++) {
                         ctx.fillStyle = R(this.R[j], this.G[j], this.B[j]);
-                        sx = 1920/2 + this.size*x.get(j);
-                        sy = 980/2 + this.size*y.get(j);
+                        cx = this.size*x.get(j);
+                        cy = this.size*y.get(j);
+                        sx = 1920/2 + cx;
+                        sy = 980/2 + cy - 100;
                         t = 1000/((sx-myAnim.x)**2 + (sy-myAnim.y)**2);
-                        ctx.fillRect(sx*(1-t) + myAnim.x*(t), sy*(1-t) + myAnim.y*(t), 1, 1);
+                        ctx.fillRect(sx*(1-t) + myAnim.x*(t), sy*(1-t) + myAnim.y*(t), 2, 2);
+                        
+                        ctx.fillRect(770 + cx*2, 720 + 1080 + cy*2, 1.5, 1.5);
                     }
                 }
             }
-        
         }
         
         function arctan2(Ys, Xs) {
             return nj.negative(Xs.divide(nj.abs(Xs))).add(1).multiply(Ys).multiply(pi/2).divide(nj.abs(Ys)).add(nj.arctan(Ys.divide(Xs)));
-        }
-        
-        var keyLayout = {
-            set : false,
-            keys : [81, 87, 69, 65, 83, 68]
         }
         
         // UPDATES
@@ -412,152 +202,64 @@
             myCanvas.clear();
             myCanvas.t += 0.01;
             
-            // set QWERTY
-            if (myCanvas.keys && myCanvas.keys[87] && !keyLayout.set) {
-                keyLayout.set = true;}
-            
-            // set AZERTY
-            if (myCanvas.keys && myCanvas.keys[90] && !keyLayout.set) {
-                keyLayout.keys = [65, 90, 69, 81, 83, 68];
-                keyLayout.set = true;}
-            
-            // set Dvorak
-            if (myCanvas.keys && myCanvas.keys[188] && !keyLayout.set) {
-                keyLayout.keys = [222, 188, 190, 65, 79, 69];
-                keyLayout.set = true;}
-            
-            // cascade
-            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[0]]) {myAnim.cascade(); }
-            
-            // thrust
-            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[1]]) {myAnim.thrust = true; }
-            
-            // fire
-            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[2]]) {myAnim.fire   = true; }
-            
-            // turn left
-            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[3]]) {myAnim.theta -= 0.01; }
-            
-            // hyperspace
-            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[4]]) {myAnim.hyperspace();}
-            
-            // turn right
-            if (myCanvas.keys && myCanvas.keys[keyLayout.keys[5]]) {myAnim.theta += 0.01; }
-            
-            
             myStar.update();
             myAnim.update();
-            if (!myAnim.dead)
-            {myEnemies.update();};
-            myCollision.clear();
-            myScraps.update();
+            
             myHud.update();
-            myMusic.update();
             myMouse.update();
+            
+            myMusic.update();
         }
         
-        // BULLET
-        function bullet(x, y, vx, vy, c, t) {
-            this.x = x;
-            this.y = y;
-            this.vx = vx;
-            this.vy = vy;
-            this.c  = c;
-            this.t  = t;
-            this.colors = [[  0,   0, 255], 
-                           [  0, 255, 255],
-                           [255, 255,   0],
-                           [255,   0, 255]];
-            
-            color_t  = myCanvas.t%4;
-            color_t0 = color_t | 0;
-            color_t1 = (color_t0 + 1)%4;
-            
-            if (this.c == 0) {
-                this.r = ((this.colors[color_t0])[0])*(1 - (color_t - color_t0)) + ((this.colors[color_t1])[0])*(color_t - color_t0);
-                this.g = ((this.colors[color_t0])[1])*(1 - (color_t - color_t0)) + ((this.colors[color_t1])[1])*(color_t - color_t0);
-                this.b = ((this.colors[color_t0])[2])*(1 - (color_t - color_t0)) + ((this.colors[color_t1])[2])*(color_t - color_t0);
-            }
-            
-            this.update = function() {
-                
-                ctx = myCanvas.context;
-                
-                this.x += this.vx;
-                this.y += this.vy;
-                this.t -= 0.01;
-                
-                myCollision.register(this.x, this.y, this);
-                
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, Math.max(0, 2*this.t/(1+this.c)), 0, 2 * pi, false);
-                ctx.fillStyle = R(this.r, this.g, this.b);
-                ctx.fill();
-            }
-        }
-        
-        function lerp(a, b, l) {
-            return a*(1-l) + b*l
-        }
-        
-        // Mouse
         function mouse() {
             this.x = 0;
             this.y = 0;
             this.clicked_ever = false;
-            this.in_title_box = false;
-            this.in_refresh_box = false;
+            this.in_game_box = false;
+            this.in_manual_box = false;
             this.setup = function() {
                 document.onmousemove = this.mousemove;
                 document.onclick = this.click;
             }
             this.click = function() {
                 myMouse.clicked_ever = true;
-                if (myMouse.in_title_box)   {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/title-screen.html"};
-                if (myMouse.in_refresh_box) {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/game.html"};
+                if   (myMouse.in_game_box)   {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/game.html"};
+                if (myMouse.in_manual_box) {window.location.href = "https://foldsters.github.io/art/games/chaos-cascade/manual.html"};
             }
             this.mousemove = function(event) {
                 myMouse.x = event.pageX;
                 myMouse.y = event.pageY;
             }
             this.update = function() {
-                if (this.x > 20 && this.y > 20 && this.x < 20+250 && this.y < 20+40){
-                    this.in_title_box = true;
+                if (this.x > 80 && this.y > 820 && this.x < 80+740 && this.y < 820+140){
+                    this.in_manual_box = true;
+                    if (this.clicked_ever) {(audioB1.play() || nopromise).catch(function(){});}
                 } else {
-                    this.in_title_box = false;
+                    this.in_manual_box = false;
+                    audioB1.pause();
+                    audioB1.currentTime = 0;
                 }
                 
-                if (this.x > 300 && this.y > 20 && this.x < 300+250 && this.y < 20+40){
-                    this.in_refresh_box = true;
+                if (this.x > 1170 && this.y > 820 && this.x < 1170+670 && this.y < 820+140){
+                    this.in_game_box = true;
+                    if (this.clicked_ever) {(audioB2.play() || nopromise).catch(function(){});}
                 } else {
-                    this.in_refresh_box = false;
+                    this.in_game_box = false;
+                    audioB2.pause();
+                    audioB2.currentTime = 0;
                 }
             }
         }
         
+        
+        
         // HEADS UP DISPLAY
         function hud() {
-            this.score = 0
-            this.l = 0;
-            this.l_buffer = 0;
-            this.dead = false;
             this.update = function() {
-                
-                if (this.l_buffer > 0) {
-                    this.l_buffer -= 1;
-                }
-                if (this.l_buffer <= 0 && !myAnim.dead) {
-                    this.l_buffer = 0;
-                    this.l = 0;
-                }
-                
-                if (myAnim.dead) {
-                    this.l = (this.l*0.999 + 0.001)**(.98); 
-                }
                 
                 ctx = myCanvas.context;
                 
-                colors = [[  0,   0, 255], 
+                colors = [[128, 128, 255], 
                           [  0, 255, 255],
                           [255, 255,   0],
                           [255,   0, 255]];
@@ -571,77 +273,6 @@
                 b = ((colors[color_t0])[2])*(1 - (color_t - color_t0)) + ((colors[color_t1])[2])*(color_t - color_t0);
                 
                 ctx.lineWidth = "4";
-                ctx.strokeStyle = R(r, g, b);
-                
-                // score
-                ctx.beginPath();
-                x = lerp(10, 1920/2, this.l);
-                y = lerp(990, 980/2, this.l);
-                w = lerp(625, 0, this.l);
-                h = lerp(80, 0, this.l);
-                ctx.rect(x, y, w, h);
-                ctx.stroke();
-                
-                ctx.fillStyle = R(r, g, b);
-                ctx.font = lerp(20, 200, this.l)+"px Arial";
-                x = lerp(15, 600, this.l);
-                y = lerp(980, 200, this.l);
-                ctx.fillText("SCORE", x, y);
-                
-                ctx.fillStyle = R(r, g, b);
-                ctx.font = lerp(50, 300, this.l)+"px Arial";
-                x = lerp(30, 875, this.l);
-                y = lerp(1050, 1000, this.l);
-                if (this.score<10) {
-                    ctx.fillText(this.score, x, y);
-                }
-                else {
-                    ctx.fillText(this.score, x-lerp(0, 100, this.l), y);
-                }
-                
-                // thrust
-                ctx.beginPath();
-                x = lerp(650, 1920/2, this.l);
-                y = lerp(990, 980/2, this.l);
-                w = lerp(625, 0, this.l);
-                h = lerp(80, 0, this.l);
-                ctx.rect(x, y, w, h);
-                ctx.stroke();
-                
-                if (myAnim.thrust_meter < 0) {ctx.fillStyle = R(255, 0, 0);}
-                x = lerp(660, 1920/2, this.l);
-                y = lerp(1000, 980/2, this.l);
-                w = lerp(Math.max(5, 605*myAnim.thrust_meter), 0, this.l);
-                h = lerp(60, 0, this.l);
-                ctx.fillRect(x, y, w, h);
-                
-                ctx.fillStyle = R(r, g, b);
-                ctx.font = lerp(20, 0, this.l)+"px Arial";
-                x = lerp(650, 1920/2, this.l);
-                y = lerp(980, 980/2, this.l);
-                ctx.fillText("THRUST", x, y);
-                
-                // chaos
-                ctx.beginPath();
-                x = lerp(1285, 1920/2, this.l);
-                y = lerp(990, 980/2, this.l);
-                w = lerp(625, 0, this.l);
-                h = lerp(80, 0, this.l);
-                ctx.rect(x, y, w, h);
-                ctx.stroke();
-                
-                if (myAnim.chaos_meter < 0) {ctx.fillStyle = R(255, 0, 0);}
-                x = lerp(1295, 1920/2, this.l);
-                y = lerp(1000, 980/2, this.l);
-                w = lerp(Math.max(5, 605*myAnim.chaos_meter), 0, this.l);
-                h = lerp(60, 0, this.l);
-                ctx.fillRect(x, y, w, h);
-                
-                ctx.fillStyle = R(r, g, b);
-                ctx.font = lerp(20, 0, this.l)+"px Arial";
-                x = lerp(1290, 1920/2, this.l);
-                y = lerp(980, 980/2, this.l);
-                ctx.fillText("CHAOS", x, y);
                 
                 space_char = {
                 
@@ -717,232 +348,60 @@
                            [2,3], [1,3], [0,2], [0,1]],
                 }
                 
-                if (myAnim.dead)
-                {
-                    words = [["TITLE SCREEN", 25,   25,   5,  1-myMouse.in_title_box],
-                             ["RESTART GAME ",  325,   25,   5, 1-myMouse.in_refresh_box]];
-
-                    for (let w=0;w<words.length;w++) {
-
-                        word = words[w][0];
-
-                        width_pointer = 0;
-
-                        offset_x = words[w][1];
-                        offset_y = words[w][2];
-
-                        letter_scale = words[w][3];
-
-                        if (words[w][4]) {
-                            ctx.fillStyle = R(r, g, b);
-                        } else {
-                            ctx.fillStyle = R(255, 255, 255);
-                        }
-
-                        for (let l=0;l<word.length;l++) {
-                            ctx.beginPath();
-                            letter = space_char[word[l]];
-                            lx = offset_x + letter_scale*(width_pointer+letter[0][0]);
-                            ly = offset_y + letter_scale*(5-(letter[0][1]));
-                            ctx.moveTo(lx, ly);
-                            for (let p=1;p<letter.length;p++) {
-                                lx = offset_x + letter_scale*(width_pointer+letter[p][0]);
-                                ly = offset_y + letter_scale*(5-letter[p][1]);
-                                ctx.lineTo(lx, ly);
-                            }
-                            width_pointer += word[l]=='W'||word[l]=='N'||word[l]=='M'?5:4;
-                            ctx.fill();
-                        }
-                    }
-
-                    ctx.lineWidth = "4";
-                    ctx.strokeStyle = R(r, g, b);
-
-                    ctx.rect(15, 15, 265, 45);
-                    ctx.stroke();
-
-                    ctx.rect(315, 15, 265, 45);
-                    ctx.stroke();
-                }
-            }
-        }
-        
-        function enemy(x, y) {
-            this.x = x;
-            this.y = y;
-            this.dead = false;
-            this.r = 0;
-            this.g = 0;
-            this.b = 0;
-            this.setup = function () {
-                center_heading = Math.atan2(this.y - 980/2, this.x - 1920/2);
-                this.speed = 4 + myHud.score;
-                this.vx = -this.speed*Math.cos(center_heading)/100;
-                this.vy = -this.speed*Math.sin(center_heading)/100;
-            };
-            this.update = function () {
                 
-                ctx = myCanvas.context;
+                words = [["SPACEWAR",   650,   100,   20, 1],
+                         ["CHAOS",      650,   600, 12.9, 1],
+                         ["CASCADE",    940,   600, 12.9, 1],
+                         ["READ MANUAL", 110,   850,   15,  1-myMouse.in_manual_box],
+                         ["START GAME ",  1200,   850,   15, 1-myMouse.in_game_box]];
                 
-                this.x += this.vx;
-                this.y += this.vy;
+                for (let w=0;w<words.length;w++) {
                 
-                center_distance = ((this.y - 980/2)**2 + (this.x - 1920/2)**2)**(1/2);
-                
-                if (center_distance < myStar.size) {
-                    myAnim.x = this.x*.99 + 0.01*1920/2;
-                    myAnim.y = this.y*.99 + 0.01*980/2;
-                    myAnim.dead = true;
-                    return;
-                }
-                
-                is_collide = myCollision.get(this.x, this.y);
-                
-                if (is_collide !== undefined && is_collide.length > 0) {
+                    word = words[w][0];
+
+                    width_pointer = 0;
+
+                    offset_x = words[w][1];
+                    offset_y = words[w][2];
                     
-                    for (let i=0;i<is_collide.length;i++) {
-                        is_collide[i].t = -1;
-                        this.r = is_collide[i].r;
-                        this.g = is_collide[i].g;
-                        this.b = is_collide[i].b;
-                    }
-                    stopAudio(6);
-                    playAudio(6);
-                    myHud.score += 1;
-                    myAnim.chaos_meter = Math.min(myAnim.chaos_meter+0.25, 1);
-                    myStar.size_buffer += 1;
-                    myHud.l_buffer = 10;
-                    myHud.l = -0.01;
-                    myScraps.explosion(this.x, this.y, this.r, this.g, this.b);
-                    this.dead = true;
+                    letter_scale = words[w][3];
                     
-                }
-                ctx.beginPath();
-                ctx.fillStyle = R(255, 255, 255);
-                ctx.arc(this.x, this.y, 12, 0, 2 * pi, false);
-                ctx.fill();
-                
-                }
-            }
-        
-        function enemyList() {
-            this.enemies = [];
-            this.enemy_buffer = [];
-            this.long_buffer = [];
-            this.buffer_timer = 1000;
-            this.setup = function() {
-                new_enemy = new enemy(50, 500);
-                new_enemy.setup();
-                this.enemy_buffer.push(new_enemy);
-            }
-            this.update = function() {
-                for(let i=0;i<this.enemies.length;i++)
-                {
-                    if (this.enemies[i].dead) {
-                        for (let j=0;j<=myHud.score/10;j++) 
-                        {
-                            random_theta = Math.random()*2*pi;
-                            x = 800*Math.cos(random_theta) + 1920/2;
-                            y = 500*Math.sin(random_theta) + 980/2;
-                            new_enemy = new enemy(x, y);
-                            new_enemy.setup();
-                            this.long_buffer.push(new_enemy);
-                        }
+                    if (words[w][4]) {
+                        ctx.fillStyle = R(r, g, b);
                     } else {
-                        this.enemies[i].update();
-                        this.enemy_buffer.push(this.enemies[i]);
+                        ctx.fillStyle = R(255, 255, 255);
+                    }
+
+                    for (let l=0;l<word.length;l++) {
+                        ctx.beginPath();
+                        letter = space_char[word[l]];
+                        lx = offset_x + letter_scale*(width_pointer+letter[0][0]);
+                        ly = offset_y + letter_scale*(5-(letter[0][1]));
+                        ctx.moveTo(lx, ly);
+                        for (let p=1;p<letter.length;p++) {
+                            lx = offset_x + letter_scale*(width_pointer+letter[p][0]);
+                            ly = offset_y + letter_scale*(5-letter[p][1]);
+                            ctx.lineTo(lx, ly);
+                        }
+                        width_pointer += word[l]=='W'||word[l]=='N'||word[l]=='M'?5:4;
+                        ctx.fill();
                     }
                 }
-                this.enemies = this.enemy_buffer;
-                if (this.buffer_timer <= 0 && this.long_buffer.length > 0){
-                    this.enemies.push(this.long_buffer.pop());
-                    this.buffer_timer = 500;
-                }
-                this.enemy_buffer = [];
-                this.buffer_timer -= 1;
-            }
-        }
-        
-        function scrap(x, y, vx, vy, r, g, b) {
-            this.x = x;
-            this.y = y;
-            this.vx = vx;
-            this.vy = vy;
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.dead = false;
-            this.update = function () {
-                ctx.beginPath();
                 
-                let center_heading = Math.atan2(this.y - 980/2, this.x - 1920/2);
-                let radius = ((this.y - 980/2)**2 + (this.x - 1920/2)**2)**(1/2);
-            
-                if (radius < 5) {
-                    this.dead = true;
-                } else {
-                    
-                    this.vx *= 0.95;
-                    this.vy *= 0.95;
-            
-                    this.vx -= Math.cos(center_heading)/2;
-                    this.vy -= Math.sin(center_heading)/2;
-
-                    this.x += this.vx;
-                    this.y += this.vy;
-
-                    ctx.arc(this.x, this.y, radius/100, 0, 2 * pi, false);
-                    ctx.fillStyle = R(this.r, this.g, this.b);
-                    ctx.fill();
-                }
-            }
-        }
-        
-        function scrapList() {
-            this.scraps = [];
-            this.scrap_buffer = [];
-            this.explosion = function(x, y, r, g, b) {
+                ctx.lineWidth = "4";
+                ctx.strokeStyle = R(r, g, b);
                 
-                random_theta = Math.random()*2*pi
-                t1 = random_theta;
-                t2 = t1 + 2*pi/5;
-                t3 = t2 + 2*pi/5;
-                t4 = t3 + 3*pi/5;
-                t5 = t4 + 4*pi/5;
+                ctx.rect(80, 820, 740, 140);
+                ctx.stroke();
                 
-                ev = 10;
+                ctx.rect(1170, 820, 670, 140);
+                ctx.stroke();
                 
-                vx1 = ev*Math.cos(t1);
-                vx2 = ev*Math.cos(t2);
-                vx3 = ev*Math.cos(t3);
-                vx4 = ev*Math.cos(t4);
-                vx5 = ev*Math.cos(t5);
+                if (!myMouse.clicked_ever) {
+                    ctx.fillStyle = R(r, g, b);
+                    ctx.font = "20px Arial";
+                    ctx.fillText("(click screen to unmute)", 100, 1070); }
                 
-                vy1 = ev*Math.sin(t1);
-                vy2 = ev*Math.sin(t2);
-                vy3 = ev*Math.sin(t3);
-                vy4 = ev*Math.sin(t4);
-                vy5 = ev*Math.sin(t5);
-                
-                s1 = new scrap(x, y, vx1, vy1, r, g, b);
-                s2 = new scrap(x, y, vx2, vy2, r, g, b);
-                s3 = new scrap(x, y, vx3, vy3, r, g, b);
-                s4 = new scrap(x, y, vx4, vy4, r, g, b);
-                s5 = new scrap(x, y, vx5, vy5, r, g, b);
-                
-                this.scrap_buffer.push(s1, s2, s3, s4, s5);
-            }
-            this.update = function() {
-                for(let i=0;i<this.scraps.length;i++)
-                {
-                    this_scrap = this.scraps[i];
-                    this_scrap.update();
-                    if (!this_scrap.dead) {
-                        this.scrap_buffer.push(this_scrap);
-                    }
-                }
-                this.scraps = this.scrap_buffer;
-                this.scrap_buffer = [];
             }
         }
         
