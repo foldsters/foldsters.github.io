@@ -62,6 +62,16 @@
                 document.body.insertBefore(this.canvas, document.body.childNodes[0]);
                 this.t = 0;
                 this.interval = setInterval(updateCanvas, 20);
+                window.addEventListener('resize', this.resize.bind(this));
+                this.resize(); // Initial resize
+            },
+            resize: function() {
+                // Calculate scaling factors based on window size
+                scaleX = window.innerWidth / this.canvas.width;
+                scaleY = window.innerHeight / this.canvas.height;
+
+                // Set transformation scale for the canvas context
+                this.context.setTransform(scaleX, scaleY);
             },
             clear : function() {
                 this.context.fillStyle = R(0, 0, 0);
