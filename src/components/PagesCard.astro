@@ -31,7 +31,7 @@ const highlightColor = colors.highlightColor ?? "var(--color-deep-tidewater)";
 			<h3>{title}</h3>
 			<p class="entry-body">{body}</p>
 			<div class="entry-foot">
-				{meta && <p class="entry-meta"><em>{meta}</em></p>}
+				{meta && <p class="entry-meta"><em set:html={meta}/></p>}
 				<span class="entry-arrow" aria-hidden="true">&rarr;</span>
 			</div>
 		</div>
@@ -190,6 +190,19 @@ const highlightColor = colors.highlightColor ?? "var(--color-deep-tidewater)";
 		line-height: 1.4;
 		flex: 1;
 		min-width: 0;
+	}
+
+	/* :global() so the strikethrough/highlight survive set:html on the meta
+	   line — Astro's scoped hashes don't reach HTML injected at runtime. */
+	.entry-meta :global(.price-was) {
+		text-decoration: line-through;
+		opacity: 0.55;
+		margin-right: 0.25rem;
+	}
+	.entry-meta :global(.price-now) {
+		color: var(--color-deep-tidewater);
+		font-weight: 700;
+		font-style: normal;
 	}
 
 	.entry-arrow {
