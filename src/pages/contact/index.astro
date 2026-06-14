@@ -84,7 +84,7 @@ import { CONTACT_ENDPOINT } from '../../config/contact';
       if (!form.reportValidity()) return;
 
       if (!endpoint || endpoint.includes('YOUR-CONVEX-DEPLOYMENT')) {
-        showError('The contact endpoint is not configured yet. Email foldsters@gmail.com directly.');
+        showError('The contact endpoint is not configured yet. Email foldster@foldsters.com directly.');
         return;
       }
 
@@ -114,7 +114,7 @@ import { CONTACT_ENDPOINT } from '../../config/contact';
         window.location.href = '/thanks/';
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'unknown error';
-        showError(`Couldn't send: ${msg}. Try again, or email foldsters@gmail.com directly.`);
+        showError(`Couldn't send: ${msg}. Try again, or email foldster@foldsters.com directly.`);
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalLabel;
       }
