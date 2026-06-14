@@ -1,54 +1,44 @@
-# Astro Starter Kit: Basics
+# foldsters.com
+
+The Foldster's Projects consultancy site. Astro static site, deploys via
+GitHub Actions to GitHub Pages → [foldsters.com](https://foldsters.com).
+
+## Local development
 
 ```sh
-npm create astro@latest -- --template basics
+npm install
+npm run dev          # dev server (also '-- --host' for LAN access)
+npm run build        # build to ./dist
+npm run preview      # build + serve from ./dist
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+## Stack
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- Astro 5
+- iA Writer Quattro S, self-hosted in `public/fonts/`
+- No client-side JS framework — vanilla Astro components only
+- View transitions via `<ClientRouter />` in `LayoutLanding.astro`
 
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
+## Project layout
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+```
+src/
+  components/   HeroSection, Logo, PagesCard, Work/Tools/ServicesSection
+  layouts/      LayoutLanding (landing page wrapper), LayoutPage (inner pages)
+  pages/        / · /work/* · /tools/* · /services/ · /about/ · /contact/
+  content/      images/ — wired up via Astro's <Image> for optimization
+  utils/        colors.ts — brand palette
+public/
+  fonts/        iA Writer Quattro S (Regular / Bold / Italic / BoldItalic)
+  images/       logo + favicon
+  CNAME         foldsters.com
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Deploy
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Pushes to `master` trigger `.github/workflows/deploy.yml`, which builds with
+`withastro/action@v3` and ships via `actions/deploy-pages@v4`.
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The Bluesky avatar-refresh hook lives in the separate
+[foldsters/portfolio](https://github.com/foldsters/portfolio) repo on its
+own daily cron, so this repo doesn't carry Bluesky credentials.
