@@ -69,8 +69,10 @@ const transitionName =
        mobile, capped at 1200px outer on desktop. */
     width: calc(100% - 2rem);
     max-width: 1200px;
-    padding-left: clamp(1.25rem, 8vw, 200px);
-    padding-right: clamp(1.25rem, 8vw, 200px);
+    /* Cap padding at the viewport size where the card caps at max-width.
+       Above that, padding stops growing and column count stays stable. */
+    padding-left: clamp(1.25rem, 6vw, 100px);
+    padding-right: clamp(1.25rem, 6vw, 100px);
     padding-top: 4dvh;
     padding-bottom: 6dvh;
     margin: 0 auto;
