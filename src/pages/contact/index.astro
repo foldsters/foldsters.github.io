@@ -11,22 +11,22 @@ import { CONTACT_ENDPOINT } from '../../config/contact';
 
   <form id="contact-form" class="contact-form" data-endpoint={CONTACT_ENDPOINT} novalidate>
     <label>
-      <span>name</span>
+      <span>Name</span>
       <input type="text" name="name" required />
     </label>
 
     <label>
-      <span>email</span>
+      <span>Email</span>
       <input type="email" name="email" required />
     </label>
 
     <label>
-      <span>twitch / youtube / bluesky (optional)</span>
+      <span>Twitch / YouTube / Bluesky (optional)</span>
       <input type="text" name="creator_handle" />
     </label>
 
     <label>
-      <span>type of project</span>
+      <span>Type of Project</span>
       <select name="project_type" required>
         <option value="asset-pack">Asset Pack — $360–720 (launch)</option>
         <option value="live-integration" selected>Live Integration — $1,200–2,100 (launch)</option>
@@ -39,7 +39,7 @@ import { CONTACT_ENDPOINT } from '../../config/contact';
     </label>
 
     <label>
-      <span>what do you want it to feel like?</span>
+      <span>What experience do you want brought to life?</span>
       <textarea name="message" rows="6" required></textarea>
     </label>
 
@@ -47,7 +47,7 @@ import { CONTACT_ENDPOINT } from '../../config/contact';
         Bots fill every input; humans never see this one. */}
     <div class="hp" aria-hidden="true">
       <label>
-        leave this blank
+        Leave This Blank
         <input type="text" name="website" tabindex="-1" autocomplete="off" />
       </label>
     </div>
@@ -56,7 +56,7 @@ import { CONTACT_ENDPOINT } from '../../config/contact';
     <p id="contact-error" class="form-error" role="alert" hidden></p>
   </form>
 
-  <p class="mono note">we respond within one week.</p>
+  <p class="mono note">We respond within one week.</p>
 </LayoutPage>
 
 <script>
