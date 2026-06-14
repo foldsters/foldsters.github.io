@@ -37,17 +37,17 @@ const { title, description } = Astro.props;
 			   note heights). */
 			function snapNoteRows() {
 				requestAnimationFrame(() => {
-					document.querySelectorAll('.section-card').forEach(card => {
+					document.querySelectorAll<HTMLElement>('.section-card').forEach(card => {
 						const list = card.querySelector('.entry-list');
 						if (!list) return;
 						const cardBottom = card.getBoundingClientRect().bottom;
-						const notes = Array.from(list.querySelectorAll('.entry'));
+						const notes = Array.from(list.querySelectorAll<HTMLElement>('.entry'));
 						notes.forEach(n => { n.style.visibility = ''; });
-						const rows = new Map();
+						const rows = new Map<number, HTMLElement[]>();
 						notes.forEach(n => {
 							const t = n.offsetTop;
 							if (!rows.has(t)) rows.set(t, []);
-							rows.get(t).push(n);
+							rows.get(t)!.push(n);
 						});
 						for (const rowNotes of rows.values()) {
 							const anyOverflows = rowNotes.some(n =>
