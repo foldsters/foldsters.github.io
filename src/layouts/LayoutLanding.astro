@@ -299,11 +299,13 @@ const { title, description } = Astro.props;
     padding: 1.25rem 0.5rem 1.5rem;
     margin: 0.75rem 0 0;
     display: grid;
-    /* max(220px, 25%) caps the column count at 3 — 4 cols would need
-       4*25%+gaps > 100%, so auto-fill won't fit a 4th. Below ~880px
-       container width, the 220px min kicks in and the grid drops to
-       2 (then 1 via the @container query). */
-    grid-template-columns: repeat(auto-fill, minmax(max(220px, 25%), 1fr));
+    /* max(240px, 25%) caps the column count at 3 — 4 cols would need
+       4*25%+gaps > 100%, so auto-fill won't fit a 4th. The 240px min
+       is aligned with the row-layout container-query threshold (500px)
+       so the grid drops to 1 col at exactly the same width the
+       polaroid → row layout switch fires — no awkward 2-col + row-
+       layout zone in the middle. */
+    grid-template-columns: repeat(auto-fill, minmax(max(240px, 25%), 1fr));
     gap: 1.5rem 1.25rem;
     container-type: inline-size;
     container-name: notes-grid;
