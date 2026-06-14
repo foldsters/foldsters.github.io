@@ -3,6 +3,7 @@ dist/
 
 # generated types
 .astro/
+convex/_generated/
 
 # dependencies
 node_modules/
@@ -32,3 +33,5 @@ __pycache__/
 *.obsidian
 
 KP5JS/
+
+.env.local

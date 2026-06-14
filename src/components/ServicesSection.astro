@@ -8,24 +8,27 @@ import Card from './PagesCard.astro';
       <div class="description">
         <div class="section-header">
           <h2>Services &amp; Pricing</h2>
-          <a href="/services/" class="section-link">See all <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a href="/services/" class="section-link">See All <span class="arrow" aria-hidden="true">&rarr;</span></a>
         </div>
         <p class="subtitle"><em>Four tiers. Published pricing. <strong>40&thinsp;% off for the first 3 paid clients.</strong></em></p>
       </div>
 
       <ul role="list" class="entry-list">
-        <Card href="/services#starter" title="Stream Setup Starter"
-          body="Custom overlay + basic bot. Quick turn, no frills. Two-week delivery."
-          meta='Foldster | Service | <s class="price-was">$1,500</s> <strong class="price-now">$900</strong> launch'/>
-        <Card href="/services#custom-build" title="Stream Experience Custom Build"
-          body="Full overlay + interactive features + bot personality + integrations. Most clients land here."
-          meta='Foldster | Service | <s class="price-was">$3,500</s> <strong class="price-now">$2,100</strong> launch'/>
-        <Card href="/services#complete-package" title="Complete Creator Brand Package"
-          body="Stream + bot + 3D-printed merch + Printful clothing line + brand bible. Vertically integrated."
-          meta='Foldster | Service | <s class="price-was">$7,500–12,000</s> <strong class="price-now">$4,500–7,200</strong> launch'/>
+        <Card href="/services#asset-pack" title="Asset Pack"
+          body="A coordinated bundle of static deliverables — overlay set, 3D-print collection, graphics suite, one-shot tool kit. No live data. You walk away with the files."
+          meta='Foldster | Service | <s class="price-was">$600–1,200</s> <strong class="price-now">$360–720</strong> launch'/>
+        <Card href="/services#live-integration" title="Live Integration"
+          body="Tool wired into a live data source — Twitch events, chat, Bluesky. Reactive overlays, custom bots, interactive widgets."
+          meta='Foldster | Service | <s class="price-was">$2,000–3,500</s> <strong class="price-now">$1,200–2,100</strong> launch'/>
+        <Card href="/services#end-to-end" title="End-to-End Pipeline"
+          body="Live tool plus an outbound on-demand service — viewer-triggered merch print, e-commerce drop, scheduled action."
+          meta='Foldster | Service | <s class="price-was">$5,000–10,000</s> <strong class="price-now">$3,000–6,000</strong> launch'/>
         <Card href="/services#partnership" title="Ongoing Tooling Partnership"
-          body="Continuous evolution. Monthly feature additions, merch drops, brand iteration. Cancel anytime."
+          body="Continuous evolution on shipped work. Monthly feature additions, scheduled drops, maintenance. Cancel anytime."
           meta='Foldster | Service | <s class="price-was">$500–1,000/mo</s> <strong class="price-now">$300–600/mo</strong> launch'/>
+        <Card href="/services#donation" title="Donation"
+          body="Keep the free tools running. Server costs + ongoing development on Demowall, Demodrip, Demosky, and the rest. No project deliverable in return — just gratitude."
+          meta='Foldster | Support | <strong class="price-now">pay what you want</strong>'/>
       </ul>
 
     </div>
