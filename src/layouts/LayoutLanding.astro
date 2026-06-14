@@ -104,21 +104,21 @@ const { title, description } = Astro.props;
     font-display: swap;
   }
 
-  /* rem is anchored to the HTML element. Mobile-vs-desktop is decided by
-     input mode (pointer: coarse = finger/stylus touch, hover: none = no
-     hover capability) rather than viewport width — this way a desktop
-     browser narrowed to 600px keeps the desktop scale instead of getting
-     punished. (max-width is still used inside the touch query as a tier
-     between phones and tablets.) */
+  /* Mobile font scale fires on *either* touch input OR narrow viewport —
+     belt-and-suspenders so Samsung Internet (which doesn't reliably
+     report `hover: none`) still hits the mobile size on phones.
+     Some narrow desktop windows will catch the mobile scale too; that's
+     an acceptable trade vs. phones getting hit with the 19px desktop
+     size. */
   html {
     font-size: 19px;
   }
-  @media (pointer: coarse) and (hover: none) {
+  @media (pointer: coarse), (max-width: 700px) {
     html {
       font-size: 12px;
     }
   }
-  @media (pointer: coarse) and (hover: none) and (max-width: 480px) {
+  @media (max-width: 480px) {
     html {
       font-size: 11px;
     }
