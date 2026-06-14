@@ -11,12 +11,17 @@ const lineColor      = "#2c3d42"; // deep-tidewater (outline)
 
 <section id="hero" class="main-section" transition:name="card-home">
   <div class="section-content hero">
+    <nav class="hero-nav mono" aria-label="Site navigation">
+      <a href="/about/"><em>about</em></a>
+      <span aria-hidden="true">·</span>
+      <a href="/contact/"><em>contact</em></a>
+    </nav>
     <div class="description">
       <h1 class="brand">Foldster's Projects</h1>
-      <p class="tagline">One studio. The full creator stack.</p>
+      <p class="tagline">We create for creators</p>
       <p class="lede">
-        Streams, bots, custom tools, 3D-printed merch, branded apparel &mdash;
-        built end-to-end for creators who want their brand to feel like one thing.
+        Stream overlays, bots, custom tools, branded merch &mdash; <br/>
+        built end-to-end for creators so they can focus on what they do best
       </p>
       <div class="cta-row">
         <a href="/contact/" class="cta cta-primary">start a project &rarr;</a>
@@ -135,6 +140,34 @@ const lineColor      = "#2c3d42"; // deep-tidewater (outline)
     padding: 5%;
     box-sizing: border-box;
     z-index: -1;
+  }
+
+  /* Small site nav in the top-right of the hero card so /about/ and
+     /contact/ are reachable from the first thing users see. */
+  .hero-nav {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 0.88rem;
+    color: var(--color-deep-tidewater);
+    z-index: 4;
+  }
+  .hero-nav a {
+    color: var(--color-deep-tidewater);
+    text-decoration: none;
+    opacity: 0.78;
+    transition: opacity 120ms ease;
+  }
+  .hero-nav a:hover {
+    opacity: 1;
+    text-decoration: underline;
+  }
+  .hero-nav span {
+    opacity: 0.5;
   }
 
   /* "scroll for more" affordance at the bottom of the hero. */
