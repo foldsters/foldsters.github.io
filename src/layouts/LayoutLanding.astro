@@ -105,18 +105,21 @@ const { title, description } = Astro.props;
   }
 
   /* rem is anchored to the HTML element, not body — so the responsive
-     font-size knob has to live here for every rem-based size to scale. */
+     font-size knob has to live here for every rem-based size to scale.
+     Desktop nudged from 16 → 17, and mobile breakpoint pulled in from
+     900 → 700 so laptops in split-screen and portrait tablets keep the
+     desktop scale instead of being punished into mobile size. */
   html {
-    font-size: 16px;
+    font-size: 17px;
   }
-  @media (max-width: 900px) {
+  @media (max-width: 700px) {
     html {
-      font-size: 10px;
+      font-size: 12px;
     }
   }
   @media (max-width: 480px) {
     html {
-      font-size: 9px;
+      font-size: 11px;
     }
   }
 
