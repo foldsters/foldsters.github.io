@@ -207,8 +207,12 @@ const { title, description } = Astro.props;
 
   .section-content {
     box-sizing: border-box;
-    padding-left: clamp(1.25rem, 8vw, 200px);
-    padding-right: clamp(1.25rem, 8vw, 200px);
+    /* Cap the padding at ~the viewport size where the card itself caps
+       at max-width. Above that, padding stops growing and content area
+       (and column count) stays stable. Was 8vw → 200px which kept
+       growing past the card-max breakpoint and caused 3↔4 column flip. */
+    padding-left: clamp(1.25rem, 6vw, 100px);
+    padding-right: clamp(1.25rem, 6vw, 100px);
     /* Side margins between card and viewport edge: 1rem each side on
        mobile, capped at 1200px outer on desktop. */
     width: calc(100% - 2rem);
