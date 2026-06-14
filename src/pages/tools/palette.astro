@@ -1,0 +1,58 @@
+---
+import LayoutPage from '../../layouts/LayoutPage.astro';
+import { Image } from 'astro:assets';
+import paletteExtractor from '../../content/images/palette/extractor.png';
+import paletteCube from '../../content/images/palette/cube.png';
+import paletteTiling from '../../content/images/palette/tiling-extract.png';
+---
+
+<LayoutPage title="Foldster's Projects — Palette Tools" description="Topology-aware SOM palette tools">
+  <h1>Palette Tools.</h1>
+  <p class="lede"><em>topology-aware SOM palettes · open source · free</em></p>
+
+  <Image src={paletteExtractor} alt="Palette Tools — palette extractor view" class="hero-image"/>
+
+  <p>
+    A self-organizing-map palette extractor where the palette grid lives on a user-defined <strong>topological surface</strong>.
+    Configure edge identifications via drag-based hotspots — open, wrapped, twisted, pinched, joined — and the SOM trains on
+    any surface you can describe: rectangle, sphere, torus, Klein bottle, Möbius strip, cross-cap, quadrupole.
+  </p>
+
+  <h2>Two modes</h2>
+
+  <h3><em>Palettope mode</em></h3>
+  <p>
+    Load an image, configure topology, get a palette that lives on that surface. GPU-accelerated SOM training via a WebGL2
+    shader that computes topology-aware distance. 3D mesh visualization morphs between flat palette and shaped topology.
+    Export as a GIMP <code>.gpl</code> palette.
+  </p>
+  <Image src={paletteCube} alt="Color cube — RGB space visualization" class="inline-image"/>
+
+  <h3><em>Graph mode (new)</em></h3>
+  <p>
+    Build arbitrary node graphs (right-click to add, shift+drag to connect). SOM training uses BFS shortest-path distance
+    as the neighborhood metric. Force-directed layout with color-distance weighting. 2D (SVG) and 3D (Three.js) views.
+    This is how the brand palette for this site was extracted.
+  </p>
+  <Image src={paletteTiling} alt="Tiling extract — palette from a tile pattern" class="inline-image"/>
+
+  <h2>Stack</h2>
+  <p><em>React + TypeScript + Three.js + Vite / GPU-accelerated SOM via WebGL2 shader</em></p>
+
+  <a href="/contact/" class="cta" slot="cta">want a custom palette extractor for your brand? &rarr;</a>
+</LayoutPage>
+
+<style>
+  .hero-image {
+    width: 100%;
+    height: auto;
+    margin: 1.25rem 0 1.75rem;
+    border-radius: 4px;
+  }
+  .inline-image {
+    width: 100%;
+    height: auto;
+    margin: 0.5rem 0 1.25rem;
+    border-radius: 4px;
+  }
+</style>

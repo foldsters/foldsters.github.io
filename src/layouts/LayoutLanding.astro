@@ -1,0 +1,429 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { colors } from '../utils/colors';
+interface Props {
+	title: string;
+        description: string;
+}
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" transition:name="root" transition:animate="none">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content={description || ""} />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/images/logo.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<!-- Security headers we can set via meta on GitHub Pages.
+		     HSTS / X-Frame-Options / COOP need real HTTP headers; GitHub
+		     Pages sets HSTS automatically when "Enforce HTTPS" is on. -->
+		<meta name="referrer" content="strict-origin-when-cross-origin" />
+		<title>{title}</title>
+		<!-- Preload the two most-used Quattro weights so first paint isn't a FOIT. -->
+		<link rel="preload" href="/fonts/iAWriterQuattroS-Regular.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/iAWriterQuattroS-Bold.woff2" as="font" type="font/woff2" crossorigin />
+    <ClientRouter />
+	</head>
+	<body>
+		<slot/>
+		<script>
+			/* Snap sticky-note rows to the section card's bottom. If any note in a
+			   row would extend past the section-card's bottom edge, hide that whole
+			   row (visibility:hidden — preserves grid layout but the row reads as
+			   empty rather than partially clipped). Re-runs on resize, after Astro
+			   view transitions, and after webfonts load (since Quattro affects
+			   note heights). */
+			function snapNoteRows() {
+				requestAnimationFrame(() => {
+					document.querySelectorAll('.section-card').forEach(card => {
+						const list = card.querySelector('.entry-list');
+						if (!list) return;
+						const cardBottom = card.getBoundingClientRect().bottom;
+						const notes = Array.from(list.querySelectorAll('.entry'));
+						notes.forEach(n => { n.style.visibility = ''; });
+						const rows = new Map();
+						notes.forEach(n => {
+							const t = n.offsetTop;
+							if (!rows.has(t)) rows.set(t, []);
+							rows.get(t).push(n);
+						});
+						for (const rowNotes of rows.values()) {
+							const anyOverflows = rowNotes.some(n =>
+								n.getBoundingClientRect().bottom > cardBottom
+							);
+							if (anyOverflows) {
+								rowNotes.forEach(n => { n.style.visibility = 'hidden'; });
+							}
+						}
+					});
+				});
+			}
+			snapNoteRows();
+			window.addEventListener('resize', snapNoteRows);
+			document.addEventListener('astro:page-load', snapNoteRows);
+			document.addEventListener('astro:after-swap', snapNoteRows);
+			if (document.fonts && document.fonts.ready) {
+				document.fonts.ready.then(snapNoteRows);
+			}
+		</script>
+	</body>
+</html>
+
+<style is:global define:vars={colors}>
+
+  /* iA Writer Quattro S — near-monospaced font with slab-serif terminals.
+     Same family as Matt's Leaflet pub. Self-hosted, SIL OFL. */
+  @font-face {
+    font-family: "iA Writer Quattro";
+    src: url("/fonts/iAWriterQuattroS-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "iA Writer Quattro";
+    src: url("/fonts/iAWriterQuattroS-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "iA Writer Quattro";
+    src: url("/fonts/iAWriterQuattroS-Italic.woff2") format("woff2");
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "iA Writer Quattro";
+    src: url("/fonts/iAWriterQuattroS-BoldItalic.woff2") format("woff2");
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  /* rem is anchored to the HTML element, not body — so the responsive
+     font-size knob has to live here for every rem-based size to scale. */
+  html {
+    font-size: 16px;
+  }
+  @media (max-width: 900px) {
+    html {
+      font-size: 10px;
+    }
+  }
+  @media (max-width: 480px) {
+    html {
+      font-size: 9px;
+    }
+  }
+
+	body {
+		overscroll-behavior-y: none;
+		overscroll-behavior-x: none;
+		margin: 0;
+		padding: 0;
+    font-family: "iA Writer Quattro", "Iosevka Etoile", "DM Mono", Menlo, monospace;
+	}
+
+  /* Everything uses iA Writer Quattro — bold for titles, italic for subtitles. */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "iA Writer Quattro", "Iosevka Etoile", "DM Mono", Menlo, monospace;
+    color: black;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  p, li {
+    font-family: "iA Writer Quattro", "Iosevka Etoile", "DM Mono", Menlo, monospace;
+    font-weight: 400;
+    color: #2c3d42;
+  }
+
+  strong {
+    font-weight: 700;
+    color: inherit;
+  }
+
+  em, .italic {
+    font-style: italic;
+  }
+
+  code, pre, .mono {
+    font-family: "iA Writer Quattro", "Iosevka Etoile", "DM Mono", Menlo, monospace;
+  }
+
+  /* Adjust for your Astro code blocks, if desired */
+  pre.astro-code {
+    background-color: transparent !important;
+    border-width: 2px;
+    border-color: rgb(var(--accent));
+    padding: 20px;
+    border-style: solid; 
+    font-size: 0.6em;
+  }
+
+  /* Headings within code blocks, if any, can inherit the monospaced style */
+
+  /* Images flow with content — no implicit top margin, that broke
+     thumbnails on inner pages. Specific image components style themselves. */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Horizontal rule to match accent color */
+  hr {
+    background-color: rgb(var(--accent));
+    border: none;
+    height: 2px;
+    margin: 40px 0 30px 0;
+  }
+
+  .section-inner {
+    overflow: visible;
+  }
+
+  .main-section {
+    width: 100%;
+    margin: 0 auto;
+    justify-items: center;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    display: flex;
+    min-height: 100dvh;
+    position: sticky;
+		top: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .section-content {
+    box-sizing: border-box;
+    padding-left: clamp(1.25rem, 8vw, 200px);
+    padding-right: clamp(1.25rem, 8vw, 200px);
+    /* Side margins between card and viewport edge: 1rem each side on
+       mobile, capped at 1200px outer on desktop. */
+    width: calc(100% - 2rem);
+    max-width: 1200px;
+    position: relative;
+    overflow: visible;
+    transform: translateY(-2.0vh);
+    margin-left: auto;
+    margin-right: auto;
+    pointer-events: all;
+    padding-top: 2vh;
+  }
+
+  .view-more-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    width: 100%;
+    height: 8rem;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  }
+
+  .view-more-button {
+    background: transparent;
+    color: #333;
+    border: 3px solid #333;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+    font-family: Menlo, monospace;
+    padding: 1rem 2rem;
+    height: 2rem;
+  }
+
+  @media print {
+    .view-more-container {
+      display: none !important;
+    }
+    .view-more-button {
+      display: none !important;
+    }
+    .search-container {
+      display: none !important;
+    }
+  }
+
+  .description {
+    border-radius: 16px;
+    z-index: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Shared section-card typography & list-entry layout. Used by every
+     section card and inner page so they all read like Matt's Leaflet pub. */
+
+  .description h2 {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-deep-tidewater);
+    margin: 0 0 0.4rem;
+    letter-spacing: 0;
+    line-height: 1.2;
+  }
+
+  .description .subtitle {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 0.95rem;
+    color: rgba(44, 61, 66, 0.78);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  /* Sticky-note grid is scoped to the landing's section cards only.
+     Inner pages style their own .entry-list as a single column row layout
+     (see LayoutPage). Marked as an inline-size container so each note
+     can adapt its layout (polaroid vs row) when the grid collapses. */
+  .section-card .entry-list {
+    list-style: none;
+    padding: 1.25rem 0.5rem 1.5rem;
+    margin: 0.75rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem 1.25rem;
+    container-type: inline-size;
+    container-name: notes-grid;
+  }
+
+  /* Services section: always a single column row layout. Instead of a
+     thumbnail (the tiers don't have product images), the photo well is
+     repurposed as a Roman-numeral tier marker (I, II, III, IV) for a
+     bit of editorial flair.
+     Pricing tiers also drop the sticky-note tilt + washi tape — they're
+     fixed offerings, not living entries; the visual difference signals
+     "these are the published rates" vs the rotated/taped work and tool
+     notes that get swapped over time. */
+  .section-card.services .entry-list {
+    grid-template-columns: 1fr;
+    counter-reset: service-tier;
+  }
+  .section-card.services .entry,
+  .section-card.services .entry:nth-child(5n+1),
+  .section-card.services .entry:nth-child(5n+2),
+  .section-card.services .entry:nth-child(5n+3),
+  .section-card.services .entry:nth-child(5n+4),
+  .section-card.services .entry:nth-child(5n+5) {
+    counter-increment: service-tier;
+    transform: none;
+  }
+  .section-card.services .entry::before,
+  .section-card.services .entry:nth-child(5n+1)::before,
+  .section-card.services .entry:nth-child(5n+2)::before,
+  .section-card.services .entry:nth-child(5n+3)::before,
+  .section-card.services .entry:nth-child(5n+4)::before,
+  .section-card.services .entry:nth-child(5n+5)::before {
+    display: none;
+  }
+  /* Tighter padding + smaller numeral so all four tiers fit comfortably
+     in the section card without overflowing. */
+  .section-card.services .entry {
+    padding: 0.6rem 0.85rem;
+  }
+  .section-card.services .entry .entry-link {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.85rem;
+  }
+  .section-card.services .entry .entry-photo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    aspect-ratio: 1 / 1;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+    flex-shrink: 0;
+    margin: 0;
+  }
+  .section-card.services .entry .entry-photo::before {
+    content: counter(service-tier, upper-roman) ".";
+    font-family: Georgia, "Times New Roman", "Adobe Caslon Pro", serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--color-deep-tidewater);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .section-card.services .entry .entry-photo .entry-image,
+  .section-card.services .entry .entry-photo .entry-photo-placeholder {
+    display: none;
+  }
+  .section-card.services .entry h3 {
+    margin: 0 0 0.2rem;
+    font-size: 0.95rem;
+  }
+  .section-card.services .entry .entry-body {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+  .section-card.services .entry .entry-foot {
+    margin-top: 0.35rem;
+  }
+
+  /* Let sticky notes overhang the cream card edge. The .main-section
+     wrapper (the "page container") still has overflow:hidden, so the
+     overhanging notes get clipped at the viewport boundary. */
+  .section-card {
+    overflow: visible;
+  }
+
+  /* Section header: title on left, "see all →" link on right. */
+  .section-card .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .section-card .section-link {
+    display: inline-block;
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-deep-tidewater);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    padding: 0.25rem 0;
+    transition: border-color 120ms ease;
+    white-space: nowrap;
+  }
+  .section-card .section-link:hover {
+    border-bottom-color: var(--color-deep-tidewater);
+  }
+  .section-card .section-link .arrow {
+    display: inline-block;
+    margin-left: 0.35rem;
+    transition: transform 140ms ease;
+  }
+  .section-card .section-link:hover .arrow {
+    transform: translateX(4px);
+  }
+
+  /* Shared cream-gradient card background — used by every section on the
+     landing and every inner page. Define once here. */
+  .section-card {
+    background: linear-gradient(
+      to bottom,
+      #fffdde,
+      #ffe8bf
+    );
+    color: #2c3d42;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.08);
+  }
+</style>
+

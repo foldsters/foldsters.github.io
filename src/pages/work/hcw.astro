@@ -1,0 +1,43 @@
+---
+import LayoutPage from '../../layouts/LayoutPage.astro';
+---
+
+<LayoutPage title="Foldster's Projects — HCW (Bizzlebeard)" description="Custom interactive overlay + bot for HCW">
+  <h1>HCW &mdash; Helmet Championship Wrestling.</h1>
+  <p class="mono">for Bizzlebeard</p>
+  <p class="lede">
+    A custom interactive overlay + bot for a wrestling-themed Twitch show. Real-time match state, win records, Bluesky + Discord cross-posting, and a chat overlay that pulls non-command audience messages into the broadcast.
+  </p>
+
+  <h2>The problem.</h2>
+  <p>
+    Wrestling-format streams have show-specific structure — matches, winners, title belts, recurring storylines — that doesn't map cleanly onto generic streaming overlays. Bizzlebeard wanted the broadcast to feel like a real promotion, not a chat box on a webcam.
+  </p>
+
+  <h2>What was built.</h2>
+  <ul>
+    <li>Twitch EventSub bot with mod-only <code>!HCW</code> commands</li>
+    <li>Match-state machine: live show → match → win/loss → undo</li>
+    <li>Bluesky post-on-win with embed cards (image, clip URL, match metadata)</li>
+    <li>Discord webhook mirroring for the off-stream community</li>
+    <li>Chat overlay: pulls non-command audience messages into the broadcast with skip-counter randomization and fade animation</li>
+    <li>Convex backend (9 tables) with snapshot-based undo</li>
+    <li>OBS browser-source compatible — drops into the existing scene</li>
+  </ul>
+
+  <h2>The stack.</h2>
+  <p class="mono">TypeScript / React / Convex / Twitch EventSub / @atproto/api / Sharp</p>
+
+  <h2>Status.</h2>
+  <p>
+    Live and actively maintained. Recent additions include uptime tracking and a chat-parrot mode that joins in when multiple chatters repeat the same line.
+  </p>
+
+  <p class="mono note">case study photos + video clip + Bizzlebeard quote coming soon.</p>
+
+  <a href="/contact/" class="cta" slot="cta">want something like this for your stream? &rarr;</a>
+</LayoutPage>
+
+<style>
+  .note { font-size: 0.85rem; color: var(--color-deep-tidewater); opacity: 0.7; margin-top: 2rem; }
+</style>

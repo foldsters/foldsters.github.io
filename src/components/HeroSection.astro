@@ -1,0 +1,172 @@
+---
+import Logo from "../components/Logo.astro";
+
+// Logo: fixed brand colors. Vellum on the light side, tidal-mist on the dark
+// side, deep-tidewater for the outline — matches the gradient feel of the
+// origami-crane reference Matt provided.
+const primaryColor   = "#fef9d9"; // vellum (light)
+const secondaryColor = "#487d90"; // tidal-mist (dark)
+const lineColor      = "#2c3d42"; // deep-tidewater (outline)
+---
+
+<section id="hero" class="main-section" transition:name="card-home">
+  <div class="section-content hero">
+    <div class="description">
+      <h1 class="brand">Foldster's Projects</h1>
+      <p class="tagline">One studio. The full creator stack.</p>
+      <p class="lede">
+        Streams, bots, custom tools, 3D-printed merch, branded apparel &mdash;
+        built end-to-end for creators who want their brand to feel like one thing.
+      </p>
+      <div class="cta-row">
+        <a href="/contact/" class="cta cta-primary">start a project &rarr;</a>
+        <a href="/work/" class="cta cta-secondary">see the work</a>
+      </div>
+    </div>
+    <div class="logo-content">
+      <Logo primaryColor={primaryColor} secondaryColor={secondaryColor} lineColor={lineColor}/>
+    </div>
+    <a href="#work" class="scroll-cue mono" aria-label="Scroll for more">
+      <em>scroll for more</em>
+      <span class="arrow" aria-hidden="true">&darr;</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .hero {
+    /* Standard card gradient — corn-silk peachy cream → pale teal, 30% alpha.
+       Same overlay on every card (hero/creator/dev) for visual consistency. */
+    background: linear-gradient(
+      to bottom,
+      #fffdde,
+      #ffe8bf
+    );
+    color: black;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.08);
+    .description {
+
+    }
+  }
+
+  /* Brand title — matches the page background's top-of-gradient teal
+     (#497c90 = tidal-mist), not the near-black deep-tidewater. Scales
+     down on narrow viewports. */
+  .hero .brand {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: clamp(1.9rem, 6vw, 2.8rem);
+    font-weight: 700;
+    margin: 0 0 0.4rem;
+    color: #497c90;
+    line-height: 1.1;
+    letter-spacing: 0;
+  }
+
+  .hero .tagline {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: clamp(1.05rem, 3vw, 1.35rem);
+    font-weight: 700;
+    color: #2c3d42;
+    line-height: 1.3;
+    margin: 0 0 1rem;
+  }
+
+  .hero .lede {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: clamp(0.95rem, 2.4vw, 1.05rem);
+    line-height: 1.55;
+    color: #2c3d42;
+    font-weight: 400;
+    max-width: 36em;
+    margin-bottom: 1.75rem;
+  }
+
+  .cta-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* Leaflet-style pill buttons — rounded, subtle, mono label. */
+  .cta {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+    border: 1.5px solid var(--color-deep-tidewater);
+  }
+
+  .cta-primary {
+    background: var(--color-deep-tidewater);
+    color: var(--color-vellum);
+  }
+
+  .cta-primary:hover {
+    background: #1d2a2f;
+    border-color: #1d2a2f;
+  }
+
+  .cta-secondary {
+    background: transparent;
+    color: var(--color-deep-tidewater);
+  }
+
+  .cta-secondary:hover {
+    background: rgba(72, 125, 144, 0.12);
+  }
+
+  .logo-content {
+    position: absolute;
+    top: 0%;
+    left: 3%;
+    height: 100%;
+    width: 100%;
+    margin: auto;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    padding: 5%;
+    box-sizing: border-box;
+    z-index: -1;
+  }
+
+  /* "scroll for more" affordance at the bottom of the hero. */
+  .scroll-cue {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    text-decoration: none;
+    color: rgba(44, 61, 66, 0.7);
+    font-size: 0.85rem;
+    transition: color 120ms ease, transform 120ms ease;
+    pointer-events: all;
+  }
+  .scroll-cue:hover {
+    color: var(--color-deep-tidewater);
+  }
+  .scroll-cue .arrow {
+    font-size: 1.2rem;
+    line-height: 1;
+    animation: scroll-bounce 1.8s ease-in-out infinite;
+  }
+  @keyframes scroll-bounce {
+    0%, 100% { transform: translateY(0); opacity: 0.55; }
+    50%      { transform: translateY(5px); opacity: 1; }
+  }
+
+  :global(*:focus) {
+    outline: none;
+  }
+</style>

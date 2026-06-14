@@ -1,0 +1,101 @@
+---
+import LayoutPage from '../../layouts/LayoutPage.astro';
+---
+
+<LayoutPage title="Foldster's Projects — Contact" description="Start a project">
+  <h1>Start a project.</h1>
+  <p class="lede">
+    Tell us about your stream, your audience, and what you want it to feel like. We'll get back within two business days.
+  </p>
+
+  <form
+    action="https://formspree.io/f/YOUR_FORM_ID"
+    method="POST"
+    class="contact-form"
+  >
+    <label>
+      <span>name</span>
+      <input type="text" name="name" required />
+    </label>
+
+    <label>
+      <span>email</span>
+      <input type="email" name="email" required />
+    </label>
+
+    <label>
+      <span>twitch / youtube / bluesky (optional)</span>
+      <input type="text" name="creator_handle" />
+    </label>
+
+    <label>
+      <span>type of project</span>
+      <select name="project_type" required>
+        <option value="starter">Stream Setup Starter — $900 (launch)</option>
+        <option value="custom-build" selected>Stream Experience Custom Build — $2,100 (launch)</option>
+        <option value="complete-package">Complete Creator Brand Package — $4,500–7,200 (launch)</option>
+        <option value="ongoing">Ongoing Tooling Partnership — $300–600/mo (launch)</option>
+        <option value="not-sure">Not sure yet — let's talk</option>
+      </select>
+    </label>
+
+    <label>
+      <span>what do you want it to feel like?</span>
+      <textarea name="message" rows="6" required></textarea>
+    </label>
+
+    <button type="submit" class="cta">send &rarr;</button>
+  </form>
+
+  <p class="mono note">we respond within 2 business days.</p>
+</LayoutPage>
+
+<style>
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 2rem;
+  }
+  .contact-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .contact-form label > span {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+    color: var(--color-deep-tidewater);
+  }
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea {
+    font-family: "Inter", sans-serif;
+    font-size: 1rem;
+    padding: 0.75rem 0.9rem;
+    border: 3px solid var(--color-deep-tidewater);
+    background: var(--color-vellum);
+    color: #1a1a1a;
+    border-radius: 0;
+    box-shadow: 3px 3px 0 0 var(--color-deep-tidewater);
+  }
+  .contact-form input:focus,
+  .contact-form select:focus,
+  .contact-form textarea:focus {
+    outline: none;
+    box-shadow: 5px 5px 0 0 var(--color-deep-tidewater);
+  }
+  .contact-form button[type="submit"] {
+    align-self: flex-start;
+    cursor: pointer;
+  }
+  .note {
+    margin-top: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--color-deep-tidewater);
+    opacity: 0.7;
+  }
+</style>

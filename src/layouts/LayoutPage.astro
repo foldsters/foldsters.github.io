@@ -1,0 +1,311 @@
+---
+import LayoutLanding from './LayoutLanding.astro';
+interface Props {
+  title: string;
+  description?: string;
+}
+const { title, description = "" } = Astro.props;
+
+// Pick a transition:name that matches the section card on the landing page,
+// so the cream card morphs continuously between landing and inner pages.
+// Pages under /work/* morph from/to WorkSection on landing, etc.
+const path = Astro.url.pathname;
+const transitionName =
+  path.startsWith('/work')     ? 'card-work'
+  : path.startsWith('/tools')   ? 'card-tools'
+  : path.startsWith('/services') ? 'card-services'
+  : path.startsWith('/about')    ? 'card-about'
+  : path.startsWith('/contact')  ? 'card-contact'
+  : 'card-page';
+---
+
+<LayoutLanding title={title} description={description}>
+  <main class="page-wrapper" data-pagefind-ignore>
+    <section class="main-section page-section">
+      <div class="section-content page-card" transition:name={transitionName}>
+        <a href="/" class="back-link">&larr; back</a>
+        <slot/>
+        <div class="page-fade">
+          <slot name="cta"/>
+        </div>
+      </div>
+    </section>
+  </main>
+</LayoutLanding>
+
+<style is:global>
+  html {
+    overscroll-behavior: none;
+    background: linear-gradient(
+      to bottom,
+      #497c90,
+      #396678
+    );
+    scroll-behavior: smooth;
+    margin: 0;
+    padding: 0;
+    min-height: 100dvh;
+  }
+
+  .page-section {
+    min-height: 100dvh;
+    padding: 4dvh 0;
+  }
+
+  /* Match the landing section card geometry — width 800 + 200px padding
+     each side = 1200px outer — so the cream card looks the same size on
+     both landing and inner pages (and the view-transition morph stays
+     visually anchored). */
+  .page-card {
+    position: relative;
+    background: linear-gradient(
+      to bottom,
+      #fffdde,
+      #ffe8bf
+    );
+    color: #2c3d42;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.08);
+    /* Side margins between card and viewport edge: 1rem each side on
+       mobile, capped at 1200px outer on desktop. */
+    width: calc(100% - 2rem);
+    max-width: 1200px;
+    padding-left: clamp(1.25rem, 8vw, 200px);
+    padding-right: clamp(1.25rem, 8vw, 200px);
+    padding-top: 4dvh;
+    padding-bottom: 6dvh;
+    margin: 0 auto;
+    border-radius: 0;
+    box-sizing: border-box;
+  }
+
+  /* Inner-page CTA footer — no fade, just centered at end of content. */
+  .page-card .page-fade {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+  .page-card .page-fade:empty {
+    display: none;
+  }
+
+  .page-card .back-link {
+    display: inline-block;
+    font-family: "iA Writer Quattro", monospace;
+    color: var(--color-deep-tidewater);
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 0.88rem;
+    margin-bottom: 1.75rem;
+    opacity: 0.78;
+  }
+  .page-card .back-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+  }
+
+  .page-card h1 {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+    color: var(--color-deep-tidewater);
+  }
+
+  .page-card h2 {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-deep-tidewater);
+  }
+
+  .page-card h3 {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.4rem;
+    color: var(--color-deep-tidewater);
+    font-style: italic;
+  }
+
+  .page-card p, .page-card li {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #2c3d42;
+    margin-bottom: 0.75rem;
+  }
+
+  .page-card .lede {
+    font-size: 1rem;
+    line-height: 1.55;
+    margin-bottom: 1.75rem;
+    color: rgba(44, 61, 66, 0.85);
+  }
+
+  .page-card .lede em {
+    font-style: italic;
+  }
+
+  .page-card a:not(.back-link):not(.cta) {
+    color: var(--color-deep-tidewater);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .page-card .price-tag {
+    font-family: "iA Writer Quattro", monospace;
+    font-weight: 700;
+    color: var(--color-deep-tidewater);
+    font-size: 1rem;
+  }
+
+  /* Code blocks — use the deep teal as a slab */
+  .page-card pre {
+    background: var(--color-deep-tidewater);
+    color: var(--color-vellum);
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border-radius: 4px;
+  }
+  .page-card pre code {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--color-vellum);
+  }
+  .page-card code {
+    font-family: "iA Writer Quattro", monospace;
+    background: rgba(44, 61, 66, 0.08);
+    padding: 0.1em 0.35em;
+    border-radius: 3px;
+    font-size: 0.92em;
+  }
+
+  /* Inner-page entry list — single column, each row is a flat block with
+     an optional image on the left. Hairline divider between rows. */
+  .page-card .entry-list {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 1.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page-card .entry-block {
+    border-bottom: 1px solid rgba(44, 61, 66, 0.18);
+    padding: 1.1rem 0;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1.1rem;
+  }
+  .page-card .entry-block:last-child {
+    border-bottom: none;
+  }
+
+  /* Optional left thumbnail — show only when an image is wired up. */
+  .page-card .entry-thumb {
+    width: 140px;
+    height: 140px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: rgba(44, 61, 66, 0.06);
+    box-shadow:
+      inset 0 0 0 1px rgba(44, 61, 66, 0.08),
+      0 1px 2px rgba(44, 61, 66, 0.08);
+    display: block;
+    margin: 0;
+  }
+
+  .page-card .entry-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .page-card .entry-block h3 {
+    margin-top: 0;
+    font-style: normal;
+    font-size: 1.05rem;
+    color: var(--color-deep-tidewater);
+  }
+  .page-card .entry-block .entry-meta {
+    font-size: 0.82rem;
+    color: rgba(44, 61, 66, 0.82);
+    margin-top: 0.4rem;
+    margin-bottom: 0.4rem;
+    font-style: italic;
+  }
+  .page-card .entry-block ul {
+    margin-top: 0.4rem;
+  }
+
+  /* Pill buttons — Leaflet style. Used for CTAs on inner pages. */
+  .page-card .cta,
+  .page-card .pill {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease;
+    border: 1.5px solid var(--color-deep-tidewater);
+    background: var(--color-deep-tidewater);
+    color: var(--color-vellum);
+    margin-top: 0;
+    cursor: pointer;
+  }
+  .page-card .cta:hover,
+  .page-card .pill:hover {
+    background: #1d2a2f;
+    border-color: #1d2a2f;
+  }
+  .page-card .cta-outline {
+    background: transparent;
+    color: var(--color-deep-tidewater);
+  }
+  .page-card .cta-outline:hover {
+    background: rgba(72, 125, 144, 0.12);
+    color: var(--color-deep-tidewater);
+  }
+
+  /* Bottom prev/next nav strip — Leaflet's "< prev / next >" style */
+  .page-card .page-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(44, 61, 66, 0.18);
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 0.9rem;
+  }
+  .page-card .page-nav a {
+    color: var(--color-deep-tidewater);
+    text-decoration: none;
+    font-weight: 700;
+  }
+  .page-card .page-nav a:hover {
+    text-decoration: underline;
+  }
+
+  /* Lists in body content */
+  .page-card ul:not(.entry-list):not(.page-nav) {
+    padding-left: 1.25rem;
+  }
+  .page-card ul:not(.entry-list):not(.page-nav) li {
+    list-style: square;
+    margin-bottom: 0.4rem;
+  }
+</style>

@@ -1,0 +1,257 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+	title: string;
+	body: string;
+	href: string;
+	meta?: string;
+	image?: ImageMetadata;
+	imageAlt?: string;
+	colors?: {
+		textColor?: string;
+		highlightColor?: string;
+	};
+}
+
+const { href, title, body, meta, image, imageAlt, colors = {} } = Astro.props;
+const textColor = colors.textColor ?? "#2c3d42";
+const highlightColor = colors.highlightColor ?? "var(--color-deep-tidewater)";
+---
+
+<li class="entry" style={`--text-color:${textColor};--highlight-color:${highlightColor};`}>
+	<a href={href} data-astro-prefetch class="entry-link">
+		<div class="entry-photo" aria-hidden={!image}>
+			{image
+				? <Image src={image} alt={imageAlt ?? title} class="entry-image"/>
+				: <div class="entry-photo-placeholder"></div>}
+		</div>
+		<div class="entry-text">
+			<h3>{title}</h3>
+			<p class="entry-body">{body}</p>
+			<div class="entry-foot">
+				{meta && <p class="entry-meta"><em>{meta}</em></p>}
+				<span class="entry-arrow" aria-hidden="true">&rarr;</span>
+			</div>
+		</div>
+	</a>
+</li>
+
+<style>
+	/* Sticky-note style — each entry is its own little paper square that sits
+	   on top of the parent section card. Slight rotation per note, layered
+	   drop shadows for paper-on-paper depth, washi-tape strip at the top. */
+
+	.entry {
+		list-style: none;
+		position: relative;
+		background: var(--color-vellum);
+		padding: 1rem 1rem 0.9rem;
+		margin: 0;
+		box-shadow:
+			0 1px 0 rgba(44, 61, 66, 0.12),
+			0 2px 4px rgba(44, 61, 66, 0.10),
+			0 10px 18px -8px rgba(44, 61, 66, 0.22);
+		transition: transform 160ms ease, box-shadow 160ms ease;
+		transform-origin: 50% 0%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	/* Washi-tape strip across the top of every note. */
+	.entry::before {
+		content: "";
+		position: absolute;
+		top: -10px;
+		left: 50%;
+		width: 64px;
+		height: 18px;
+		background:
+			linear-gradient(
+				to bottom,
+				rgba(72, 125, 144, 0.45),
+				rgba(72, 125, 144, 0.35)
+			);
+		border-left: 1px dashed rgba(255, 255, 255, 0.35);
+		border-right: 1px dashed rgba(255, 255, 255, 0.35);
+		transform: translateX(-50%) rotate(-3deg);
+		pointer-events: none;
+		z-index: 2;
+	}
+
+	.entry:nth-child(5n+1) { transform: rotate(-1.4deg) translateY(2px); }
+	.entry:nth-child(5n+1)::before { transform: translateX(-50%) rotate(-4deg); }
+
+	.entry:nth-child(5n+2) { transform: rotate(0.9deg) translateY(-1px); }
+	.entry:nth-child(5n+2)::before { transform: translateX(-30%) rotate(2deg); }
+
+	.entry:nth-child(5n+3) { transform: rotate(-0.4deg); }
+	.entry:nth-child(5n+3)::before { transform: translateX(-60%) rotate(-1deg); }
+
+	.entry:nth-child(5n+4) { transform: rotate(1.2deg) translateY(3px); }
+	.entry:nth-child(5n+4)::before { transform: translateX(-45%) rotate(5deg); }
+
+	.entry:nth-child(5n+5) { transform: rotate(-0.8deg) translateY(-2px); }
+	.entry:nth-child(5n+5)::before { transform: translateX(-55%) rotate(-2deg); }
+
+	.entry-link {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 0;
+		text-decoration: none;
+		color: var(--text-color);
+		flex: 1;
+	}
+
+	/* Photo well — polaroid-ish frame at the top of every note. Always present
+	   (with a subtle placeholder when no image is passed) so the layout reads
+	   the same whether an image is wired up yet or not. */
+	.entry-photo {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 4 / 3;
+		background: rgba(44, 61, 66, 0.06);
+		overflow: hidden;
+		box-shadow:
+			inset 0 0 0 1px rgba(44, 61, 66, 0.08),
+			0 1px 2px rgba(44, 61, 66, 0.08);
+		margin-top: 0.5rem;
+	}
+
+	.entry-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		display: block;
+	}
+
+	/* Subtle placeholder pattern for notes without an image yet — diagonal
+	   lines in a teal tint, like a contact-sheet hatch. */
+	.entry-photo-placeholder {
+		width: 100%;
+		height: 100%;
+		background-image:
+			repeating-linear-gradient(
+				45deg,
+				rgba(72, 125, 144, 0.10) 0,
+				rgba(72, 125, 144, 0.10) 1px,
+				transparent 1px,
+				transparent 9px
+			);
+	}
+
+	.entry-text {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.entry h3 {
+		font-family: "iA Writer Quattro", monospace;
+		font-size: 1.02rem;
+		font-weight: 700;
+		color: var(--text-color);
+		margin: 0 0 0.35rem;
+		line-height: 1.25;
+		letter-spacing: 0;
+	}
+
+	.entry-body {
+		font-family: "iA Writer Quattro", monospace;
+		font-size: 0.85rem;
+		font-weight: 400;
+		color: var(--text-color);
+		margin: 0;
+		line-height: 1.45;
+	}
+
+	/* Meta line + arrow share a baseline row at the bottom of the text
+	   block — keeps the sticky note a touch shorter than when the arrow
+	   had its own row beneath. */
+	.entry-foot {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 0.75rem;
+		margin-top: 0.55rem;
+	}
+
+	.entry-meta {
+		font-family: "iA Writer Quattro", monospace;
+		font-size: 0.78rem;
+		font-weight: 400;
+		/* Bump the opacity from 0.62 → 0.82 so 0.78rem italic still hits
+		   WCAG AA 4.5:1 against the vellum sticky-note background. */
+		color: rgba(44, 61, 66, 0.82);
+		margin: 0;
+		line-height: 1.4;
+		flex: 1;
+		min-width: 0;
+	}
+
+	.entry-arrow {
+		font-family: "iA Writer Quattro", monospace;
+		font-weight: 700;
+		color: var(--highlight-color);
+		font-size: 1rem;
+		opacity: 0.5;
+		transition: transform 140ms ease, opacity 140ms ease;
+		flex-shrink: 0;
+	}
+
+	/* Hover: lift the note and straighten it slightly. */
+	.entry:hover {
+		z-index: 5;
+		transform: rotate(0deg) translateY(-4px) scale(1.02);
+		box-shadow:
+			0 2px 0 rgba(44, 61, 66, 0.10),
+			0 6px 8px rgba(44, 61, 66, 0.14),
+			0 20px 28px -10px rgba(44, 61, 66, 0.28);
+	}
+
+	.entry:hover .entry-arrow {
+		opacity: 1;
+		transform: translateX(4px);
+	}
+
+	/* As soon as the grid collapses to a single column, switch to row layout
+	   so we never get a tall polaroid sitting in a narrow single column.
+	   With grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) and
+	   gap 1.25rem, 2 columns drop to 1 when the container is < ~500px —
+	   so we trigger row mode at the same threshold. */
+	@container notes-grid (max-width: 500px) {
+		.entry-link {
+			flex-direction: row;
+			align-items: center;
+			gap: 0.9rem;
+		}
+		.entry-photo {
+			width: 96px;
+			height: 96px;
+			aspect-ratio: 1 / 1;
+			flex-shrink: 0;
+			margin-top: 0.25rem;
+		}
+		.entry-text {
+			flex: 1;
+			min-width: 0;
+		}
+		.entry h3 {
+			margin-top: 0;
+		}
+		.entry:nth-child(n+5) {
+			display: none;
+		}
+	}
+
+	/* Very narrow single-column mode — drop the thumbnail entirely so the
+	   text has room to breathe. */
+	@container notes-grid (max-width: 320px) {
+		.entry-photo {
+			display: none;
+		}
+	}
+</style>

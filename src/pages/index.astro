@@ -1,0 +1,62 @@
+---
+import LayoutLanding from '../layouts/LayoutLanding.astro';
+import HeroSection from '../components/HeroSection.astro';
+import WorkSection from '../components/WorkSection.astro';
+import ToolsSection from '../components/ToolsSection.astro';
+import ServicesSection from '../components/ServicesSection.astro';
+import { generateAndUploadProfilePicture } from '../utils/blueskyUploader';
+
+// Build-time hook: regenerate the Bluesky profile picture with a random
+// brand-color logo on each build. Now that colors.ts only contains the brand
+// palette, this picks two brand colors per build.
+await generateAndUploadProfilePicture();
+---
+
+<LayoutLanding title="Foldster's Projects" description="Custom creator experiences — streams, bots, merch, identity.">
+  <main class="page-wrapper" data-pagefind-ignore>
+    <HeroSection/>
+    <WorkSection/>
+    <ToolsSection/>
+    <ServicesSection/>
+  </main>
+</LayoutLanding>
+
+<style>
+  html {
+    overscroll-behavior: none;
+    min-height: 100dvh;
+    color: #000;
+    margin: 0;
+    padding: 0;
+    /* Page background: pure teal gradient. Each section card is its own
+       cream-gradient card on top of this. */
+    background: linear-gradient(
+      to bottom,
+      #497c90,
+      #396678
+    );
+    scroll-behavior: smooth;
+  }
+
+  :global(.page-wrapper) {
+    .work {
+      transform: rotate(-0.5deg) translateY(-0.5vh);
+    }
+
+    .tools {
+      transform: rotate(0.5deg);
+    }
+
+    .services {
+      transform: translateY(1.5vh);
+    }
+
+    .section-inner {
+      height: 84dvh;
+    }
+
+    .section-content {
+      height: 85dvh;
+    }
+  }
+</style>

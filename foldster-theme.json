@@ -1,0 +1,97 @@
+{
+  "name": "foldster-theme",
+  "settings": [
+    {
+      "scope": ["comment", "punctuation.definition.comment"],
+      "settings": {
+        "foreground": "#888888"
+      }
+    },
+    {
+      "scope": ["keyword", "keyword.control", "storage", "storage.type"],
+      "settings": {
+        "foreground": "#3264C8"
+      }
+    },
+    {
+      "scope": ["constant.numeric", "constant.language", "constant.character"],
+      "settings": {
+        "foreground": "#000000"
+      }
+    },
+    {
+      "scope": ["string", "string.quoted", "string.interpolated", "string.regexp", "punctuation.definition.string"],
+      "settings": {
+        "foreground": "#225577"
+      }
+    },
+    {
+      "scope": ["variable", "variable.language", "entity.name.function"],
+      "settings": {
+        "foreground": "#000000"
+      }
+    },
+    {
+      "scope": [
+        "punctuation", 
+        "meta.embedded", 
+        "meta.structure.dictionary.key.python", 
+        "entity.other.attribute-name"
+      ],
+      "settings": {
+        "foreground": "#000000"
+      }
+    },
+    {
+      "scope": ["keyword.operator", "keyword.operator.logical.python", "keyword.operator.arithmetic.python", "keyword.operator.assignment"],
+      "settings": {
+        "foreground": "#000000"
+      }
+    },
+    {
+      "scope": ["markup.heading", "markup.bold"],
+      "settings": {
+        "fontStyle": "bold",
+        "foreground": "#3264C8"
+      }
+    },
+    {
+      "scope": ["markup.italic"],
+      "settings": {
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "scope": ["markup.underline"],
+      "settings": {
+        "fontStyle": "underline"
+      }
+    },
+    {
+      "scope": ["invalid"],
+      "settings": {
+        "foreground": "#f44747"
+      }
+    },
+    {
+      "scope": ["meta.diff.header"],
+      "settings": {
+        "foreground": "#3264C8"
+      }
+    },
+    {
+      "scope": ["markup.inline.raw", "markup.deleted"],
+      "settings": {
+        "foreground": "#000000"
+      }
+    }
+  ],
+  "colors": {
+    "editor.background": "#0000",
+    "editor.foreground": "#000000",
+    "editor.selectionBackground": "#00000030",
+    "editor.lineHighlightBackground": "#00000010",
+    "editorCursor.foreground": "#000000",
+    "editorWhitespace.foreground": "#CCCCCC"
+  }
+}

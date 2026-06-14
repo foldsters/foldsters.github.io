@@ -1,0 +1,33 @@
+---
+import Card from './PagesCard.astro';
+---
+
+<section id="services" class="main-section" transition:name="card-services">
+  <div class="section-content section-card services">
+    <div class="section-inner">
+      <div class="description">
+        <div class="section-header">
+          <h2>Services &amp; pricing.</h2>
+          <a href="/services/" class="section-link">see all <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
+        <p class="subtitle"><em>Four tiers. Published pricing. <strong>40&thinsp;% off for the first 3 paid clients.</strong></em></p>
+      </div>
+
+      <ul role="list" class="entry-list">
+        <Card href="/services#starter" title="Stream Setup Starter"
+          body="Custom overlay + basic bot. Quick turn, no frills. Two-week delivery."
+          meta="Foldster | Service | $1,500 → $900 launch"/>
+        <Card href="/services#custom-build" title="Stream Experience Custom Build"
+          body="Full overlay + interactive features + bot personality + integrations. Most clients land here."
+          meta="Foldster | Service | $3,500 → $2,100 launch"/>
+        <Card href="/services#complete-package" title="Complete Creator Brand Package"
+          body="Stream + bot + 3D-printed merch + Printful clothing line + brand bible. Vertically integrated."
+          meta="Foldster | Service | $7,500–12,000 → $4,500–7,200 launch"/>
+        <Card href="/services#partnership" title="Ongoing Tooling Partnership"
+          body="Continuous evolution. Monthly feature additions, merch drops, brand iteration. Cancel anytime."
+          meta="Foldster | Service | $500–1,000/mo → $300–600/mo launch"/>
+      </ul>
+
+    </div>
+  </div>
+</section>

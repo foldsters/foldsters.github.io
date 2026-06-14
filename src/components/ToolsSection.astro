@@ -1,0 +1,46 @@
+---
+import Card from './PagesCard.astro';
+import demodripThumb from '../content/images/demodrip/demodrip-1.png';
+import demoskyThumb from '../content/images/demosky/demosky-1.png';
+import paletteThumb from '../content/images/palette/extractor.png';
+---
+
+<section id="tools" class="main-section" transition:name="card-tools">
+  <div class="section-content section-card tools">
+    <div class="section-inner">
+
+      <div class="description">
+        <div class="section-header">
+          <h2>Free tools.</h2>
+          <a href="/tools/" class="section-link">see all <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
+        <p class="subtitle"><em>Six open-source tools for creators. Use them as-is or commission a custom version.</em></p>
+      </div>
+
+      <ul role="list" class="entry-list">
+        <Card href="/tools/demowall" title="Demowall"
+          body="GLSL fragment shaders as Android live wallpapers. Load custom shaders from Bluesky via Demosky."
+          meta="Foldster | Tool | open source, Google Play"/>
+        <Card href="/tools/demodrip" title="Demodrip"
+          body="Shader-based t-shirt design tool. Live 3D preview, export print-ready textures."
+          meta="Foldster | Tool | open source, demodrip.app"
+          image={demodripThumb} imageAlt="Demodrip — shader rendered on a 3D t-shirt"/>
+        <Card href="/tools/demosky" title="Demosky"
+          body="Bluesky client for browsing and sharing shader demos. The social hub for the ecosystem."
+          meta="Foldster | Tool | open source, demosky.app"
+          image={demoskyThumb} imageAlt="Demosky — Bluesky shader feed client"/>
+        <Card href="/tools/palette" title="Palette Tools"
+          body="Topology-aware SOM palette extraction. Spheres, tori, Klein bottles. Yes, really."
+          meta="Foldster | Tool | open source"
+          image={paletteThumb} imageAlt="Palette Tools — topology-aware palette extractor"/>
+        <Card href="/tools/emotions-dev" title="emotions.dev"
+          body="Emotions toolkit. Recently shipped — full writeup coming."
+          meta="Foldster | Tool | newly shipped"/>
+        <Card href="/tools/foldster-studio" title="Foldster Studio"
+          body="Browser-native streaming. captureStream + WHIP to stream.place, no OBS required, works on phone."
+          meta="Foldster | Tool | open source, PoC"/>
+      </ul>
+
+    </div>
+  </div>
+</section>

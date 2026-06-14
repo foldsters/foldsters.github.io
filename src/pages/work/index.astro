@@ -1,0 +1,36 @@
+---
+import LayoutPage from '../../layouts/LayoutPage.astro';
+---
+
+<LayoutPage title="Foldster's Projects — Work" description="Selected case studies">
+  <h1>Recent work.</h1>
+  <p class="lede"><em>Real builds for real creators. Click through for what was built, how it performs, and what made it interesting.</em></p>
+
+  <ul class="entry-list">
+    <li class="entry-block">
+      <div class="entry-content">
+        <h3><a href="/work/hcw/">HCW &mdash; Helmet Championship Wrestling</a></h3>
+        <p class="entry-meta"><em>Foldster | Work | for Bizzlebeard</em></p>
+        <p>Custom interactive overlay + bot for a wrestling-themed Twitch show. Match state, win records, Bluesky + Discord cross-posting, chat overlay that pulls audience messages into the broadcast.</p>
+      </div>
+    </li>
+
+    <li class="entry-block">
+      <div class="entry-content">
+        <h3><a href="/work/guessr47/">Guessr47</a></h3>
+        <p class="entry-meta"><em>Foldster | Work | for Rewkers</em></p>
+        <p>Multiplayer location-guessing game for video-game maps. Twitch OAuth for player auth, sync + async modes, host upload + real-time scoring. Live at <a href="https://guessr47.com" target="_blank">guessr47.com</a>.</p>
+      </div>
+    </li>
+
+    <li class="entry-block">
+      <div class="entry-content">
+        <h3><a href="/work/nicole-overlays/">Nicole's OBS Overlays</a></h3>
+        <p class="entry-meta"><em>Foldster | Work | for Nicole, in progress</em></p>
+        <p>Custom stream overlay package — the close-collaboration build, warmer aesthetic, designed for slower-paced streaming. Case study coming when launched.</p>
+      </div>
+    </li>
+  </ul>
+
+  <a href="/contact/" class="cta" slot="cta">start a project &rarr;</a>
+</LayoutPage>

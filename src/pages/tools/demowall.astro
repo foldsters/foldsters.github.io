@@ -1,0 +1,30 @@
+---
+import LayoutPage from '../../layouts/LayoutPage.astro';
+---
+
+<LayoutPage title="Foldster's Projects — Demowall" description="GLSL shader Android live wallpapers">
+  <h1>Demowall.</h1>
+  <p class="mono">android live wallpaper · open source · free</p>
+  <p class="lede">
+    Run any GLSL fragment shader as your phone wallpaper. Pick a built-in, write your own in-app, or load community shaders from Bluesky via Demosky.
+  </p>
+
+  <h2>What it does.</h2>
+  <ul>
+    <li>GLSL fragment shaders animate as live wallpaper</li>
+    <li>In-app shader editor (write and tweak on the device)</li>
+    <li>Load custom shaders from Bluesky / Demosky</li>
+    <li>Standard uniforms: <code>iTime</code>, <code>iResolution</code>, <code>iPrevFrame</code></li>
+  </ul>
+
+  <h2>Stack.</h2>
+  <p class="mono">Expo / React Native / TypeScript / custom Kotlin native module / GLSL ES 3.0</p>
+
+  <h2>Get it.</h2>
+  <ul>
+    <li><a href="https://github.com/foldsters/universal-live-wallpaper" target="_blank">github.com/foldsters/universal-live-wallpaper</a> &mdash; source</li>
+    <li>Google Play (APK published)</li>
+  </ul>
+
+  <a href="/contact/" class="cta" slot="cta">want a custom version for your stream? &rarr;</a>
+</LayoutPage>

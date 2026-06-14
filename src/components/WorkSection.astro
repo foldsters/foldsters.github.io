@@ -1,0 +1,40 @@
+---
+import Card from './PagesCard.astro';
+---
+
+<section id="work" class="main-section" transition:name="card-work">
+  <div class="section-content section-card work">
+    <div class="section-inner">
+
+      <div class="description">
+        <div class="section-header">
+          <h2>Recent work.</h2>
+          <a href="/work/" class="section-link">see all <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
+        <p class="subtitle"><em>Real builds for real creators &mdash; shipped end-to-end.</em></p>
+      </div>
+
+      <ul role="list" class="entry-list">
+        <Card
+          href="/work/hcw"
+          title="HCW"
+          body="Custom interactive overlay + bot for Bizzlebeard's wrestling show. Match state, win records, Bluesky cross-posting, chat overlay."
+          meta="Foldster | Work | for Bizzlebeard"
+        />
+        <Card
+          href="/work/guessr47"
+          title="Guessr47"
+          body="Multiplayer location-guessing for video-game maps. Twitch OAuth, sync + async modes, host-side map upload."
+          meta="Foldster | Work | for Rewkers"
+        />
+        <Card
+          href="/work/nicole-overlays"
+          title="Nicole's Overlays"
+          body="Custom OBS overlay package — the close-collaboration build. Warmer aesthetic, designed for slower-paced streaming."
+          meta="Foldster | Work | for Nicole, in progress"
+        />
+      </ul>
+
+    </div>
+  </div>
+</section>
