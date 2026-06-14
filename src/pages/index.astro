@@ -4,12 +4,9 @@ import HeroSection from '../components/HeroSection.astro';
 import WorkSection from '../components/WorkSection.astro';
 import ToolsSection from '../components/ToolsSection.astro';
 import ServicesSection from '../components/ServicesSection.astro';
-import { generateAndUploadProfilePicture } from '../utils/blueskyUploader';
 
-// Build-time hook: regenerate the Bluesky profile picture with a random
-// brand-color logo on each build. Now that colors.ts only contains the brand
-// palette, this picks two brand colors per build.
-await generateAndUploadProfilePicture();
+// Bluesky profile-picture uploader runs out of foldsters/portfolio's
+// daily cron — keeps this repo from needing the Bluesky secrets.
 ---
 
 <LayoutLanding title="Foldster's Projects" description="Custom creator experiences — streams, bots, merch, identity.">
