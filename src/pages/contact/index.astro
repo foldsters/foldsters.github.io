@@ -37,6 +37,7 @@ import LayoutPage from '../../layouts/LayoutPage.astro';
         <option value="ongoing">Ongoing Tooling Partnership — $300–600/mo (launch)</option>
         <option value="not-sure">Not sure yet — let's talk</option>
       </select>
+      <a href="/services/" class="hint mono"><em>not sure what's in each tier? see the breakdown &rarr;</em></a>
     </label>
 
     <label>
@@ -97,5 +98,18 @@ import LayoutPage from '../../layouts/LayoutPage.astro';
     font-size: 0.85rem;
     color: var(--color-deep-tidewater);
     opacity: 0.7;
+  }
+  .contact-form label .hint {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 0.8rem;
+    color: var(--color-deep-tidewater);
+    text-decoration: none;
+    margin-top: 0.35rem;
+    opacity: 0.78;
+    align-self: flex-start;
+  }
+  .contact-form label .hint:hover {
+    opacity: 1;
+    text-decoration: underline;
   }
 </style>
