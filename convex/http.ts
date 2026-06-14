@@ -19,7 +19,7 @@ const TIER_LABELS: Record<string, string> = {
 };
 
 const FROM = "Foldster's Projects <hello@foldsters.com>";
-const NOTIFY_TO = "foldsters@gmail.com";
+const NOTIFY_TO = "foldster@foldsters.com";
 
 function corsHeaders(origin: string | null) {
   const allowed = origin && ALLOWED_ORIGINS.has(origin) ? origin : "https://foldsters.com";
@@ -47,7 +47,8 @@ function notifyHtml(d: {
   message: string;
 }) {
   return `<table style="font-family:-apple-system,system-ui,sans-serif;color:#2c3d42;max-width:560px;line-height:1.55">
-    <tr><td style="padding:0 0 14px;font-size:15px"><strong>New inquiry: ${escapeHtml(d.tierLabel)}</strong></td></tr>
+    <tr><td style="padding:0 0 14px;font-size:15px"><strong>New inquiry</strong></td></tr>
+    <tr><td style="padding:3px 0"><strong>Project type:</strong> ${escapeHtml(d.tierLabel)}</td></tr>
     <tr><td style="padding:3px 0"><strong>Name:</strong> ${escapeHtml(d.name)}</td></tr>
     <tr><td style="padding:3px 0"><strong>Email:</strong> <a href="mailto:${escapeHtml(d.email)}" style="color:#487d90">${escapeHtml(d.email)}</a></td></tr>
     ${d.creatorHandle ? `<tr><td style="padding:3px 0"><strong>Handle:</strong> ${escapeHtml(d.creatorHandle)}</td></tr>` : ""}
@@ -70,6 +71,8 @@ function confirmHtml(d: { name: string; tierLabel: string; creatorHandle?: strin
 async function sendEmail(payload: {
   from: string;
   to: string[];
+  cc?: string[];
+  bcc?: string[];
   replyTo: string;
   subject: string;
   html: string;
@@ -86,6 +89,8 @@ async function sendEmail(payload: {
     body: JSON.stringify({
       from: payload.from,
       to: payload.to,
+      ...(payload.cc && payload.cc.length > 0 ? { cc: payload.cc } : {}),
+      ...(payload.bcc && payload.bcc.length > 0 ? { bcc: payload.bcc } : {}),
       reply_to: payload.replyTo,
       subject: payload.subject,
       html: payload.html,
@@ -160,12 +165,18 @@ const submitContact = httpAction(async (ctx, request) => {
     html: notifyHtml({ name, email, creatorHandle, tierLabel, message }),
   });
 
-  // Confirm to submitter (echo back what they sent)
+  // Confirm to submitter (echo back what they sent). CC Matt's domain
+  // address — visible to the submitter (signals an institutional kickoff
+  // contact, not just a Gmail) — and gives Matt a copy he can Reply All
+  // to so his response continues the confirmation thread. (Plain Reply
+  // goes to NOTIFY_TO via Reply-To; Reply All adds the submitter from
+  // the To: line.)
   await sendEmail({
     from: FROM,
     to: [email],
+    cc: [NOTIFY_TO],
     replyTo: NOTIFY_TO,
-    subject: "We got it — Foldster's Projects",
+    subject: `Foldster's Projects — ${name}'s ${tierLabel} inquiry`,
     html: confirmHtml({ name, tierLabel, creatorHandle, message }),
   });
 
