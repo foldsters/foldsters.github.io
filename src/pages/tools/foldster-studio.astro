@@ -3,13 +3,13 @@ import LayoutPage from '../../layouts/LayoutPage.astro';
 ---
 
 <LayoutPage title="Foldster's Projects — Foldster Studio" description="Browser-native streaming, no OBS required">
-  <h1>Foldster Studio.</h1>
+  <h1>Foldster Studio</h1>
   <p class="mono">browser-native streaming · open source · free</p>
   <p class="lede">
     Stream any canvas-based web app to stream.place with one function call. No OBS, no FFmpeg, no relay server. Works on phone.
   </p>
 
-  <h2>What it does.</h2>
+  <h2>What It Does</h2>
   <ul>
     <li><code>captureStream()</code> + WHIP to stream.place &mdash; one call, you're live</li>
     <li>H.264 High Profile, 30fps, 3 Mbps</li>
@@ -18,7 +18,7 @@ import LayoutPage from '../../layouts/LayoutPage.astro';
     <li>Works on mobile (where OBS doesn't)</li>
   </ul>
 
-  <h2>The API.</h2>
+  <h2>The API</h2>
   <pre><code>{`import { createStream } from './stream.js';
 
 const stream = createStream({
@@ -32,15 +32,15 @@ const stream = createStream({
 await stream.goLive();
 stream.stop();`}</code></pre>
 
-  <h2>Stack.</h2>
+  <h2>Stack</h2>
   <p class="mono">JavaScript / WebRTC / WHIP / stream.place</p>
 
-  <h2>Status.</h2>
+  <h2>Status</h2>
   <p>
     Phase 1 PoC working. Library extraction (npm package) is the next pickup, with integration into Demosky, palette tools, and custom client work after that.
   </p>
 
-  <h2>Source.</h2>
+  <h2>Source</h2>
   <p><a href="https://github.com/foldsters/canvas-stream-poc" target="_blank">github.com/foldsters/canvas-stream-poc</a> (private — DM for access)</p>
 
   <a href="/contact/" class="cta" slot="cta">want streaming baked into your stack? &rarr;</a>
