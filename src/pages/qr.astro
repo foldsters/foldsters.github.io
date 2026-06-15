@@ -1,0 +1,29 @@
+---
+// Redirect endpoint for the business-card QR code.
+//   foldsters.com/qr → foldsters.com/
+// Every hit on this path is provably a QR scan (no internal link points
+// here), so it shows up as a distinct page in analytics / server logs.
+// Free, no JS infra needed.
+//
+// The QR PNG at /images/qr-card.png is a qart-style code with the crane
+// silhouette embedded in the modules — generated offline via vitrun/qart.
+
+const target = "/";
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <link rel="canonical" href={`https://foldsters.com${target}`} />
+    <meta name="robots" content="noindex" />
+    <title>Foldster's Projects</title>
+    <script is:inline define:vars={{ target }}>
+      window.location.replace(target);
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to <a href={target}>foldsters.com</a>&hellip;</p>
+  </body>
+</html>

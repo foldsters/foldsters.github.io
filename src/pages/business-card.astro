@@ -1,0 +1,304 @@
+---
+import Logo from '../components/Logo.astro';
+
+const primaryColor   = "#fef9d9"; // vellum
+const secondaryColor = "#487d90"; // tidal-mist
+const lineColor      = "#2c3d42"; // deep-tidewater
+
+// Standard US business card: 3.5" × 2". Mirrors HeroSection.astro markup
+// 1:1 — same brand stack, same crane-logo-behind-text layering, same vellum
+// gradient. Only the CTA row + scroll cue + hero-nav are dropped; the
+// contact lines (email + phone) take their place.
+//
+// Two cards on this page: front (brand stack) + back (qart-style QR with
+// the crane silhouette embedded in the modules — generated offline via
+// vitrun/qart, encodes https://foldsters.com/qr-bc1k which redirects to
+// the root via src/pages/qr-bc1k.astro for analytics tracking. PNG sits
+// at /images/qr-card.png).
+//
+// Export: open the page → browser print → "Save as PDF". Enable
+// "Background graphics" so the vellum gradient prints.
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Foldster's Projects — Business Card</title>
+    <link rel="preload" href="/fonts/iAWriterQuattroS-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/iAWriterQuattroS-Bold.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <div class="bc">
+      <section class="bc-inner hero">
+        <div class="description">
+          <h1 class="brand">Foldster's Projects</h1>
+          <p class="tagline">We bring your content creation brand to life</p>
+          <p class="lede">
+            Stream overlays, bots, custom tools, and branded merch.<br/>
+            Full automated pipelines between them all.
+          </p>
+          <ul class="contact" role="list">
+            <li><a href="tel:+17278534092">(727) 853&ndash;4092</a></li>
+            <li><a href="mailto:foldster@foldsters.com">foldster@foldsters.com</a></li>
+          </ul>
+        </div>
+        <div class="logo-content">
+          <Logo primaryColor={primaryColor} secondaryColor={secondaryColor} lineColor={lineColor}/>
+        </div>
+      </section>
+    </div>
+
+    <div class="bc bc-back">
+      <section class="bc-inner qr">
+        <div class="qr-mask" role="img" aria-label="QR code linking to foldsters.com"></div>
+      </section>
+    </div>
+
+    <p class="export-hint">
+      Print or &ldquo;Save as PDF&rdquo; to export. Each card is exactly 3.5&Prime; &times; 2&Prime; and breaks to a separate page for duplex printing.
+    </p>
+
+    <style>
+      @font-face {
+        font-family: "iA Writer Quattro";
+        src: url("/fonts/iAWriterQuattroS-Regular.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "iA Writer Quattro";
+        src: url("/fonts/iAWriterQuattroS-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      :root {
+        --vellum:         #fef9d9;
+        --corn-silk:      #feeac3;
+        --tidal-mist:     #487d90;
+        --deep-tidewater: #2c3d42;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100dvh;
+        background: linear-gradient(to bottom, #396678, #497c90);
+        font-family: "iA Writer Quattro", monospace;
+        color: var(--deep-tidewater);
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        padding: 2rem;
+      }
+
+      /* Outer wrapper IS the teal border. Card is exactly 3.5″ × 2″ at
+         print, with the tidal-mist teal acting as the frame and the
+         vellum gradient interior matching HeroSection's `.hero`. */
+      .bc {
+        width: 3.5in;
+        height: 2in;
+        background: var(--tidal-mist);
+        padding: 0.07in;
+        box-shadow:
+          0 6px 12px rgba(0, 0, 0, 0.18),
+          0 24px 40px -10px rgba(0, 0, 0, 0.28);
+        flex-shrink: 0;
+      }
+
+      /* Mirrors `.section-content.hero` from HeroSection.astro: vellum
+         gradient background, relative positioning so the absolutely-
+         positioned logo can fill it behind the text. */
+      .bc-inner.hero {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, #fffdde, #ffe8bf);
+        color: black;
+        padding: 0.14in 0.18in;
+        overflow: hidden;
+      }
+
+      .description {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      /* Brand title — same color (#497c90 = tidal-mist top of page gradient)
+         and weight as HeroSection. Sized in pt so the print scale matches the
+         3.5″ × 2″ card exactly. */
+      /* All sizes are exactly 80% of the hero card's defaults
+         (14 / 7 / 5.5 / 7 pt → 11.2 / 5.6 / 4.4 / 5.6 pt). Margins
+         scaled proportionally so the spacing rhythm matches the
+         live hero at print size. */
+      .hero .brand {
+        font-family: "iA Writer Quattro", monospace;
+        font-size: 11.2pt;
+        font-weight: 700;
+        margin: 0 0 0.8pt;
+        color: #497c90;
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      .hero .tagline {
+        font-family: "iA Writer Quattro", monospace;
+        font-size: 5.6pt;
+        font-weight: 700;
+        color: var(--deep-tidewater);
+        line-height: 1.25;
+        margin: 0 0 3.2pt;
+      }
+
+      .hero .lede {
+        font-family: "iA Writer Quattro", monospace;
+        font-size: 4.4pt;
+        line-height: 1.4;
+        color: var(--deep-tidewater);
+        font-weight: 400;
+        margin: 0 0 4pt;
+      }
+
+      /* Bottom-align the contact block — `margin-top: auto` on a flex
+         child consumes all remaining vertical space above it, pushing
+         it to the bottom of the .description column. */
+      .contact {
+        list-style: none;
+        padding: 0;
+        margin: auto 0 0;
+        font-family: "iA Writer Quattro", monospace;
+        font-size: 5.6pt;
+        font-weight: 700;
+        color: var(--deep-tidewater);
+        line-height: 1.45;
+      }
+      .contact a {
+        color: var(--deep-tidewater);
+        text-decoration: none;
+      }
+
+      /* Crane logo: same absolute-fill watermark layering as the hero
+         (.logo-content sits behind the text). Using z-index: 0 instead
+         of -1 here because this standalone page lacks the parent
+         stacking context that scopes -1 on the live hero; -1 would
+         render the crane behind the page background and disappear. */
+      .logo-content {
+        position: absolute;
+        top: 0;
+        left: 3%;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        padding: 5%;
+        box-sizing: border-box;
+        z-index: 0;
+      }
+      .logo-content :global(.logo-container) {
+        width: 100%;
+        height: 100%;
+      }
+      /* Logo.astro ships `#logo { width: 100%; height: auto }` (ID
+         selector, hard to override). On a wide-aspect card like 3.5×2,
+         that makes the SVG taller than the card and clips the crane —
+         the visible portion reads as right-aligned. Absolutely-positioned
+         center (top/left 50% + translate -50%) is the bulletproof way to
+         center an SVG of unknown intrinsic size — works regardless of
+         the SVG's viewBox or any internal transforms. The `.logo-content`
+         prefix bumps specificity above #logo. */
+      .logo-content :global(#logo),
+      .logo-content :global(.logo) {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 100%;
+        width: auto;
+        max-width: 100%;
+        display: block;
+      }
+
+      /* Back of the card — QR centered, no caption. Same teal border +
+         vellum gradient as the front. */
+      .bc-inner.qr {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, #fffdde, #ffe8bf);
+        padding: 0.12in;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* qart QR coloration: paint a teal gradient (matching the home page
+         background) and mask it through the QR PNG. The PNG is black-on-
+         transparent — `mask-mode: alpha` means opaque-alpha pixels of the
+         mask show the gradient, transparent pixels hide it (vellum card
+         background shows through). Pixelated rendering keeps module
+         boundaries crisp instead of antialiasing them into mush. */
+      .qr-mask {
+        height: 100%;
+        aspect-ratio: 1 / 1;
+        /* 3-stop diagonal dark → light → dark, top-left to bottom-right.
+           Same teal pair as the page background gradient (#396678 dark,
+           #497c90 tidal-mist) — gives a sweeping highlight band across
+           the QR without going so dark it loses contrast. */
+        background: linear-gradient(to bottom right, #396678, #5a91a5 50%, #396678);
+        -webkit-mask: url(/images/qr-card.png) center / contain no-repeat;
+        mask: url(/images/qr-card.png) center / contain no-repeat;
+        -webkit-mask-mode: alpha;
+        mask-mode: alpha;
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+      }
+
+      .export-hint {
+        font-family: "iA Writer Quattro", monospace;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0;
+      }
+
+      /* Print: each card on its own page, centered, no on-screen chrome.
+         The bc-back gets a page-break-before so it lands on page 2 and
+         the printer can run duplex for a real two-sided card. */
+      @media print {
+        html, body {
+          background: none;
+        }
+        body {
+          display: block;
+          padding: 0;
+        }
+        .export-hint { display: none; }
+        .bc {
+          box-shadow: none;
+          margin: 0.5in auto;
+        }
+        .bc-back {
+          page-break-before: always;
+          break-before: page;
+        }
+        @page {
+          margin: 0.5in;
+        }
+      }
+    </style>
+  </body>
+</html>
