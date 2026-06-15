@@ -51,7 +51,7 @@ const lineColor      = "#2c3d42"; // deep-tidewater
 
     <div class="bc bc-back">
       <section class="bc-inner qr">
-        <div class="qr-mask" role="img" aria-label="QR code linking to foldsters.com"></div>
+        <img src="/images/qr-card.png" alt="QR code linking to foldsters.com" class="qr-img" />
       </section>
     </div>
 
@@ -245,24 +245,15 @@ const lineColor      = "#2c3d42"; // deep-tidewater
         justify-content: center;
       }
 
-      /* qart QR coloration: paint a teal gradient (matching the home page
-         background) and mask it through the QR PNG. The PNG is black-on-
-         transparent — `mask-mode: alpha` means opaque-alpha pixels of the
-         mask show the gradient, transparent pixels hide it (vellum card
-         background shows through). Pixelated rendering keeps module
-         boundaries crisp instead of antialiasing them into mush. */
-      .qr-mask {
+      /* qart QR — gradient baked into the PNG (alpha channel handles the
+         vellum-show-through), so a plain <img> renders correctly in both
+         the browser and Chrome's headless PDF export. Pixelated rendering
+         keeps module boundaries crisp instead of antialiasing into mush. */
+      .qr-img {
         height: 100%;
-        aspect-ratio: 1 / 1;
-        /* 3-stop diagonal dark → light → dark, top-left to bottom-right.
-           Same teal pair as the page background gradient (#396678 dark,
-           #497c90 tidal-mist) — gives a sweeping highlight band across
-           the QR without going so dark it loses contrast. */
-        background: linear-gradient(to bottom right, #396678, #5a91a5 50%, #396678);
-        -webkit-mask: url(/images/qr-card.png) center / contain no-repeat;
-        mask: url(/images/qr-card.png) center / contain no-repeat;
-        -webkit-mask-mode: alpha;
-        mask-mode: alpha;
+        width: auto;
+        max-width: 100%;
+        display: block;
         image-rendering: pixelated;
         image-rendering: -moz-crisp-edges;
         image-rendering: crisp-edges;
@@ -285,18 +276,24 @@ const lineColor      = "#2c3d42"; // deep-tidewater
         body {
           display: block;
           padding: 0;
+          margin: 0;
         }
         .export-hint { display: none; }
         .bc {
           box-shadow: none;
-          margin: 0.5in auto;
+          margin: 0;
         }
         .bc-back {
           page-break-before: always;
           break-before: page;
         }
+        /* The page IS the card — 3.5″ × 2″ exactly, zero margins, so the
+           printed/PDF output is the bleed-edge card with no whitespace
+           around it. Browser print dialog now defaults to the right
+           paper size, and headless Chrome exports cleanly. */
         @page {
-          margin: 0.5in;
+          size: 3.5in 2in;
+          margin: 0;
         }
       }
     </style>
