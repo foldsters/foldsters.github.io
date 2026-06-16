@@ -1,8 +1,9 @@
 ---
 import Card from './PagesCard.astro';
+import demowallThumb from '../content/images/demowall/demowall-1.png';
 import demodripThumb from '../content/images/demodrip/demodrip-1.png';
 import demoskyThumb from '../content/images/demosky/demosky-1.png';
-import paletteThumb from '../content/images/palette/extractor.png';
+import paletteThumb from '../content/images/palette/palette-1.png';
 import emotionsDevThumb from '../content/images/emotions-dev/emotions-dev-1.png';
 ---
 
@@ -21,7 +22,9 @@ import emotionsDevThumb from '../content/images/emotions-dev/emotions-dev-1.png'
       <ul role="list" class="entry-list">
         <Card href="/tools/demowall" title="Demowall"
           body="GLSL fragment shaders as Android live wallpapers. Load custom shaders from Bluesky via Demosky."
-          meta="Foldster | Tool | open source, Google Play"/>
+          meta="Foldster | Tool | open source, Google Play"
+          image={demowallThumb}
+          imageAlt="Demowall — shader-based live wallpaper preview on Android"/>
         <Card href="/tools/demodrip" title="Demodrip"
           body="Shader-based t-shirt design tool. Live 3D preview, export print-ready textures."
           meta="Foldster | Tool | open source, demodrip.app"
