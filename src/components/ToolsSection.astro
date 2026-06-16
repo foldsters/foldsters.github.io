@@ -3,6 +3,7 @@ import Card from './PagesCard.astro';
 import demodripThumb from '../content/images/demodrip/demodrip-1.png';
 import demoskyThumb from '../content/images/demosky/demosky-1.png';
 import paletteThumb from '../content/images/palette/extractor.png';
+import emotionsDevThumb from '../content/images/emotions-dev/emotions-dev-1.png';
 ---
 
 <section id="tools" class="main-section" transition:name="card-tools">
@@ -35,7 +36,9 @@ import paletteThumb from '../content/images/palette/extractor.png';
           image={paletteThumb} imageAlt="Palettope — topology-aware palette extractor"/>
         <Card href="/tools/emotions-dev" title="Emotions.dev"
           body="Emotions toolkit. Recently shipped — full writeup coming."
-          meta="Foldster | Tool | newly shipped"/>
+          meta="Foldster | Tool | newly shipped"
+          image={emotionsDevThumb}
+          imageAlt="Emotions.dev — 'Developing Emotions' lexicon for developer burnout"/>
         <Card href="/tools/foldster-studio" title="Foldster Studio"
           body="Browser-native streaming. captureStream + WHIP to stream.place, no OBS required, works on phone."
           meta="Foldster | Tool | open source, PoC"/>

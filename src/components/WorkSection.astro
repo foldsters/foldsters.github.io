@@ -1,5 +1,8 @@
 ---
 import Card from './PagesCard.astro';
+import hcwThumb from '../content/images/hcw/hcw-1.png';
+import guessr47Thumb from '../content/images/guessr47/guessr47-1.png';
+import dizzyOverlaysThumb from '../content/images/dizzy-overlays/dizzy-1.png';
 ---
 
 <section id="work" class="main-section" transition:name="card-work">
@@ -20,18 +23,24 @@ import Card from './PagesCard.astro';
           title="Bizzlebeard's HCW Bot"
           body="Custom interactive overlay + bot for Bizzlebeard's wrestling show. Match state, win records, Bluesky cross-posting, chat overlay."
           meta="Foldster | Work | for Bizzlebeard"
+          image={hcwThumb}
+          imageAlt="HCW match — Bluesky cross-post with embedded Twitch clip"
         />
         <Card
           href="/work/guessr47"
           title="Rewkers's Guessr47"
           body="Multiplayer location-guessing for video-game maps. Twitch OAuth, sync + async modes, host-side map upload."
           meta="Foldster | Work | for Rewkers"
+          image={guessr47Thumb}
+          imageAlt="Guessr47 landing — Make Your Mark mission select"
         />
         <Card
           href="/work/dizzy-overlays"
           title="Dizzy's Custom Overlays"
           body="Custom OBS overlay package — the close-collaboration build. Warmer aesthetic, designed for slower-paced streaming."
           meta="Foldster | Work | for Dizzy, in progress"
+          image={dizzyOverlaysThumb}
+          imageAlt="Generative contour overlay — blue/purple/pink gradient on black"
         />
       </ul>
 
