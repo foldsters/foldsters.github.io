@@ -6,6 +6,12 @@ interface Props {
         description: string;
 }
 const { title, description } = Astro.props;
+
+// Absolute URLs for OG/Twitter cards — must be fully qualified for link
+// previews (Bluesky, Twitter, Facebook, iMessage, Slack, etc.) to fetch
+// the image. Astro.site comes from astro.config.mjs (https://foldsters.com).
+const ogImage = new URL('/images/og-card.png', Astro.site).toString();
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 ---
 
 <!doctype html>
@@ -22,6 +28,27 @@ const { title, description } = Astro.props;
 		     HSTS / X-Frame-Options / COOP need real HTTP headers; GitHub
 		     Pages sets HSTS automatically when "Enforce HTTPS" is on. -->
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
+		<link rel="canonical" href={canonical} />
+
+		<!-- Open Graph — drives the link preview card on Bluesky, Twitter,
+		     iMessage, Slack, Discord, Facebook, etc. The og-card.png is
+		     1200x686, generated from src/pages/og-card.astro. -->
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Foldster's Projects" />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description || ""} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="686" />
+		<meta property="og:image:alt" content="Foldster's Projects — we bring your content creation brand to life" />
+
+		<!-- Twitter card (also used by some Bluesky clients as a fallback). -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description || ""} />
+		<meta name="twitter:image" content={ogImage} />
+
 		<title>{title}</title>
 		<!-- Preload the two most-used Quattro weights so first paint isn't a FOIT. -->
 		<link rel="preload" href="/fonts/iAWriterQuattroS-Regular.woff2" as="font" type="font/woff2" crossorigin />

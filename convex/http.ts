@@ -103,6 +103,53 @@ async function sendEmail(payload: {
   }
 }
 
+// Telegram notification via Tower relay — POSTs to a userbot-backed
+// endpoint on Tower, which sends the message as Matt (not as a bot)
+// into his chat with Tower's bot account. Fire-and-forget; the email
+// pair above is the primary delivery channel. Swallows its own errors
+// so a Tower outage never blocks the user response.
+async function sendTelegram(text: string) {
+  const url = process.env.TOWER_RELAY_URL;
+  const bearer = process.env.TOWER_RELAY_BEARER;
+  if (!url || !bearer) {
+    console.warn("TOWER_RELAY_URL/BEARER not set on Convex deployment — skipping notification");
+    return;
+  }
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${bearer}`,
+      },
+      body: JSON.stringify({ message: text, source: "convex/contact-form" }),
+    });
+    if (!res.ok) {
+      console.error(`Tower relay failed: ${res.status} ${await res.text()}`);
+    }
+  } catch (err) {
+    console.error("Tower relay threw:", err);
+  }
+}
+
+function notifyTelegramText(d: {
+  name: string;
+  email: string;
+  creatorHandle?: string;
+  tierLabel: string;
+  message: string;
+}) {
+  const lines = [
+    `🎯 New ${d.tierLabel} inquiry`,
+    "",
+    `From: ${d.name} <${d.email}>`,
+  ];
+  if (d.creatorHandle) lines.push(`Handle: ${d.creatorHandle}`);
+  lines.push("", "Message:", d.message.slice(0, 600));
+  if (d.message.length > 600) lines.push(`... (+${d.message.length - 600} chars)`);
+  return lines.join("\n");
+}
+
 const submitContact = httpAction(async (ctx, request) => {
   const origin = request.headers.get("origin");
   const headers = { ...corsHeaders(origin), "Content-Type": "application/json" };
@@ -179,6 +226,11 @@ const submitContact = httpAction(async (ctx, request) => {
     subject: `Foldster's Projects — ${name}'s ${tierLabel} inquiry`,
     html: confirmHtml({ name, tierLabel, creatorHandle, message }),
   });
+
+  // Courtesy ping to Matt's phone via Telegram. sendTelegram swallows
+  // its own errors so a Telegram outage won't block the user response —
+  // email is the primary delivery channel above.
+  await sendTelegram(notifyTelegramText({ name, email, creatorHandle, tierLabel, message }));
 
   return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
 });

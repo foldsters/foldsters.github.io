@@ -1,0 +1,136 @@
+---
+import Logo from '../components/Logo.astro';
+
+const primaryColor   = "#fef9d9"; // vellum
+const secondaryColor = "#487d90"; // tidal-mist
+const lineColor      = "#2c3d42"; // deep-tidewater
+
+// One-shot rendering source for the site's Open Graph share card.
+// Reuses the business-card front design (vellum gradient + crane
+// watermark + brand + tagline + lede), drops the contact lines
+// (email + phone don't belong on a public social share), sized to
+// 1200×686 (≈3.5:2 aspect, same as the card).
+//
+// Render via Chrome headless at the page's exact viewport, save to
+// public/images/og-card.png, reference from LayoutLanding's og:image
+// meta tag. `noindex` keeps this rendering source out of search.
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex" />
+    <title>Foldster's Projects</title>
+    <link rel="preload" href="/fonts/iAWriterQuattroS-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/iAWriterQuattroS-Bold.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <div class="card">
+      <section class="card-inner hero">
+        <div class="description">
+          <h1 class="brand">Foldster's Projects</h1>
+          <p class="tagline">We bring your content creation brand to life</p>
+        </div>
+        <div class="logo-content">
+          <Logo primaryColor={primaryColor} secondaryColor={secondaryColor} lineColor={lineColor}/>
+        </div>
+      </section>
+    </div>
+
+    <style>
+      @font-face {
+        font-family: "iA Writer Quattro";
+        src: url("/fonts/iAWriterQuattroS-Regular.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "iA Writer Quattro";
+        src: url("/fonts/iAWriterQuattroS-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      :root {
+        --vellum: #fef9d9;
+        --tidal-mist: #487d90;
+        --deep-tidewater: #2c3d42;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      html, body {
+        width: 1200px;
+        height: 686px;
+        font-family: "iA Writer Quattro", monospace;
+        background: var(--tidal-mist);
+        overflow: hidden;
+      }
+
+      .card {
+        width: 1200px;
+        height: 686px;
+        background: var(--tidal-mist);
+        padding: 24px;
+      }
+
+      /* Two-column layout: text on the left, crane on the right.
+         Same arrangement as the Bluesky banner — keeps the watermark
+         crane from overlapping the text. */
+      .card-inner.hero {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, #fffdde, #ffe8bf);
+        color: black;
+        padding: 68px 80px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+
+      .description {
+        flex: 1 1 50%;
+        min-width: 0;
+      }
+
+      .hero .brand {
+        font-family: "iA Writer Quattro", monospace;
+        font-size: 84px;
+        font-weight: 700;
+        margin: 0 0 16px;
+        color: #497c90;
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      .hero .tagline {
+        font-family: "iA Writer Quattro", monospace;
+        font-size: 36px;
+        font-weight: 700;
+        color: var(--deep-tidewater);
+        line-height: 1.25;
+        margin: 0;
+      }
+
+      .logo-content {
+        flex: 0 0 46%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .logo-content :global(#logo),
+      .logo-content :global(.logo) {
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        display: block;
+      }
+    </style>
+  </body>
+</html>
