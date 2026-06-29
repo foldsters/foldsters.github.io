@@ -54,6 +54,7 @@
     </div>
 
     <div id="result" class="result"></div>
+    <svg id="graph" viewBox="0 0 320 160" preserveAspectRatio="none"></svg>
   </main>
 
   <style is:global>
@@ -178,6 +179,16 @@
     }
     .result.bad { border-color: var(--bad); }
     .result.good { border-color: var(--good); }
+    #graph {
+      width: 100%;
+      height: 160px;
+      display: block;
+      margin-top: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+    #graph:empty { display: none; }
   </style>
 
   <script is:inline>
@@ -211,12 +222,68 @@
         return (isFinite(h) ? h : 0) + (isFinite(m) ? m / 60 : 0);
       };
 
+      function drawGraph(ca, cu, D, fa, fu) {
+        const svg = $("graph");
+        if (!isFinite(fa) || !isFinite(fu) || fu <= 0 || cu < 0) { svg.innerHTML = ""; return; }
+        const tMax = cu + fu;
+        if (tMax <= 0) { svg.innerHTML = ""; return; }
+        const W = 320, H = 160, padL = 8, padR = 8, padT = 10, padB = 16;
+        const innerW = W - padL - padR;
+        const innerH = H - padT - padB;
+        const yMax = Math.max(D, fa, ca) * 1.18 + 1;
+        const yMin = 0;
+        const mapX = (t) => padL + (t / tMax) * innerW;
+        const mapY = (v) => padT + innerH - ((v - yMin) / (yMax - yMin)) * innerH;
+
+        // Past segment: flat at ca from t=0 to t=cu
+        // Future segment: running avg from t=cu to t=cu+fu
+        let path = "";
+        if (cu > 0) {
+          path += `M${mapX(0).toFixed(1)},${mapY(ca).toFixed(1)} L${mapX(cu).toFixed(1)},${mapY(ca).toFixed(1)} `;
+        } else {
+          path += `M${mapX(0).toFixed(1)},${mapY(ca).toFixed(1)} `;
+        }
+        const STEPS = 80;
+        for (let i = 1; i <= STEPS; i++) {
+          const t = cu + (i / STEPS) * fu;
+          const avg = (ca * cu + fa * (t - cu)) / t;
+          path += `L${mapX(t).toFixed(1)},${mapY(avg).toFixed(1)} `;
+        }
+
+        const targetY = mapY(D);
+        const nowX = mapX(cu);
+        const nowY = mapY(ca);
+
+        // Intercept: only show if curve actually crosses target within window
+        let interceptSvg = "";
+        if (ca < D && fa > D) {
+          const tInt = (cu * (fa - ca)) / (fa - D);
+          if (tInt <= tMax + 1e-6) {
+            const ix = mapX(tInt);
+            interceptSvg = `<circle cx="${ix.toFixed(1)}" cy="${targetY.toFixed(1)}" r="4" fill="#9146FF" stroke="#e7e9ec" stroke-width="1.5"/>`;
+          }
+        }
+
+        svg.innerHTML = `
+          <line x1="${padL}" y1="${targetY.toFixed(1)}" x2="${(W - padR).toFixed(1)}" y2="${targetY.toFixed(1)}" stroke="#c54040" stroke-dasharray="4,3" stroke-width="1"/>
+          <text x="${(W - padR - 4).toFixed(1)}" y="${(targetY - 4).toFixed(1)}" text-anchor="end" font-size="10" fill="#c54040" font-family="-apple-system, sans-serif">target ${fmtNum(D)}</text>
+          <path d="${path}" fill="none" stroke="#2ea05a" stroke-width="2"/>
+          <circle cx="${nowX.toFixed(1)}" cy="${nowY.toFixed(1)}" r="3" fill="#8d949c"/>
+          <text x="${nowX.toFixed(1)}" y="${(H - 4).toFixed(1)}" text-anchor="middle" font-size="9" fill="#8d949c" font-family="-apple-system, sans-serif">now</text>
+          ${interceptSvg}
+          <text x="${padL.toFixed(1)}" y="${(H - 4).toFixed(1)}" font-size="9" fill="#8d949c" font-family="-apple-system, sans-serif">0h</text>
+          <text x="${(W - padR).toFixed(1)}" y="${(H - 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#8d949c" font-family="-apple-system, sans-serif">${fmtHours(tMax)}</text>
+        `;
+      }
+
       function compute() {
         const ca = parseFloat($("current-avg").value);
         const cu = hm("current-uptime-h", "current-uptime-m");
         const D = parseFloat($("target-avg").value);
         const r = $("result");
+        const svg = $("graph");
         r.className = "result";
+        svg.innerHTML = "";
 
         if (!isFinite(ca) || !isFinite(cu) || !isFinite(D) || cu < 0 || D <= 0) {
           r.textContent = "Fill in the inputs above.";
@@ -239,6 +306,7 @@
           const fu = (cu * (D - ca)) / (fa - D);
           r.classList.add("good");
           r.innerHTML = `<strong>${fmtHours(fu)}</strong> more at <strong>${fmtNum(fa)}</strong> sustained viewers lands you at <strong>${fmtNum(D)}</strong> average.<span class="hint">Total stream: ${fmtHours(cu + fu)}.</span>`;
+          drawGraph(ca, cu, D, fa, fu);
           return;
         }
 
@@ -252,6 +320,7 @@
         }
         r.classList.add("good");
         r.innerHTML = `<strong>${fmtNum(fa)}</strong> average viewers are needed for the next <strong>${fmtHours(fu)}</strong> to land at <strong>${fmtNum(D)}</strong>.`;
+        drawGraph(ca, cu, D, fa, fu);
       }
 
       document.querySelectorAll(".tab").forEach((b) => {
