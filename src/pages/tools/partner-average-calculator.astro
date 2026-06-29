@@ -198,7 +198,7 @@
         }
         if (ca >= D) {
           r.classList.add("good");
-          r.innerHTML = `Already at <strong>${fmtNum(ca)}</strong> — past the <strong>${fmtNum(D)}</strong> target.`;
+          r.innerHTML = `<strong>${fmtNum(ca)}</strong> average is already past the <strong>${fmtNum(D)}</strong> target.`;
           return;
         }
 
@@ -207,12 +207,12 @@
           if (!isFinite(fa) || fa < 0) { r.textContent = "Enter a viewer count."; return; }
           if (fa <= D) {
             r.classList.add("bad");
-            r.innerHTML = `<strong>${fmtNum(fa)}</strong> won't pull the average up — needs to exceed <strong>${fmtNum(D)}</strong>.`;
+            r.innerHTML = `<strong>${fmtNum(fa)}</strong> sustained viewers won't reach <strong>${fmtNum(D)}</strong> — needs to exceed the target.`;
             return;
           }
           const fu = (cu * (D - ca)) / (fa - D);
           r.classList.add("good");
-          r.innerHTML = `<strong>${fmtHours(fu)}</strong> more at <strong>${fmtNum(fa)}</strong> viewers.<span class="hint">Total stream: ${fmtHours(cu + fu)}.</span>`;
+          r.innerHTML = `<strong>${fmtHours(fu)}</strong> more at <strong>${fmtNum(fa)}</strong> sustained viewers lands you at <strong>${fmtNum(D)}</strong> average.<span class="hint">Total stream: ${fmtHours(cu + fu)}.</span>`;
           return;
         }
 
@@ -221,11 +221,11 @@
         const fa = (D * (cu + fu) - ca * cu) / fu;
         if (fa < 0) {
           r.classList.add("good");
-          r.innerHTML = `Even 0 viewers for the next <strong>${fmtHours(fu)}</strong> lands you past <strong>${fmtNum(D)}</strong>.`;
+          r.innerHTML = `<strong>0</strong> viewers are enough for the next <strong>${fmtHours(fu)}</strong> — you'd still land past <strong>${fmtNum(D)}</strong>.`;
           return;
         }
         r.classList.add("good");
-        r.innerHTML = `Need at least <strong>${fmtNum(fa)}</strong> average viewers for the next <strong>${fmtHours(fu)}</strong>.`;
+        r.innerHTML = `<strong>${fmtNum(fa)}</strong> average viewers are needed for the next <strong>${fmtHours(fu)}</strong> to land at <strong>${fmtNum(D)}</strong>.`;
       }
 
       document.querySelectorAll(".tab").forEach((b) => {
