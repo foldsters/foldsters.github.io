@@ -19,8 +19,11 @@
         <input id="current-avg" type="number" min="0" step="0.1" value="50" inputmode="decimal" />
       </label>
       <label>
-        <span>Uptime so far (hrs)</span>
-        <input id="current-uptime" type="number" min="0" step="0.1" value="2" inputmode="decimal" />
+        <span>Uptime so far</span>
+        <div class="hm">
+          <input id="current-uptime-h" type="number" min="0" step="1" value="2" inputmode="numeric" /><span class="unit">h</span>
+          <input id="current-uptime-m" type="number" min="0" max="59" step="1" value="0" inputmode="numeric" /><span class="unit">m</span>
+        </div>
       </label>
       <label>
         <span>Target average</span>
@@ -42,8 +45,11 @@
 
     <div id="panel-viewers" hidden>
       <label class="block">
-        <span>Remaining stream time (hrs)</span>
-        <input id="future-uptime-input" type="number" min="0" step="0.25" value="2" inputmode="decimal" />
+        <span>Remaining stream time</span>
+        <div class="hm">
+          <input id="future-uptime-h" type="number" min="0" step="1" value="2" inputmode="numeric" /><span class="unit">h</span>
+          <input id="future-uptime-m" type="number" min="0" max="59" step="1" value="0" inputmode="numeric" /><span class="unit">m</span>
+        </div>
       </label>
     </div>
 
@@ -116,6 +122,20 @@
       outline: none;
       border-color: var(--accent);
     }
+    .hm {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hm input {
+      width: 0;
+      flex: 1;
+      text-align: right;
+    }
+    .hm .unit {
+      font-size: 12px;
+      color: var(--muted);
+    }
     .tabs {
       display: flex;
       gap: 0;
@@ -185,9 +205,15 @@
         compute();
       }
 
+      const hm = (hId, mId) => {
+        const h = parseFloat($(hId).value);
+        const m = parseFloat($(mId).value);
+        return (isFinite(h) ? h : 0) + (isFinite(m) ? m / 60 : 0);
+      };
+
       function compute() {
         const ca = parseFloat($("current-avg").value);
-        const cu = parseFloat($("current-uptime").value);
+        const cu = hm("current-uptime-h", "current-uptime-m");
         const D = parseFloat($("target-avg").value);
         const r = $("result");
         r.className = "result";
@@ -216,7 +242,7 @@
           return;
         }
 
-        const fu = parseFloat($("future-uptime-input").value);
+        const fu = hm("future-uptime-h", "future-uptime-m");
         if (!isFinite(fu) || fu <= 0) { r.textContent = "Enter a duration."; return; }
         const fa = (D * (cu + fu) - ca * cu) / fu;
         if (fa < 0) {
@@ -231,7 +257,7 @@
       document.querySelectorAll(".tab").forEach((b) => {
         b.addEventListener("click", () => setMode(b.dataset.mode));
       });
-      ["current-avg","current-uptime","target-avg","future-avg-input","future-uptime-input"].forEach((id) => {
+      ["current-avg","current-uptime-h","current-uptime-m","target-avg","future-avg-input","future-uptime-h","future-uptime-m"].forEach((id) => {
         $(id).addEventListener("input", compute);
       });
       compute();
