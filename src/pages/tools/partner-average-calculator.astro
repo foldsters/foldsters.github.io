@@ -23,6 +23,7 @@
         <div class="hm">
           <input id="current-uptime-h" type="number" min="0" step="1" value="2" inputmode="numeric" /><span class="unit">h</span>
           <input id="current-uptime-m" type="number" min="0" max="59" step="1" value="0" inputmode="numeric" /><span class="unit">m</span>
+          <button id="clock-toggle" class="clock-btn" type="button" title="Start clock">▶</button>
         </div>
       </label>
       <label>
@@ -136,6 +137,24 @@
     .hm .unit {
       font-size: 12px;
       color: var(--muted);
+    }
+    .clock-btn {
+      flex: 0 0 auto;
+      width: 32px;
+      padding: 6px 0;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      line-height: 1;
+    }
+    .clock-btn:hover { color: var(--text); }
+    .clock-btn.active {
+      background: var(--good);
+      color: white;
+      border-color: var(--good);
     }
     .tabs {
       display: flex;
@@ -326,9 +345,87 @@
       document.querySelectorAll(".tab").forEach((b) => {
         b.addEventListener("click", () => setMode(b.dataset.mode));
       });
-      ["current-avg","current-uptime-h","current-uptime-m","target-avg","future-avg-input","future-uptime-h","future-uptime-m"].forEach((id) => {
+      ["current-avg","target-avg","future-avg-input","future-uptime-h","future-uptime-m"].forEach((id) => {
         $(id).addEventListener("input", compute);
       });
+
+      // Clock auto-increment for "uptime so far". State persists in localStorage
+      // so a refresh keeps the clock running. Manual edits to the uptime inputs
+      // while the clock is on re-anchor startMs to the typed value.
+      const CLOCK_KEY = "pac-clock-start";
+      let clockStartMs = null;
+      let clockInterval = null;
+      let internalUpdate = false;
+
+      function startTicking() {
+        if (clockInterval) return;
+        clockInterval = window.setInterval(tick, 30000);
+      }
+      function stopTicking() {
+        if (clockInterval) window.clearInterval(clockInterval);
+        clockInterval = null;
+      }
+      function tick() {
+        if (!clockStartMs) return;
+        const totalH = (Date.now() - clockStartMs) / 3600000;
+        const hh = Math.floor(totalH);
+        const mm = Math.floor((totalH - hh) * 60);
+        internalUpdate = true;
+        $("current-uptime-h").value = String(hh);
+        $("current-uptime-m").value = String(mm);
+        internalUpdate = false;
+        compute();
+      }
+      function updateClockUI() {
+        const btn = $("clock-toggle");
+        if (clockStartMs) {
+          btn.textContent = "■";
+          btn.title = "Stop clock";
+          btn.classList.add("active");
+        } else {
+          btn.textContent = "▶";
+          btn.title = "Start clock";
+          btn.classList.remove("active");
+        }
+      }
+      function startClock() {
+        const hours = hm("current-uptime-h", "current-uptime-m");
+        clockStartMs = Date.now() - hours * 3600000;
+        localStorage.setItem(CLOCK_KEY, String(clockStartMs));
+        startTicking();
+        updateClockUI();
+        tick();
+      }
+      function stopClock() {
+        clockStartMs = null;
+        localStorage.removeItem(CLOCK_KEY);
+        stopTicking();
+        updateClockUI();
+      }
+      $("clock-toggle").addEventListener("click", () => {
+        if (clockStartMs) stopClock(); else startClock();
+      });
+      ["current-uptime-h","current-uptime-m"].forEach((id) => {
+        $(id).addEventListener("input", () => {
+          if (!internalUpdate && clockStartMs) {
+            // user edited while clock running — re-anchor to typed value
+            const hours = hm("current-uptime-h", "current-uptime-m");
+            clockStartMs = Date.now() - hours * 3600000;
+            localStorage.setItem(CLOCK_KEY, String(clockStartMs));
+          }
+          compute();
+        });
+      });
+
+      // Resume from localStorage if a clock was running
+      const stored = parseInt(localStorage.getItem(CLOCK_KEY) || "", 10);
+      if (isFinite(stored)) {
+        clockStartMs = stored;
+        startTicking();
+        updateClockUI();
+        tick();
+      }
+
       compute();
     })();
   </script>
