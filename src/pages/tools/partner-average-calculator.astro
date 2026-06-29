@@ -257,19 +257,44 @@
         const mapX = (t) => padL + (t / tMax) * innerW;
         const mapY = (v) => padT + innerH - ((v - yMin) / (yMax - yMin)) * innerH;
 
-        // Past: flat at ca from t=0 to t=cu; Future: running avg curve to tMax
-        let path = "";
-        if (cu > 0) {
-          path += `M${mapX(0).toFixed(1)},${mapY(ca).toFixed(1)} L${mapX(cu).toFixed(1)},${mapY(ca).toFixed(1)} `;
-        } else {
-          path += `M${mapX(0).toFixed(1)},${mapY(ca).toFixed(1)} `;
-        }
-        const STEPS = 100;
+        // Sample the curve as point list, then split into below-target (red)
+        // and above-target (green) segments, interpolating across the target.
+        const pts = [{ t: 0, avg: ca }];
+        if (cu > 0) pts.push({ t: cu, avg: ca });
+        const STEPS = 120;
         for (let i = 1; i <= STEPS; i++) {
           const t = cu + (i / STEPS) * (tMax - cu);
           const avg = (ca * cu + fa * (t - cu)) / t;
-          path += `L${mapX(t).toFixed(1)},${mapY(avg).toFixed(1)} `;
+          pts.push({ t, avg });
         }
+        const redSegs = [];
+        const greenSegs = [];
+        for (let i = 1; i < pts.length; i++) {
+          const a = pts[i - 1], b = pts[i];
+          const aBelow = a.avg < D, bBelow = b.avg < D;
+          if (aBelow === bBelow) {
+            (aBelow ? redSegs : greenSegs).push([a, b]);
+          } else {
+            const tx = a.t + ((D - a.avg) / (b.avg - a.avg)) * (b.t - a.t);
+            const cross = { t: tx, avg: D };
+            (aBelow ? redSegs : greenSegs).push([a, cross]);
+            (aBelow ? greenSegs : redSegs).push([cross, b]);
+          }
+        }
+        const segsToPath = (segs) => {
+          if (!segs.length) return "";
+          let s = "", lastEnd = null;
+          for (const [a, b] of segs) {
+            if (!lastEnd || lastEnd.t !== a.t || lastEnd.avg !== a.avg) {
+              s += `M${mapX(a.t).toFixed(1)},${mapY(a.avg).toFixed(1)} `;
+            }
+            s += `L${mapX(b.t).toFixed(1)},${mapY(b.avg).toFixed(1)} `;
+            lastEnd = b;
+          }
+          return s;
+        };
+        const redPath = segsToPath(redSegs);
+        const greenPath = segsToPath(greenSegs);
 
         const targetY = mapY(D);
         const nowX = mapX(cu);
@@ -287,26 +312,37 @@
           interceptLabel = `<text x="${ix.toFixed(1)}" y="${(H - 4).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="#b481ff" font-family="-apple-system, sans-serif">${fmtHours(tIntercept)}</text>`;
         }
 
-        // Y-axis tick values: 0, target, fa (or ca if higher), spaced naturally
+        const sustainedColor = "#4dabf7";
+        const targetColor = "#2ea05a";
+
+        // Y-axis labels: 0, current avg, target (green), sustained (blue)
         const yTicks = Array.from(new Set([0, D, ca, fa].map((v) => +v.toFixed(0))))
           .filter((v) => v >= 0 && v <= yMax)
           .sort((a, b) => a - b);
         const yTicksSvg = yTicks.map((v) => {
           const y = mapY(v);
           const isTarget = Math.abs(v - D) < 0.5;
-          const color = isTarget ? "#c54040" : "#8d949c";
+          const isSustained = Math.abs(v - fa) < 0.5 && !isTarget;
+          const color = isTarget ? targetColor : isSustained ? sustainedColor : "#8d949c";
           return `<text x="${(padL - 4).toFixed(1)}" y="${(y + 3).toFixed(1)}" text-anchor="end" font-size="9" fill="${color}" font-family="-apple-system, sans-serif">${v}</text>`;
         }).join("");
 
-        // Order matters (SVG painters algorithm): background → curve → target line → intercept overlay.
+        // Sustained-viewers reference line (blue dashed) when in range
+        const sustainedY = mapY(fa);
+        const sustainedSvg = (fa >= 0 && fa <= yMax)
+          ? `<line x1="${padL}" y1="${sustainedY.toFixed(1)}" x2="${(W - padR).toFixed(1)}" y2="${sustainedY.toFixed(1)}" stroke="${sustainedColor}" stroke-dasharray="4,3" stroke-width="1"/>`
+          : "";
+
+        // Paint order: y-ticks → sustained line → curve (red+green) → target line → intercept
         svg.innerHTML = `
           ${yTicksSvg}
-          <path d="${path}" fill="none" stroke="#2ea05a" stroke-width="2"/>
+          ${sustainedSvg}
+          <path d="${redPath}" fill="none" stroke="#c54040" stroke-width="2"/>
+          <path d="${greenPath}" fill="none" stroke="${targetColor}" stroke-width="2"/>
           <circle cx="${nowX.toFixed(1)}" cy="${nowY.toFixed(1)}" r="3" fill="#8d949c"/>
           <text x="${nowX.toFixed(1)}" y="${(H - 4).toFixed(1)}" text-anchor="middle" font-size="9" fill="#8d949c" font-family="-apple-system, sans-serif">now</text>
           <text x="${padL.toFixed(1)}" y="${(H - 4).toFixed(1)}" font-size="9" fill="#8d949c" font-family="-apple-system, sans-serif">0h</text>
-          <line x1="${padL}" y1="${targetY.toFixed(1)}" x2="${(W - padR).toFixed(1)}" y2="${targetY.toFixed(1)}" stroke="#c54040" stroke-dasharray="4,3" stroke-width="1"/>
-          <text x="${(W - padR - 4).toFixed(1)}" y="${(targetY - 4).toFixed(1)}" text-anchor="end" font-size="10" fill="#c54040" font-family="-apple-system, sans-serif">target ${fmtNum(D)}</text>
+          <line x1="${padL}" y1="${targetY.toFixed(1)}" x2="${(W - padR).toFixed(1)}" y2="${targetY.toFixed(1)}" stroke="${targetColor}" stroke-dasharray="4,3" stroke-width="1"/>
           ${interceptSvg}
           ${interceptLabel}
         `;
