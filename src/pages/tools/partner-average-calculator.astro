@@ -315,16 +315,26 @@
         const sustainedColor = "#4dabf7";
         const targetColor = "#2ea05a";
 
-        // Y-axis labels: 0, current avg, target (green), sustained (blue)
-        const yTicks = Array.from(new Set([0, D, ca, fa].map((v) => +v.toFixed(0))))
-          .filter((v) => v >= 0 && v <= yMax)
-          .sort((a, b) => a - b);
+        // Y-axis labels: 0, current avg, target (green), sustained (blue).
+        // Keep raw values (so color match is exact), then dedupe labels that
+        // would overlap on screen — but prefer the named values (D, fa) over
+        // generic ticks when they collide.
+        const raw = [0, D, ca, fa].filter((v) => isFinite(v) && v >= 0 && v <= yMax).sort((a, b) => a - b);
+        const yTicks = [];
+        for (const v of raw) {
+          const prev = yTicks[yTicks.length - 1];
+          if (prev === undefined || Math.abs(prev - v) > 0.5) {
+            yTicks.push(v);
+          } else if (v === D || v === fa) {
+            yTicks[yTicks.length - 1] = v; // prefer the named value
+          }
+        }
         const yTicksSvg = yTicks.map((v) => {
           const y = mapY(v);
-          const isTarget = Math.abs(v - D) < 0.5;
-          const isSustained = Math.abs(v - fa) < 0.5 && !isTarget;
+          const isTarget = v === D;
+          const isSustained = v === fa && !isTarget;
           const color = isTarget ? targetColor : isSustained ? sustainedColor : "#8d949c";
-          return `<text x="${(padL - 4).toFixed(1)}" y="${(y + 3).toFixed(1)}" text-anchor="end" font-size="9" fill="${color}" font-family="-apple-system, sans-serif">${v}</text>`;
+          return `<text x="${(padL - 4).toFixed(1)}" y="${(y + 3).toFixed(1)}" text-anchor="end" font-size="9" fill="${color}" font-family="-apple-system, sans-serif">${fmtNum(v)}</text>`;
         }).join("");
 
         // Sustained-viewers reference line (blue dashed) when in range
