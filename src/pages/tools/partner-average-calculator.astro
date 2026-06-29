@@ -287,15 +287,16 @@
           interceptLabel = `<text x="${ix.toFixed(1)}" y="${(H - 4).toFixed(1)}" text-anchor="middle" font-size="9" fill="#9146FF" font-family="-apple-system, sans-serif">${fmtHours(tIntercept)}</text>`;
         }
 
+        // SVG painters-algorithm: target → projection curve → intercept (on top).
         svg.innerHTML = `
           <line x1="${padL}" y1="${targetY.toFixed(1)}" x2="${(W - padR).toFixed(1)}" y2="${targetY.toFixed(1)}" stroke="#c54040" stroke-dasharray="4,3" stroke-width="1"/>
           <text x="${(W - padR - 4).toFixed(1)}" y="${(targetY - 4).toFixed(1)}" text-anchor="end" font-size="10" fill="#c54040" font-family="-apple-system, sans-serif">target ${fmtNum(D)}</text>
           <path d="${path}" fill="none" stroke="#2ea05a" stroke-width="2"/>
-          ${interceptSvg}
           <circle cx="${nowX.toFixed(1)}" cy="${nowY.toFixed(1)}" r="3" fill="#8d949c"/>
           <text x="${nowX.toFixed(1)}" y="${(H - 4).toFixed(1)}" text-anchor="middle" font-size="9" fill="#8d949c" font-family="-apple-system, sans-serif">now</text>
-          ${interceptLabel}
           <text x="${padL.toFixed(1)}" y="${(H - 4).toFixed(1)}" font-size="9" fill="#8d949c" font-family="-apple-system, sans-serif">0h</text>
+          ${interceptSvg}
+          ${interceptLabel}
         `;
       }
 
