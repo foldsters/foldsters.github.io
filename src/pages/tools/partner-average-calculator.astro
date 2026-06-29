@@ -381,7 +381,12 @@
 
       function compute() {
         const ca = parseFloat($("current-avg").value);
-        const cu = hm("current-uptime-h", "current-uptime-m");
+        // When the clock is on, use the live elapsed time instead of the
+        // input fields (which only refresh on minute boundaries) so the
+        // result updates continuously rather than once a minute.
+        const cu = clockStartMs
+          ? (Date.now() - clockStartMs) / 3600000
+          : hm("current-uptime-h", "current-uptime-m");
         const D = parseFloat($("target-avg").value);
         const r = $("result");
         const svg = $("graph");
@@ -443,7 +448,7 @@
 
       function startTicking() {
         if (clockInterval) return;
-        clockInterval = window.setInterval(tick, 30000);
+        clockInterval = window.setInterval(tick, 5000);
       }
       function stopTicking() {
         if (clockInterval) window.clearInterval(clockInterval);
