@@ -412,6 +412,11 @@
           return;
         }
 
+        // The displayed current average is a rounded integer on Twitch — a "65"
+        // could actually be anywhere from 65.0 to 65.999. Compute both bounds
+        // and show as a range so the user sees the honest uncertainty.
+        const caHi = ca + 1;
+
         if (mode === "time") {
           const fa = parseFloat($("future-avg-input").value);
           if (!isFinite(fa) || fa < 0) { r.textContent = "Enter a viewer count."; return; }
@@ -420,24 +425,35 @@
             r.innerHTML = `<strong>${fmtNum(fa)}</strong> sustained viewers won't reach <strong>${fmtNum(D)}</strong> — needs to exceed the target.`;
             return;
           }
-          const fu = (cu * (D - ca)) / (fa - D);
+          const computeFu = (caVal) => caVal >= D ? 0 : (cu * (D - caVal)) / (fa - D);
+          const fuHi = computeFu(ca);     // lower-bound ca → more time
+          const fuLo = computeFu(caHi);   // upper-bound ca → less time
           r.classList.add("good");
-          r.innerHTML = `<strong>${fmtHours(fu)}</strong> more at <strong>${fmtNum(fa)}</strong> sustained viewers lands you at <strong>${fmtNum(D)}</strong> average.<span class="hint">Total stream: ${fmtHours(cu + fu)}.</span>`;
-          drawGraph(ca, cu, D, fa, fu);
+          const timeStr = fmtHours(fuLo) === fmtHours(fuHi)
+            ? `<strong>${fmtHours(fuHi)}</strong>`
+            : `<strong>${fmtHours(fuLo)} – ${fmtHours(fuHi)}</strong>`;
+          r.innerHTML = `${timeStr} more at <strong>${fmtNum(fa)}</strong> sustained viewers lands you at <strong>${fmtNum(D)}</strong> average.<span class="hint">Total stream: ${fmtHours(cu + fuLo)} – ${fmtHours(cu + fuHi)}.</span>`;
+          drawGraph(ca, cu, D, fa, fuHi);
           return;
         }
 
         const fu = hm("future-uptime-h", "future-uptime-m");
         if (!isFinite(fu) || fu <= 0) { r.textContent = "Enter a duration."; return; }
-        const fa = (D * (cu + fu) - ca * cu) / fu;
-        if (fa < 0) {
+        const computeFa = (caVal) => (D * (cu + fu) - caVal * cu) / fu;
+        const faHi = Math.max(0, computeFa(ca));     // lower-bound ca → more viewers needed
+        const faLo = Math.max(0, computeFa(caHi));   // upper-bound ca → fewer
+        if (faHi <= 0) {
           r.classList.add("good");
           r.innerHTML = `<strong>0</strong> viewers are enough for the next <strong>${fmtHours(fu)}</strong> — you'd still land past <strong>${fmtNum(D)}</strong>.`;
+          drawGraph(ca, cu, D, faHi, fu);
           return;
         }
         r.classList.add("good");
-        r.innerHTML = `<strong>${fmtNum(fa)}</strong> average viewers are needed for the next <strong>${fmtHours(fu)}</strong> to land at <strong>${fmtNum(D)}</strong>.`;
-        drawGraph(ca, cu, D, fa, fu);
+        const faStr = fmtNum(faLo) === fmtNum(faHi)
+          ? `<strong>${fmtNum(faHi)}</strong>`
+          : `<strong>${fmtNum(faLo)} – ${fmtNum(faHi)}</strong>`;
+        r.innerHTML = `${faStr} average viewers are needed for the next <strong>${fmtHours(fu)}</strong> to land at <strong>${fmtNum(D)}</strong>.`;
+        drawGraph(ca, cu, D, faHi, fu);
       }
 
       document.querySelectorAll(".tab").forEach((b) => {
