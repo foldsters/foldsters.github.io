@@ -1,0 +1,242 @@
+---
+import LayoutPage from '../../layouts/LayoutPage.astro';
+---
+
+<LayoutPage
+  title="Foldster's Projects — Twitch Partner Average Calculator"
+  description="Solve for the remaining stream time, or for the minimum sustained viewer count, to hit a 75-viewer average."
+>
+  <h1>Partner Average Calculator</h1>
+  <p class="lede"><em>How much longer (or with how many viewers) do you need to stream to land at the Twitch Partner threshold of 75 average viewers?</em></p>
+
+  <h2>Where you are</h2>
+  <div class="field-row">
+    <label>
+      Current average viewers
+      <input id="current-avg" type="number" min="0" step="0.1" value="50" inputmode="decimal" />
+    </label>
+    <label>
+      Stream uptime so far (hours)
+      <input id="current-uptime" type="number" min="0" step="0.1" value="2" inputmode="decimal" />
+    </label>
+    <label>
+      Target average
+      <input id="target-avg" type="number" min="1" step="0.5" value="75" inputmode="decimal" />
+    </label>
+  </div>
+
+  <h2>What you're solving for</h2>
+  <div class="mode-tabs" role="tablist">
+    <button id="mode-time" type="button" class="mode-tab active" data-mode="time">Solve for time</button>
+    <button id="mode-viewers" type="button" class="mode-tab" data-mode="viewers">Solve for viewers</button>
+  </div>
+
+  <div id="panel-time" class="mode-panel">
+    <p>Given a sustained viewer count for the rest of the stream, how much longer do you need to go?</p>
+    <label class="field-block">
+      Sustained viewers going forward
+      <input id="future-avg-input" type="number" min="0" step="1" value="100" inputmode="numeric" />
+    </label>
+  </div>
+
+  <div id="panel-viewers" class="mode-panel" hidden>
+    <p>Given how much longer you can stream, what's the minimum average viewer count you need to sustain?</p>
+    <label class="field-block">
+      Remaining stream time (hours)
+      <input id="future-uptime-input" type="number" min="0" step="0.25" value="2" inputmode="decimal" />
+    </label>
+  </div>
+
+  <div id="result" class="result"></div>
+
+  <h2>The math</h2>
+  <p>It's a weighted average. Past viewer-hours plus future viewer-hours, divided by total uptime, equals the target:</p>
+  <pre><code>(ca · cu + fa · fu) / (cu + fu) = D</code></pre>
+  <p>Rearranged to solve for time:</p>
+  <pre><code>fu = cu · (D - ca) / (fa - D)</code></pre>
+  <p>Rearranged to solve for the future average:</p>
+  <pre><code>fa = (D · (cu + fu) - ca · cu) / fu</code></pre>
+  <p>Where <code>ca</code> = current average, <code>cu</code> = current uptime, <code>fa</code> = future average, <code>fu</code> = future uptime, <code>D</code> = target average. Solvable when current average is below target AND future average exceeds target.</p>
+
+  <a href="/contact/" class="cta" slot="cta">Want a custom tracker / calculator for your stream? &rarr;</a>
+</LayoutPage>
+
+<style>
+  .field-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0 1.5rem;
+  }
+  .field-row label,
+  .field-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 0.88rem;
+    color: rgba(44, 61, 66, 0.85);
+  }
+  .field-block {
+    margin: 0.5rem 0 0;
+  }
+  .field-row input,
+  .field-block input {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 1rem;
+    padding: 0.5rem 0.65rem;
+    border: 1.5px solid rgba(44, 61, 66, 0.25);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.6);
+    color: #2c3d42;
+  }
+  .field-row input:focus,
+  .field-block input:focus {
+    outline: none;
+    border-color: var(--color-deep-tidewater);
+    background: white;
+  }
+  .mode-tabs {
+    display: flex;
+    gap: 0;
+    margin: 1rem 0 1rem;
+    border-bottom: 1.5px solid rgba(44, 61, 66, 0.25);
+  }
+  .mode-tab {
+    font-family: "iA Writer Quattro", monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.55rem 1rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -1.5px;
+    color: rgba(44, 61, 66, 0.6);
+    cursor: pointer;
+  }
+  .mode-tab.active {
+    color: var(--color-deep-tidewater);
+    border-bottom-color: var(--color-deep-tidewater);
+  }
+  .mode-panel {
+    margin: 0.5rem 0 1rem;
+  }
+  .result {
+    background: var(--color-deep-tidewater);
+    color: var(--color-vellum);
+    font-family: "iA Writer Quattro", monospace;
+    padding: 1rem 1.25rem;
+    border-radius: 4px;
+    margin: 1.5rem 0;
+    min-height: 3rem;
+    line-height: 1.5;
+    font-size: 1rem;
+  }
+  .result strong {
+    font-weight: 700;
+    color: white;
+  }
+  .result .hint {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+  }
+  .result.bad {
+    background: #6b3030;
+  }
+  .result.good {
+    background: #2f5f3e;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    const fmtHours = (hours) => {
+      if (!isFinite(hours) || hours < 0) return String(hours);
+      const h = Math.floor(hours);
+      const m = Math.round((hours - h) * 60);
+      if (h === 0) return `${m}m`;
+      if (m === 0) return `${h}h`;
+      return `${h}h ${m}m`;
+    };
+    const fmtNumber = (n, decimals = 1) => {
+      if (!isFinite(n)) return String(n);
+      return n.toFixed(decimals).replace(/\.0+$/, "");
+    };
+
+    let mode = "time";
+
+    function setMode(next) {
+      mode = next;
+      document.querySelectorAll(".mode-tab").forEach((b) =>
+        b.classList.toggle("active", b.dataset.mode === next),
+      );
+      $("panel-time").hidden = next !== "time";
+      $("panel-viewers").hidden = next !== "viewers";
+      compute();
+    }
+
+    function compute() {
+      const ca = parseFloat($("current-avg").value);
+      const cu = parseFloat($("current-uptime").value);
+      const D = parseFloat($("target-avg").value);
+      const result = $("result");
+      result.className = "result";
+
+      if (!isFinite(ca) || !isFinite(cu) || !isFinite(D) || cu < 0 || D <= 0) {
+        result.textContent = "Fill in current average, uptime, and target.";
+        return;
+      }
+      if (ca >= D) {
+        result.classList.add("good");
+        result.innerHTML = `Already at <strong>${fmtNumber(ca)}</strong> avg — past the <strong>${fmtNumber(D)}</strong> target. Keep doing what you're doing.`;
+        return;
+      }
+
+      if (mode === "time") {
+        const fa = parseFloat($("future-avg-input").value);
+        if (!isFinite(fa) || fa < 0) {
+          result.textContent = "Enter a viewer count.";
+          return;
+        }
+        if (fa <= D) {
+          result.classList.add("bad");
+          result.innerHTML = `<strong>${fmtNumber(fa)}</strong> sustained viewers won't get you to <strong>${fmtNumber(D)}</strong> average — needs to exceed the target.<span class="hint">Pulling the average up requires future viewers above the target.</span>`;
+          return;
+        }
+        const fu = (cu * (D - ca)) / (fa - D);
+        result.classList.add("good");
+        const totalHours = cu + fu;
+        result.innerHTML = `Stream <strong>${fmtHours(fu)}</strong> more at <strong>${fmtNumber(fa)}</strong> viewers to land at <strong>${fmtNumber(D)}</strong> average.<span class="hint">Total stream length: ${fmtHours(totalHours)}.</span>`;
+        return;
+      }
+
+      // mode === "viewers"
+      const fu = parseFloat($("future-uptime-input").value);
+      if (!isFinite(fu) || fu <= 0) {
+        result.textContent = "Enter a future stream duration.";
+        return;
+      }
+      const fa = (D * (cu + fu) - ca * cu) / fu;
+      if (fa < 0) {
+        result.classList.add("good");
+        result.innerHTML = `You'd hit <strong>${fmtNumber(D)}</strong> average even with <strong>0</strong> viewers in the remaining ${fmtHours(fu)}.<span class="hint">No pressure on the back half of the stream.</span>`;
+        return;
+      }
+      result.classList.add("good");
+      result.innerHTML = `Need at least <strong>${fmtNumber(fa)}</strong> average viewers for the next <strong>${fmtHours(fu)}</strong> to land at <strong>${fmtNumber(D)}</strong> overall.`;
+    }
+
+    document.querySelectorAll(".mode-tab").forEach((b) => {
+      b.addEventListener("click", () => setMode(b.dataset.mode));
+    });
+    ["current-avg", "current-uptime", "target-avg", "future-avg-input", "future-uptime-input"].forEach((id) => {
+      $(id).addEventListener("input", compute);
+    });
+    compute();
+  })();
+</script>
+
