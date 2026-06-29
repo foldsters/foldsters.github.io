@@ -282,7 +282,7 @@
           const ix = mapX(tIntercept);
           interceptSvg = `
             <line x1="${ix.toFixed(1)}" y1="${padT.toFixed(1)}" x2="${ix.toFixed(1)}" y2="${bottomY.toFixed(1)}" stroke="#9146FF" stroke-dasharray="4,3" stroke-width="1.5"/>
-            <circle cx="${ix.toFixed(1)}" cy="${targetY.toFixed(1)}" r="6" fill="#9146FF" stroke="white" stroke-width="2"/>
+            <circle cx="${ix.toFixed(1)}" cy="${targetY.toFixed(1)}" r="3.5" fill="#9146FF" stroke="white" stroke-width="1.5"/>
           `;
           interceptLabel = `<text x="${ix.toFixed(1)}" y="${(H - 4).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="#b481ff" font-family="-apple-system, sans-serif">${fmtHours(tIntercept)}</text>`;
         }
