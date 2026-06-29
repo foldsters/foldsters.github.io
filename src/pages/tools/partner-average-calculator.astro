@@ -249,7 +249,7 @@
         const tIntercept = cu + fu;
         const tMax = tIntercept * 1.4; // extend past the target so the curve continues toward fa
         if (tMax <= 0) { svg.innerHTML = ""; return; }
-        const W = 320, H = 240, padL = 8, padR = 8, padT = 10, padB = 16;
+        const W = 320, H = 240, padL = 28, padR = 8, padT = 10, padB = 16;
         const innerW = W - padL - padR;
         const innerH = H - padT - padB;
         const yMax = Math.max(D, fa, ca) * 1.18 + 1;
@@ -287,8 +287,20 @@
           interceptLabel = `<text x="${ix.toFixed(1)}" y="${(H - 4).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="#b481ff" font-family="-apple-system, sans-serif">${fmtHours(tIntercept)}</text>`;
         }
 
+        // Y-axis tick values: 0, target, fa (or ca if higher), spaced naturally
+        const yTicks = Array.from(new Set([0, D, ca, fa].map((v) => +v.toFixed(0))))
+          .filter((v) => v >= 0 && v <= yMax)
+          .sort((a, b) => a - b);
+        const yTicksSvg = yTicks.map((v) => {
+          const y = mapY(v);
+          const isTarget = Math.abs(v - D) < 0.5;
+          const color = isTarget ? "#c54040" : "#8d949c";
+          return `<text x="${(padL - 4).toFixed(1)}" y="${(y + 3).toFixed(1)}" text-anchor="end" font-size="9" fill="${color}" font-family="-apple-system, sans-serif">${v}</text>`;
+        }).join("");
+
         // Order matters (SVG painters algorithm): background → curve → target line → intercept overlay.
         svg.innerHTML = `
+          ${yTicksSvg}
           <path d="${path}" fill="none" stroke="#2ea05a" stroke-width="2"/>
           <circle cx="${nowX.toFixed(1)}" cy="${nowY.toFixed(1)}" r="3" fill="#8d949c"/>
           <text x="${nowX.toFixed(1)}" y="${(H - 4).toFixed(1)}" text-anchor="middle" font-size="9" fill="#8d949c" font-family="-apple-system, sans-serif">now</text>
