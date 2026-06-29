@@ -248,6 +248,14 @@
 
       let mode = "time";
 
+      const STATE_KEY = "pac-state";
+      const STATE_IDS = ["current-avg","current-uptime-h","current-uptime-m","target-avg","future-avg-input","future-uptime-h","future-uptime-m"];
+      function saveState() {
+        const s = { mode };
+        STATE_IDS.forEach((id) => { s[id] = $(id).value; });
+        try { localStorage.setItem(STATE_KEY, JSON.stringify(s)); } catch {}
+      }
+
       function setMode(next) {
         mode = next;
         document.querySelectorAll(".tab").forEach((b) =>
@@ -255,6 +263,7 @@
         );
         $("panel-time").hidden = next !== "time";
         $("panel-viewers").hidden = next !== "viewers";
+        saveState();
         compute();
       }
 
@@ -435,7 +444,7 @@
         b.addEventListener("click", () => setMode(b.dataset.mode));
       });
       ["current-avg","target-avg","future-avg-input","future-uptime-h","future-uptime-m"].forEach((id) => {
-        $(id).addEventListener("input", compute);
+        $(id).addEventListener("input", () => { saveState(); compute(); });
       });
 
       // Clock auto-increment for "uptime so far". State persists in localStorage
@@ -502,14 +511,27 @@
             clockStartMs = Date.now() - hours * 3600000;
             localStorage.setItem(CLOCK_KEY, String(clockStartMs));
           }
+          if (!internalUpdate) saveState();
           compute();
         });
       });
 
-      // Resume from localStorage if a clock was running
-      const stored = parseInt(localStorage.getItem(CLOCK_KEY) || "", 10);
-      if (isFinite(stored)) {
-        clockStartMs = stored;
+      // Restore saved input state first
+      try {
+        const raw = localStorage.getItem(STATE_KEY);
+        if (raw) {
+          const s = JSON.parse(raw);
+          STATE_IDS.forEach((id) => {
+            if (s[id] !== undefined) $(id).value = s[id];
+          });
+          if (s.mode === "viewers") setMode("viewers");
+        }
+      } catch {}
+
+      // Then resume clock if applicable
+      const storedClock = parseInt(localStorage.getItem(CLOCK_KEY) || "", 10);
+      if (isFinite(storedClock)) {
+        clockStartMs = storedClock;
         startTicking();
         updateClockUI();
         tick();
