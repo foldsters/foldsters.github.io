@@ -6,7 +6,7 @@ import LayoutPage from '../../layouts/LayoutPage.astro';
   <h1>Dizzy's OBS Overlays</h1>
   <p class="mono">for Dizzy</p>
   <p class="lede">
-    A custom stream overlay package &mdash; the close-collaboration build, designed for a partner who streams a different vibe entirely from Bizzlebeard or Rewkers.
+    A custom stream overlay package &mdash; plus a pipeline to push new scenes straight to her setup &mdash; the close-collaboration build, designed for a partner who streams a different vibe entirely from Bizzlebeard or Rewkers.
   </p>
 
   <h2>The Problem</h2>
@@ -23,6 +23,17 @@ import LayoutPage from '../../layouts/LayoutPage.astro';
     <li>Reusable across her platforms</li>
   </ul>
 
+  <h2>Shipping New Scenes Remotely</h2>
+  <p>
+    Beyond the overlays themselves, the setup is built so new scenes can be delivered to her without a screen-share session. Scenes are edited off-site in OBS, committed to git, and her one-click launcher pulls the latest, translates the asset paths from macOS to Windows, and opens OBS ready to stream.
+  </p>
+  <ul>
+    <li>Git-versioned scene collection &mdash; a WIP branch plus a ship-when-ready <code>deploy</code> branch her launcher tracks</li>
+    <li>Cross-platform path translation (macOS &rarr; Windows) so scenes built on my machine just work on hers</li>
+    <li>Git LFS for media assets &mdash; images, video, audio, browser sources, fonts</li>
+    <li>One-click launcher: pull &rarr; translate &rarr; open OBS, with instant rollback to any prior version</li>
+  </ul>
+
   <h2>Status</h2>
   <p>
     Work in progress. Targeting late summer 2026 for completion ahead of Foldster's Projects' formal launch.
@@ -30,7 +41,7 @@ import LayoutPage from '../../layouts/LayoutPage.astro';
 
   <p class="mono note">case study photos + demo clip + Dizzy quote coming when launched.</p>
 
-  <a href="/contact/" class="cta" slot="cta">Want a custom overlay package? &rarr;</a>
+  <a href="/contact/" class="cta" slot="cta">Want a custom overlay package &mdash; or a pipeline to push scene updates straight to your setup? &rarr;</a>
 </LayoutPage>
 
 <style>

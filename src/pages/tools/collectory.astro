@@ -1,0 +1,38 @@
+---
+import LayoutPage from '../../layouts/LayoutPage.astro';
+---
+
+<LayoutPage title="Foldster's Projects — Collectory" description="Drag-and-drop tracker maker for streamers">
+  <h1>Collectory</h1>
+  <p class="mono">in progress</p>
+  <p class="lede">
+    A browser-based, drag-and-drop tracker maker for streamers. Build a custom collection or progress tracker, share it with a code, and embed it as an OBS browser source — no design tools, no code.
+  </p>
+
+  <h2>The Problem</h2>
+  <p>
+    Streamers constantly want bespoke on-stream trackers — bingo boards, achievement grids, collection checklists, "beat every boss" runs — but each one is a one-off build. Collectory turns that into a tool: make the tracker yourself, share it, and drop it into your scene.
+  </p>
+  <p>
+    This matters more than ever with the rise of randomizers. Archipelago and other multiworld setups shuffle items, goals, and logic across games, and a single seed's flag options produce a combinatorial explosion of run types — so no two challenges track the same way. Off-the-shelf trackers can't keep up, which makes custom, challenge-specific trackers essential rather than nice-to-have.
+  </p>
+
+  <h2>What's Being Built</h2>
+  <ul>
+    <li>Drag-and-drop grid editor — place icons, size the board, arrange freely</li>
+    <li>Per-icon state cycles (e.g. locked → in-progress → done) you define</li>
+    <li>Share a finished tracker via a short code</li>
+    <li>Embed as an OBS browser source that updates live</li>
+    <li>Twitch sign-in + a Convex real-time backend for state and sharing</li>
+  </ul>
+
+  <h2>The Stack</h2>
+  <p class="mono">Vite / React / TypeScript / Convex / Twitch OAuth</p>
+
+  <h2>Status</h2>
+  <p>
+    In active development at <a href="https://collectory.app" target="_blank">collectory.app</a> — auth and the real-time backend are in place; the editor is next.
+  </p>
+
+  <a href="/contact/" class="cta" slot="cta">Want a custom tracker or overlay for your stream? &rarr;</a>
+</LayoutPage>

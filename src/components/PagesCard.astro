@@ -18,10 +18,18 @@ interface Props {
 const { href, title, body, meta, image, imageAlt, colors = {} } = Astro.props;
 const textColor = colors.textColor ?? "#2c3d42";
 const highlightColor = colors.highlightColor ?? "var(--color-deep-tidewater)";
+// External links open in a new tab (and skip prefetch).
+const isExternal = /^https?:\/\//.test(href);
 ---
 
 <li class="entry" style={`--text-color:${textColor};--highlight-color:${highlightColor};`}>
-	<a href={href} data-astro-prefetch class="entry-link">
+	<a
+		href={href}
+		class="entry-link"
+		target={isExternal ? "_blank" : undefined}
+		rel={isExternal ? "noopener noreferrer" : undefined}
+		data-astro-prefetch={isExternal ? undefined : true}
+	>
 		<div class="entry-photo" aria-hidden={!image}>
 			{image
 				? <Image src={image} alt={imageAlt ?? title} class="entry-image"/>

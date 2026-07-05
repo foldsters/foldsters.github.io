@@ -1,5 +1,6 @@
 ---
 import Card from './PagesCard.astro';
+import sotsThumb from '../content/images/stars-of-the-show/stars-of-the-show-1.png';
 import hcwThumb from '../content/images/hcw/hcw-1.png';
 import guessr47Thumb from '../content/images/guessr47/guessr47-1.png';
 import dizzyOverlaysThumb from '../content/images/dizzy-overlays/dizzy-1.png';
@@ -19,12 +20,12 @@ import dizzyOverlaysThumb from '../content/images/dizzy-overlays/dizzy-1.png';
 
       <ul role="list" class="entry-list">
         <Card
-          href="/work/hcw"
-          title="Bizzlebeard's HCW Bot"
-          body="Custom interactive overlay + bot for Bizzlebeard's wrestling show. Match state, win records, Bluesky cross-posting, chat overlay."
-          meta="Foldster | Work | for Bizzlebeard"
-          image={hcwThumb}
-          imageAlt="HCW match — Bluesky cross-post with embedded Twitch clip"
+          href="/work/stars-of-the-show"
+          title="DatastarTV's Stars of the Show"
+          body="Fashion-showcase event platform for datastarTV's 1st Affiliate Anniversary stream. Twitch + Discord sign-in, blind judging with live slideshow control, ranked community voting, real-time winner reveal."
+          meta="Foldster | Work | for datastarTV"
+          image={sotsThumb}
+          imageAlt="Stars of the Show — chromatic title on a topographic map"
         />
         <Card
           href="/work/guessr47"
@@ -35,9 +36,17 @@ import dizzyOverlaysThumb from '../content/images/dizzy-overlays/dizzy-1.png';
           imageAlt="Guessr47 landing — Make Your Mark mission select"
         />
         <Card
+          href="/work/hcw"
+          title="Bizzlebeard's HCW Bot"
+          body="Custom interactive overlay + bot for Bizzlebeard's wrestling show. Match state, win records, Bluesky cross-posting, chat overlay."
+          meta="Foldster | Work | for Bizzlebeard"
+          image={hcwThumb}
+          imageAlt="HCW match — Bluesky cross-post with embedded Twitch clip"
+        />
+        <Card
           href="/work/dizzy-overlays"
           title="Dizzy's Custom Overlays"
-          body="Custom OBS overlay package — the close-collaboration build. Warmer aesthetic, designed for slower-paced streaming."
+          body="Custom OBS overlays plus a remote scene-delivery pipeline — new scenes pushed off-site, her one-click launcher pulls, translates Mac→Windows paths, and opens OBS."
           meta="Foldster | Work | for Dizzy, in progress"
           image={dizzyOverlaysThumb}
           imageAlt="Generative contour overlay — blue/purple/pink gradient on black"

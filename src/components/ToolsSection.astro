@@ -1,5 +1,7 @@
 ---
 import Card from './PagesCard.astro';
+import collectoryThumb from '../content/images/collectory/collectory-1.png';
+import partnerCalcThumb from '../content/images/twitch-partner-calculator/twitch-partner-calculator-1.png';
 import demowallThumb from '../content/images/demowall/demowall-1.png';
 import demodripThumb from '../content/images/demodrip/demodrip-1.png';
 import demoskyThumb from '../content/images/demosky/demosky-1.png';
@@ -21,15 +23,25 @@ import foldsterStudioThumb from '../content/images/foldster-studio/foldster-stud
       </div>
 
       <ul role="list" class="entry-list">
+        <Card href="/tools/collectory" title="Collectory"
+          body="Drag-and-drop tracker maker for streamers. Drop icons on a grid, define state cycles, share via code, embed as an OBS browser source."
+          meta="Foldster | Tool | in progress, collectory.app"
+          image={collectoryThumb}
+          imageAlt="Collectory — a Zelda: Ocarina of Time item tracker board"/>
+        <Card href="/tools/twitch-partner-calculator" title="Twitch Partner Calculator"
+          body="Work out how much longer — or how many more viewers — you need to hit Twitch's 75-viewer Partner average. Live-updates as your session runs."
+          meta="Foldster | Tool | free to use"
+          image={partnerCalcThumb}
+          imageAlt="Twitch Partner Calculator — average-viewers curve crossing the 75 threshold"/>
+        <Card href="/tools/demodrip" title="Demodrip"
+          body="Shader-based t-shirt design tool. Live 3D preview, export print-ready textures."
+          meta="Foldster | Tool | open source, demodrip.app"
+          image={demodripThumb} imageAlt="Demodrip — shader rendered on a 3D t-shirt"/>
         <Card href="/tools/demowall" title="Demowall"
           body="GLSL fragment shaders as Android live wallpapers. Load custom shaders from Bluesky via Demosky."
           meta="Foldster | Tool | open source, Google Play"
           image={demowallThumb}
           imageAlt="Demowall — shader-based live wallpaper preview on Android"/>
-        <Card href="/tools/demodrip" title="Demodrip"
-          body="Shader-based t-shirt design tool. Live 3D preview, export print-ready textures."
-          meta="Foldster | Tool | open source, demodrip.app"
-          image={demodripThumb} imageAlt="Demodrip — shader rendered on a 3D t-shirt"/>
         <Card href="/tools/demosky" title="Demosky"
           body="Bluesky client for browsing and sharing shader demos. The social hub for the ecosystem."
           meta="Foldster | Tool | open source, demosky.app"
@@ -38,16 +50,16 @@ import foldsterStudioThumb from '../content/images/foldster-studio/foldster-stud
           body="Topology-aware palette extraction. Spheres, Tori, and Klein bottle color maps, plus arbitrary graph-based palettes."
           meta="Foldster | Tool | open source"
           image={paletteThumb} imageAlt="Palettope — topology-aware palette extractor"/>
-        <Card href="/tools/emotions-dev" title="Emotions.dev"
-          body="Emotions toolkit. Recently shipped — full writeup coming."
-          meta="Foldster | Tool | newly shipped"
-          image={emotionsDevThumb}
-          imageAlt="Emotions.dev — 'Developing Emotions' lexicon for developer burnout"/>
         <Card href="/tools/foldster-studio" title="Foldster Studio"
           body="Browser-native streaming. captureStream + WHIP to stream.place, no OBS required, works on phone."
           meta="Foldster | Tool | open source, PoC"
           image={foldsterStudioThumb}
           imageAlt="Foldster Studio — canvas-stream-poc canvas with floating glow sprites"/>
+        <Card href="/tools/emotions-dev" title="Emotions.dev"
+          body="Emotions toolkit. Recently shipped — full writeup coming."
+          meta="Foldster | Tool | newly shipped"
+          image={emotionsDevThumb}
+          imageAlt="Emotions.dev — 'Developing Emotions' lexicon for developer burnout"/>
       </ul>
 
     </div>

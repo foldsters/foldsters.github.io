@@ -1,0 +1,37 @@
+---
+import LayoutPage from '../../layouts/LayoutPage.astro';
+---
+
+<LayoutPage title="Foldster's Projects — Stars of the Show (datastarTV)" description="Fashion-showcase event platform for datastarTV">
+  <h1>Stars of the Show</h1>
+  <p class="mono">for datastarTV</p>
+  <p class="lede">
+    A fashion-showcase event platform built for datastarTV's 1st Affiliate Anniversary stream. Contestants submit a character, the host judges live on stream, and the community ranks their favorites — all real-time, all anonymous until the reveal.
+  </p>
+
+  <h2>The Problem</h2>
+  <p>
+    DatastarTV wanted a "Stars of the Show" segment for a ~12-hour anniversary stream: viewers submit a dressed-up character, a panel judges them live on-air, and the audience votes. It needed to run as an OBS browser source the host drives, keep submitter identities hidden until winners are announced, and let guest judges score alongside the host without touching the stream feed.
+  </p>
+
+  <h2>What Was Built</h2>
+  <ul>
+    <li>Twitch <em>and</em> Discord sign-in (implicit + auth-code flows), no passwords</li>
+    <li>Character submission: in-browser image cropping, multi-image ordering, lore, all re-editable</li>
+    <li>A lifecycle state machine — draft → submissions → judging → community voting → winners</li>
+    <li>Blind judging: a live slideshow (OBS browser source) only the host advances; guest judges score locally on their own devices and never move the on-stream view</li>
+    <li>Ranked community voting — Gold / Silver / Bronze (10 / 6 / 2 pts), one ballot per account, no voting for your own entry</li>
+    <li>Winner reveal with automatic tiebreakers (judge average vs. community points) and identities uncovered only at the end</li>
+    <li>Admin dashboard: run the event, approve guest judges, edit the landing copy, seed test data</li>
+  </ul>
+
+  <h2>The Stack</h2>
+  <p class="mono">Vite / React / TypeScript / Convex (real-time backend, auth, file storage) / Twitch + Discord OAuth</p>
+
+  <h2>Status</h2>
+  <p>
+    Live at <a href="https://datastar.tv/sots" target="_blank">datastar.tv/sots</a>, built and shipped to production in a few days for the anniversary stream.
+  </p>
+
+  <a href="/contact/" class="cta" slot="cta">Want a custom event or voting platform for your community? &rarr;</a>
+</LayoutPage>

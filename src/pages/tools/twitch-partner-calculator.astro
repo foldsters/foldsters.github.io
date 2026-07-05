@@ -1,0 +1,53 @@
+---
+import LayoutPage from '../../layouts/LayoutPage.astro';
+---
+
+<LayoutPage title="Foldster's Projects — Twitch Partner Calculator" description="Plan your path to Twitch's 75-viewer Partner average">
+  <h1>Twitch Partner Calculator</h1>
+  <p class="mono">free to use</p>
+  <p class="lede">
+    A focused calculator for streamers chasing Twitch Partner: work out how much longer — or how many more concurrent viewers — you need to pull your stream's average up to the 75-viewer threshold.
+  </p>
+
+  <h2>The Problem</h2>
+  <p>
+    Twitch Partner requires a 75 average-concurrent-viewer stream. Mid-stream, it's hard to know whether you're on track: raising an average is a moving target that depends on how long you've streamed and how many viewers you hold from here. Revven wanted a clear, live answer.
+  </p>
+
+  <h2>What Was Built</h2>
+  <ul>
+    <li>Two modes — solve for <em>time</em> (how much longer at your current viewers) or <em>viewers</em> (how many you need going forward)</li>
+    <li>A live clock: while it's running, the math uses real elapsed time, not minute-rounded inputs</li>
+    <li>Results shown as a range, accounting for Twitch's integer-rounded average</li>
+    <li>All inputs + your active mode persist in the browser, so a refresh doesn't lose your session</li>
+  </ul>
+
+  <h2>The Stack</h2>
+  <p class="mono">Astro / vanilla TypeScript — no backend, runs entirely in the browser</p>
+
+  <h2>Status</h2>
+  <p>
+    Live and free to use — <a href="/tools/partner-average-calculator/">open the calculator &rarr;</a>
+  </p>
+
+  <h2>&ldquo;Foldster&rsquo;s calculator that he made has been very, very useful.&rdquo;</h2>
+  <video class="testimonial-video" controls preload="metadata" playsinline>
+    <source src="/videos/revven-partner-calc.mp4" type="video/mp4" />
+    Your browser doesn't support embedded video.
+  </video>
+  <p class="mono">Revven &mdash; live on stream, chasing the 75-viewer Partner average.</p>
+
+  <a href="/contact/" class="cta" slot="cta">Want a custom tool for your stream &mdash; even one your audience never sees? &rarr;</a>
+</LayoutPage>
+
+<style>
+  .testimonial-video {
+    width: 100%;
+    max-width: 640px;
+    aspect-ratio: 16 / 9;
+    display: block;
+    border-radius: 6px;
+    background: #000;
+    box-shadow: 0 10px 18px -8px rgba(44, 61, 66, 0.28);
+  }
+</style>
