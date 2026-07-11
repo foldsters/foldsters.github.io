@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pitch Field</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 1rem; padding: 1.5rem;
+    background: #0e181c; color: #dfeef0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  h1 { margin: 0; font-size: 1.4rem; letter-spacing: 0.5px; font-weight: 700; }
+  .hint { margin: 0; max-width: 900px; text-align: center; font-size: 0.85rem;
+          color: #7f9ea3; line-height: 1.5; }
+  canvas {
+    width: min(96vw, 960px); aspect-ratio: 16 / 9; touch-action: none; cursor: crosshair;
+    border-radius: 10px; box-shadow: 0 12px 30px -12px rgba(0,0,0,0.6);
+    background: #16242a;
+  }
+  .controls { display: flex; flex-wrap: wrap; gap: 1.25rem; align-items: center;
+              justify-content: center; font-size: 0.8rem; color: #a9c4c8; }
+  .controls label { display: flex; align-items: center; gap: 0.5rem; }
+  input[type=range] { accent-color: #55d6e0; }
+  select { background: #1b2b31; color: #dfeef0; border: 1px solid #2c4249;
+           border-radius: 6px; padding: 3px 6px; font: inherit; }
+  .controls button { background: #1b2b31; color: #dfeef0; border: 1px solid #2c4249;
+                     border-radius: 6px; padding: 4px 11px; font: inherit; cursor: pointer; }
+  .controls button:hover { border-color: #3d5a63; }
+  /* Fullscreen: hide the chrome, let the canvas fill the viewport. */
+  :fullscreen { padding: 0; gap: 6px; justify-content: flex-start; background: #0e181c; }
+  :fullscreen h1, :fullscreen .hint { display: none; }
+  :fullscreen canvas { flex: 1 1 auto; width: 100vw; height: auto; min-height: 0;
+                       max-width: none; aspect-ratio: auto; border-radius: 0; }
+  :fullscreen .controls { flex: 0 0 auto; padding: 6px 0 10px; }
+</style>
+</head>
+<body>
+  <h1>Pitch Field</h1>
+  <p class="hint">
+    Press &amp; drag in the box. <b>←&nbsp;→</b> picks the note (played in every octave at once).
+    <b>↑&nbsp;↓</b> slides the average pitch. The slider sets how many octaves ring together.
+  </p>
+  <canvas id="pad" width="960" height="540"></canvas>
+  <div class="controls">
+    <label>Octave spread
+      <input id="width" type="range" min="0" max="1" step="0.001" value="0.65"><span id="widthval" style="min-width:2.4em;text-align:right;color:#7f9ea3">13</span>
+    </label>
+    <label>Blend width
+      <input id="blend" type="range" min="0.15" max="4" step="0.05" value="0.5">
+    </label>
+    <label>Layout
+      <select id="order">
+        <option value="chromatic">Chromatic</option>
+        <option value="fifths">Circle of fifths</option>
+        <option value="thirds">Thirds (maj / min)</option>
+        <option value="sus25">Suspended (2·5)</option>
+        <option value="wheel27">Wheel (2·7)</option>
+      </select>
+    </label>
+    <label>Rotate <button id="rotl" type="button">◀</button> <button id="rotr" type="button">▶</button></label>
+    <label>Numerals
+      <select id="numerals">
+        <option value="diatonic">In key</option>
+        <option value="all">All</option>
+        <option value="off">Off</option>
+      </select>
+    </label>
+    <label>Wave
+      <select id="wave">
+        <option>sine</option><option>triangle</option>
+        <option>sawtooth</option><option>square</option>
+      </select>
+    </label>
+    <label>Smooth X <input id="smooth" type="checkbox"></label>
+    <label>Slew <input id="slew" type="range" min="0" max="1" step="0.001" value="0"><span id="slewval" style="min-width:3.4em;text-align:right;color:#7f9ea3">0.00s</span></label>
+    <label>Slew on
+      <select id="slewmode">
+        <option value="both">Drag + touches</option>
+        <option value="drag">Dragging</option>
+        <option value="touch">New touches</option>
+      </select>
+    </label>
+    <label>Curve
+      <select id="ease">
+        <option value="linear">Linear</option>
+        <option value="in">Ease in</option>
+        <option value="out">Ease out</option>
+        <option value="inout">Ease in-out</option>
+      </select>
+    </label>
+    <label>Volume
+      <input id="vol" type="range" min="0" max="1" step="0.01" value="0.6">
+    </label>
+    <button id="fs" type="button">Fullscreen</button>
+  </div>
+
+<script>
+const pad = document.getElementById('pad');
+const ctx2 = pad.getContext('2d');
+let W = pad.width, H = pad.height;
+const widthEl = document.getElementById('width');
+const widthValEl = document.getElementById('widthval');
+const blendEl = document.getElementById('blend');
+const orderEl = document.getElementById('order');
+const waveEl  = document.getElementById('wave');
+const smoothEl = document.getElementById('smooth');
+const slewEl = document.getElementById('slew');
+const slewValEl = document.getElementById('slewval');
+const slewModeEl = document.getElementById('slewmode');
+const easeEl = document.getElementById('ease');
+const volEl   = document.getElementById('vol');
+const fsEl    = document.getElementById('fs');
+const rotlEl  = document.getElementById('rotl');
+const rotrEl  = document.getElementById('rotr');
+const numeralsEl = document.getElementById('numerals');
+
+const NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const FIFTHS = [0,7,2,9,4,11,6,1,8,3,10,5];
+// Thirds: 24 alternating major/minor triads ascending by thirds (C, Em, G, Bm…).
+// Adjacent chords share two notes; the cycle closes only after all 24 triads.
+const THIRDS = (() => {
+  const arr = []; let root = 0, maj = true;
+  for (let i = 0; i < 24; i++) {
+    arr.push({ root, maj, pcs: [root, (root + (maj ? 4 : 3)) % 12, (root + 7) % 12],
+               label: NAMES[root] + (maj ? '' : 'm') });
+    root = (root + (maj ? 4 : 3)) % 12; maj = !maj;
+  }
+  return arr;
+})();
+// Alternating-interval "wheels": each chord is [root, root+g1, root+g1+g2] with
+// (g1,g2) alternating (a,b)/(b,a); the root advances by g1 each step, so adjacent
+// chords share tones. 2·5 gives suspended chords (sus2 / sus4). Cycles until the
+// root returns with even parity.
+function buildWheel(a, b) {
+  const arr = [], sup = { 2: '²', 3: '³', 4: '⁴', 5: '⁵', 7: '⁷' };
+  let root = 0, i = 0;
+  do {
+    const g1 = i % 2 === 0 ? a : b, g2 = i % 2 === 0 ? b : a;
+    arr.push({ pcs: [root, (root + g1) % 12, (root + g1 + g2) % 12],
+               label: NAMES[root] + (sup[g1] || '') });
+    root = (root + g1) % 12; i++;
+  } while (i < 48 && !(root === 0 && i % 2 === 0));
+  return arr;
+}
+// 2·5 makes suspended chords, but sus2[R] and sus4[R+7] are the SAME three notes
+// (the gaps sum to a 5th, so the chord inverts into itself) — alternating them just
+// relabels one sonority. So use the 12 DISTINCT sus chords, arranged by fifths so
+// neighbours still share two tones. (2·7 has no such symmetry → full wheel.)
+const SUS = FIFTHS.map(r => ({ pcs: [r, (r + 2) % 12, (r + 7) % 12], label: NAMES[r] + 'sus' }));
+const WHEEL27 = buildWheel(2, 7);
+
+// A mode = how many columns, which pitch class(es) each column sounds, its label.
+const MODES = {
+  chromatic: { cols: 12, pcs: c => [c],          label: c => NAMES[c] },
+  fifths:    { cols: 12, pcs: c => [FIFTHS[c]],   label: c => NAMES[FIFTHS[c]] },
+  thirds:    { cols: 24, pcs: c => THIRDS[c].pcs, label: c => THIRDS[c].label },
+  sus25:     { cols: 12,              pcs: c => SUS[c].pcs,     label: c => SUS[c].label },
+  wheel27:   { cols: WHEEL27.length, pcs: c => WHEEL27[c].pcs, label: c => WHEEL27[c].label },
+};
+const mode = () => MODES[orderEl.value];
+
+// Column rotation: rotN(c) is the content index shown at screen column c.
+let rot = 0;
+const rotN = (c) => { const n = mode().cols; return ((c + rot) % n + n) % n; };
+
+// Roman numerals for diatonic triads, keyed by "<semitones above tonic>,<major?1:0>".
+const ROMAN_MAJOR = { '0,1': 'I', '2,0': 'ii', '4,0': 'iii', '5,1': 'IV', '7,1': 'V', '9,0': 'vi' };
+const ROMAN_MINOR = { '0,0': 'i', '3,1': 'III', '5,0': 'iv', '7,0': 'v', '8,1': 'VI', '10,1': 'VII' };
+function romanFor(tonicRoot, tonicMaj, chord) {
+  const offset = ((chord.root - tonicRoot) % 12 + 12) % 12;
+  return (tonicMaj ? ROMAN_MAJOR : ROMAN_MINOR)[`${offset},${chord.maj ? 1 : 0}`] || '';
+}
+
+// Full chromatic Roman numeral for ANY chord: scale-degree (with ♭/♯) per semitone
+// offset, cased by chord quality. Reduces to the diatonic numerals above for
+// in-key chords; gives borrowed/chromatic names (♭II, ♯iv, III, ♭VII…) otherwise.
+const BASE_ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+const CHROM_MAJOR = [[1,''],[2,'♭'],[2,''],[3,'♭'],[3,''],[4,''],[4,'♯'],[5,''],[6,'♭'],[6,''],[7,'♭'],[7,'']];
+const CHROM_MINOR = [[1,''],[2,'♭'],[2,''],[3,''],[3,'♯'],[4,''],[4,'♯'],[5,''],[6,''],[6,'♯'],[7,''],[7,'♯']];
+function romanAll(tonicRoot, tonicMaj, chord) {
+  const offset = ((chord.root - tonicRoot) % 12 + 12) % 12;
+  const [d, a] = (tonicMaj ? CHROM_MAJOR : CHROM_MINOR)[offset];
+  return a + (chord.maj ? BASE_ROMAN[d] : BASE_ROMAN[d].toLowerCase());
+}
+// The vertical axis (average pitch) spans this MIDI range.
+const MIDI_MIN = 24, MIDI_MAX = 96;      // ~C1 .. C7
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const midiToFreq = m => 440 * Math.pow(2, (m - 69) / 12);
+const midiToY = m => H * (1 - (m - MIDI_MIN) / (MIDI_MAX - MIDI_MIN));
+// Octave-spread slider maps exponentially to 1..48 semitones — fine resolution at small widths.
+const spreadSemis = () => 1 + 47 * Math.expm1(4 * parseFloat(widthEl.value)) / Math.expm1(4);
+
+// Notes of a pitch class across every octave in the audible range.
+function midisForColumn(col) {
+  const out = [];
+  for (const pc of mode().pcs(col))
+    for (let oct = 1; oct <= 9; oct++) {
+      const m = pc + 12 * oct;
+      if (m >= 21 && m <= 108) out.push(m);
+    }
+  return out;
+}
+
+// ---- Audio engine -------------------------------------------------------
+// A fixed pool of oscillators runs continuously; we retune them and set each
+// one's gain from the Gaussian weight, so sweeps glide with no clicks.
+const POOL = 48; // headroom for a wide Gaussian blend across many columns/octaves
+let actx = null, master = null, voice = null;
+const oscs = [], gains = [];
+const slotMidi = new Array(POOL).fill(null); // pitch each oscillator currently holds (null = idle)
+let playing = false, cur = null; // cur = {col, y} for drawing
+
+function initAudio() {
+  actx = new (window.AudioContext || window.webkitAudioContext)();
+  master = actx.createGain(); master.gain.value = parseFloat(volEl.value);
+  master.connect(actx.destination);
+  voice = actx.createGain(); voice.gain.value = 0; voice.connect(master);
+  for (let i = 0; i < POOL; i++) {
+    const o = actx.createOscillator(); o.type = waveEl.value;
+    const g = actx.createGain(); g.gain.value = 0;
+    o.connect(g); g.connect(voice); o.start();
+    oscs.push(o); gains.push(g);
+  }
+}
+
+// Stable voice allocation: keep each sounding pitch on the SAME oscillator so a
+// crossfade only moves the note that's actually changing — shared/held notes
+// never reassign (which was causing the boundary swoop). New notes fade in on an
+// idle oscillator; vanished notes fade out and free their slot.
+function assignVoices(notes) {
+  const sum = notes.reduce((a, n) => a + n.w, 0) || 1;
+  const t = actx.currentTime, tc = 0.03;
+  const claimed = new Array(POOL).fill(false), g = new Array(POOL).fill(0), pending = [];
+  // Pass 1: keep notes already sounding on their current oscillator (glide if it drifts).
+  for (const n of notes) {
+    let best = -1, bestD = 1.2; // only reuse a slot within ~1 semitone
+    for (let i = 0; i < POOL; i++) {
+      if (claimed[i] || slotMidi[i] === null) continue;
+      const d = Math.abs(slotMidi[i] - n.midi);
+      if (d <= bestD) { bestD = d; best = i; }
+    }
+    if (best !== -1) {
+      claimed[best] = true; slotMidi[best] = n.midi; g[best] = n.w / sum;
+      oscs[best].frequency.setTargetAtTime(midiToFreq(n.midi), t, tc);
+    } else pending.push(n);
+  }
+  // Pass 2: assign new notes to idle oscillators (jump freq while still silent).
+  for (const n of pending) {
+    let slot = slotMidi.findIndex((m, i) => !claimed[i] && m === null);
+    if (slot === -1) slot = claimed.findIndex(c => !c);  // steal only if truly out of slots
+    if (slot === -1) break;
+    claimed[slot] = true; slotMidi[slot] = n.midi; g[slot] = n.w / sum;
+    oscs[slot].frequency.setValueAtTime(midiToFreq(n.midi), t);
+  }
+  // Silence + free everything unclaimed.
+  for (let i = 0; i < POOL; i++) {
+    gains[i].gain.setTargetAtTime(g[i], t, tc);
+    if (!claimed[i]) slotMidi[i] = null;
+  }
+}
+
+function updateVoice(xN, yN) {
+  const m = mode(), cols = m.cols;
+  const centerMidi = MIDI_MIN + (1 - yN) * (MIDI_MAX - MIDI_MIN);
+  const sigma = spreadSemis();                        // Gaussian width, semitones
+  const gauss = midi => Math.exp(-((midi - centerMidi) ** 2) / (2 * sigma * sigma));
+  const smooth = smoothEl.checked;
+  let colWeights = null; // per-column horizontal Gaussian weight (for the X-spotlight drawing)
+
+  // Accumulate weighted notes, deduping by midi so shared/crossfaded notes
+  // combine (e.g. the two common tones of adjacent thirds chords stay steady
+  // while only the differing note crossfades).
+  const weight = new Map();
+  const add = (midi, w) => { if (midi >= 21 && midi <= 108) weight.set(midi, (weight.get(midi) || 0) + w); };
+
+  if (smooth && orderEl.value === 'chromatic') {
+    // Chromatic: the pitch itself glides continuously (no snap). Rotation shifts it.
+    const fpc = xN * 12 + rot;
+    for (let oct = 1; oct <= 9; oct++) add(fpc + 12 * oct, gauss(fpc + 12 * oct));
+  } else if (smooth) {
+    // Fifths / thirds: crossfade across columns with a Gaussian centered on the
+    // cursor. Column centers sit at integer positions (xN*cols - 0.5), so a
+    // column's own center is pure that column; between them it blends.
+    const center = clamp(xN * cols - 0.5, 0, cols - 1);
+    const sigmaX = parseFloat(blendEl.value);           // blend width, in columns
+    colWeights = new Array(cols).fill(0);
+    for (let c = 0; c < cols; c++) {
+      const d = c - center;
+      const cw = Math.exp(-(d * d) / (2 * sigmaX * sigmaX));
+      colWeights[c] = cw;
+      if (cw < 0.02) continue;                           // skip negligible columns
+      for (const pc of m.pcs(rotN(c)))
+        for (let oct = 1; oct <= 9; oct++) add(pc + 12 * oct, cw * gauss(pc + 12 * oct));
+    }
+  } else {
+    // Snapped to a single column (original behavior).
+    const col = clamp(Math.floor(xN * cols), 0, cols - 1);
+    for (const pc of m.pcs(rotN(col)))
+      for (let oct = 1; oct <= 9; oct++) add(pc + 12 * oct, gauss(pc + 12 * oct));
+  }
+
+  let notes = [...weight.entries()].map(([midi, w]) => ({ midi, w }));
+  if (notes.length > POOL) notes = notes.sort((a, b) => b.w - a.w).slice(0, POOL); // keep the loudest
+  assignVoices(notes);
+  cur = { x: xN, ny: yN, notes, centerMidi, sigma, smooth, colWeights,
+          col: clamp(Math.floor(xN * cols), 0, cols - 1) };
+}
+
+// ---- Pointer handling ---------------------------------------------------
+function pos(e) {
+  const r = pad.getBoundingClientRect();
+  return {
+    xN: clamp((e.clientX - r.left) / r.width, 0, 1),
+    yN: clamp((e.clientY - r.top) / r.height, 0, 1),
+  };
+}
+// ---- Slew (pitch lag) ---------------------------------------------------
+// A virtual pointer lags behind the finger along a straight line; the audio is
+// rendered in instant-mode AT the virtual position, so pitches trace the same
+// path as if you had dragged from A to B — just time-shaped by the easing curve.
+// slew = seconds to fully catch up (0 = instant).
+let target = null, virt = null, vel = 0, lastT = null, looping = false, dirty = false;
+const nowSec = () => performance.now() / 1000;
+// The slew sets a SPEED: seconds to traverse the full field. Mapped exponentially
+// so there's fine resolution near 0.
+const SLEW_MAX = 10, SLEW_K = 5;
+const slewSec = () => SLEW_MAX * Math.expm1(SLEW_K * parseFloat(slewEl.value)) / Math.expm1(SLEW_K);
+
+function retarget(tx, ty, useSlew) {
+  target = { x: tx, y: ty };
+  // Disengaged (or first touch) -> snap. Otherwise the loop integrates toward it.
+  if (!useSlew || slewSec() < 1e-3 || !virt) { virt = { x: tx, y: ty }; vel = 0; }
+  dirty = true;
+}
+
+// Velocity-based pursuit: the virtual pointer moves toward the CURRENT target at a
+// bounded speed, carrying its velocity across target nudges (no timer to reset, so
+// a small move mid-approach no longer stalls it). Easing shapes the profile:
+// ease-in = accelerate from rest, ease-out = decelerate into the target,
+// ease-in-out = both, linear = constant speed with a hard stop.
+function loop() {
+  if (!playing) { looping = false; lastT = null; return; }
+  const t = nowSec(), dt = lastT == null ? 0 : Math.min(t - lastT, 0.05);
+  lastT = t;
+  if (virt && target) {
+    const gx = target.x - virt.x, gy = target.y - virt.y, dist = Math.hypot(gx, gy);
+    if (dist > 1e-4 && dt > 0) {
+      const slew = Math.max(slewSec(), 1e-3);
+      const maxSpeed = 1 / slew;                 // full span (1.0) per slew seconds
+      const accel = maxSpeed / (0.4 * slew);     // ramp to full speed in ~40% of slew
+      const curve = easeEl.value;
+      const useAccel = curve === 'in' || curve === 'inout';
+      const useDecel = curve === 'out' || curve === 'inout';
+      const cap = useDecel ? Math.sqrt(2 * accel * dist) : Infinity; // able to brake to 0 at target
+      const speedTarget = Math.min(maxSpeed, cap);
+      vel = useAccel ? Math.min(speedTarget, vel + accel * dt) : speedTarget;
+      const step = Math.min(vel * dt, dist);
+      virt = { x: virt.x + (gx / dist) * step, y: virt.y + (gy / dist) * step };
+      if (Math.hypot(target.x - virt.x, target.y - virt.y) < 1e-4) { virt = { ...target }; vel = 0; }
+      dirty = true;
+    } else if (dist <= 1e-4) vel = 0;
+  }
+  if (dirty && virt) { updateVoice(virt.x, virt.y); draw(); dirty = false; }
+  requestAnimationFrame(loop);
+}
+
+function press(e) {
+  if (!actx) initAudio();
+  if (actx.state === 'suspended') actx.resume();
+  playing = true; pad.setPointerCapture(e.pointerId);
+  const p = pos(e);
+  if (!virt) virt = { x: p.xN, y: p.yN };             // first touch ever: nothing to glide from
+  vel = 0;                                            // each new gesture starts from rest
+  retarget(p.xN, p.yN, slewModeEl.value !== 'drag');  // glide on new touch unless "Dragging" only
+  voice.gain.setTargetAtTime(1, actx.currentTime, 0.012);
+  if (!looping) { looping = true; lastT = null; requestAnimationFrame(loop); }
+}
+function move(e) {
+  if (!playing) return;
+  const p = pos(e);
+  retarget(p.xN, p.yN, slewModeEl.value !== 'touch'); // lag while dragging unless "New touches" only
+}
+function release() {
+  if (!playing) return; playing = false;
+  voice.gain.setTargetAtTime(0, actx.currentTime, 0.06);
+  draw();
+}
+pad.addEventListener('pointerdown', press);
+pad.addEventListener('pointermove', move);
+pad.addEventListener('pointerup', release);
+pad.addEventListener('pointercancel', release);
+
+// Live control changes while holding
+widthEl.addEventListener('input', () => { widthValEl.textContent = spreadSemis().toFixed(0); dirty = true; draw(); });
+blendEl.addEventListener('input', () => { dirty = true; draw(); });
+orderEl.addEventListener('change', () => { dirty = true; draw(); });
+waveEl.addEventListener('change', () => { oscs.forEach(o => o.type = waveEl.value); });
+smoothEl.addEventListener('change', () => { dirty = true; draw(); });
+volEl.addEventListener('input', () => { if (master) master.gain.setTargetAtTime(parseFloat(volEl.value), actx.currentTime, 0.02); });
+slewEl.addEventListener('input', () => { slewValEl.textContent = slewSec().toFixed(2) + 's'; });
+function rotate(d) { rot += d; dirty = true; draw(); }
+rotlEl.addEventListener('click', () => rotate(-1));
+rotrEl.addEventListener('click', () => rotate(1));
+numeralsEl.addEventListener('change', draw);
+window.addEventListener('keydown', (e) => {
+  if (/^(INPUT|SELECT)$/.test(e.target.tagName)) return; // let sliders/selects use arrows
+  if (e.key === 'ArrowLeft')  { rotate(-1); e.preventDefault(); }
+  if (e.key === 'ArrowRight') { rotate(1);  e.preventDefault(); }
+});
+
+// ---- Drawing ------------------------------------------------------------
+function draw() {
+  const m = mode(), cols = m.cols;
+  if (cur) cur.col = Math.min(cur.col, cols - 1);
+  ctx2.clearRect(0, 0, W, H);
+  const colW = W / cols, S = H / 540; // S scales fonts/dots/strokes with the canvas size
+
+  // note / chord columns
+  for (let c = 0; c < cols; c++) {
+    ctx2.fillStyle = c % 2 ? '#16242a' : '#1a2a30';
+    ctx2.fillRect(c * colW, 0, colW, H);
+  }
+
+  // faint octave ruler (position of C in each octave = pitch height)
+  ctx2.font = `${11 * S}px ui-monospace, monospace`;
+  ctx2.textAlign = 'left';
+  for (let oct = 2; oct <= 8; oct++) {
+    const y = midiToY(12 * oct);
+    if (y < 0 || y > H) continue;
+    ctx2.strokeStyle = 'rgba(120,160,165,0.10)'; ctx2.lineWidth = S;
+    ctx2.beginPath(); ctx2.moveTo(0, y); ctx2.lineTo(W, y); ctx2.stroke();
+    ctx2.fillStyle = 'rgba(150,190,195,0.35)';
+    ctx2.fillText('C' + (oct - 1), 6 * S, y - 4 * S);
+  }
+
+  // active column + the octave "spotlight": each octave note of the current
+  // pitch class drawn as a line whose brightness = its Gaussian weight.
+  if (cur) {
+    const cy = cur.ny * H;
+    // horizontal (X) Gaussian: shade each column by its blend weight, fading out
+    // from the cursor — the horizontal twin of the vertical band fade. In snapped
+    // mode it's just the single active column.
+    if (cur.colWeights) {
+      const cwmax = Math.max(...cur.colWeights, 1e-6);
+      for (let c = 0; c < cols; c++) {
+        const a = cur.colWeights[c] / cwmax;
+        if (a < 0.02) continue;
+        ctx2.fillStyle = `rgba(90,215,225,${0.16 * a})`;
+        ctx2.fillRect(c * colW, 0, colW, H);
+      }
+    } else if (!cur.smooth) {
+      ctx2.fillStyle = 'rgba(90,215,225,0.09)'; ctx2.fillRect(cur.col * colW, 0, colW, H);
+    }
+    // octave spotlight: each sounding note as a line, brightness = its weight
+    const wmax = Math.max(...cur.notes.map(n => n.w), 1e-6);
+    for (const n of cur.notes) {
+      const y = midiToY(n.midi), a = n.w / wmax;
+      ctx2.strokeStyle = `rgba(120,235,245,${0.12 + 0.8 * a})`;
+      ctx2.lineWidth = (1 + 3 * a) * S;
+      ctx2.beginPath(); ctx2.moveTo(0, y); ctx2.lineTo(W, y); ctx2.stroke();
+    }
+    // cursor at the actual x + center marker
+    const cx = cur.x * W;
+    ctx2.strokeStyle = 'rgba(234,252,255,0.5)';
+    ctx2.setLineDash([4 * S, 4 * S]); ctx2.lineWidth = S;
+    ctx2.beginPath(); ctx2.moveTo(0, cy); ctx2.lineTo(W, cy); ctx2.stroke();
+    ctx2.setLineDash([]);
+    ctx2.beginPath(); ctx2.arc(cx, cy, 7 * S, 0, 7); ctx2.fillStyle = '#eafcff'; ctx2.fill();
+    // finger/target (hollow ring) vs the lagging sound position (solid dot)
+    if (playing && target && (Math.abs(target.x - cur.x) > 0.004 || Math.abs(target.y - cur.ny) > 0.004)) {
+      ctx2.strokeStyle = 'rgba(234,252,255,0.35)'; ctx2.lineWidth = 1.5 * S;
+      ctx2.beginPath(); ctx2.arc(target.x * W, target.y * H, 10 * S, 0, 7); ctx2.stroke();
+    }
+  }
+
+  // column labels (note names, or chord names in thirds mode) — rotated
+  ctx2.font = `600 ${(cols > 12 ? 11 : 15) * S}px system-ui`; ctx2.textAlign = 'center';
+  for (let c = 0; c < cols; c++) {
+    ctx2.fillStyle = (cur && cur.col === c) ? '#eafcff' : '#6f9297';
+    ctx2.fillText(m.label(rotN(c)), (c + 0.5) * colW, H - 14 * S);
+    ctx2.strokeStyle = 'rgba(0,0,0,0.25)'; ctx2.lineWidth = S;
+    ctx2.beginPath(); ctx2.moveTo(c * colW, 0); ctx2.lineTo(c * colW, H); ctx2.stroke();
+  }
+
+  // Roman numerals at the top (thirds mode): key = the middle column; each chord
+  // diatonic to that key gets its numeral, the tonic (middle) brightest.
+  if (orderEl.value === 'thirds' && numeralsEl.value !== 'off') {
+    const centerCol = Math.floor(cols / 2), tonic = THIRDS[rotN(centerCol)];
+    const showAll = numeralsEl.value === 'all';
+    ctx2.font = `600 ${13 * S}px system-ui`; ctx2.textAlign = 'center';
+    for (let c = 0; c < cols; c++) {
+      const chord = THIRDS[rotN(c)];
+      const diatonic = romanFor(tonic.root, tonic.maj, chord) !== '';
+      if (!diatonic && !showAll) continue;
+      ctx2.fillStyle = c === centerCol ? '#eafcff'
+        : diatonic ? 'rgba(150,220,225,0.72)' : 'rgba(150,220,225,0.32)';
+      ctx2.fillText(romanAll(tonic.root, tonic.maj, chord), (c + 0.5) * colW, 20 * S);
+    }
+  }
+}
+
+// Fullscreen toggle (fullscreens the whole app; canvas grows to fill).
+fsEl.addEventListener('click', () => {
+  if (document.fullscreenElement || document.webkitFullscreenElement)
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  else
+    (document.body.requestFullscreen || document.body.webkitRequestFullscreen).call(document.body);
+});
+document.addEventListener('fullscreenchange', () => {
+  fsEl.textContent = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen';
+});
+
+// Keep the canvas backing buffer matched to its displayed size (crisp at any
+// size, incl. fullscreen and window resizes). DPR-aware, capped for perf.
+function resize() {
+  const r = pad.getBoundingClientRect();
+  if (r.width < 1 || r.height < 1) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  pad.width = Math.round(r.width * dpr);
+  pad.height = Math.round(r.height * dpr);
+  W = pad.width; H = pad.height;
+  draw();
+}
+new ResizeObserver(resize).observe(pad);
+
+// Optional: deep-link a mode via URL hash, e.g. index.html#thirds
+if (location.hash && MODES[location.hash.slice(1)]) orderEl.value = location.hash.slice(1);
+draw();
+</script>
+</body>
+</html>

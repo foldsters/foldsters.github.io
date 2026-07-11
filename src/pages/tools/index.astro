@@ -2,6 +2,7 @@
 import LayoutPage from '../../layouts/LayoutPage.astro';
 import { Image } from 'astro:assets';
 import demodripThumb from '../../content/images/demodrip/demodrip-1.png';
+import pitchFieldThumb from '../../content/images/pitch-field/pitch-field-1.png';
 import demoskyThumb from '../../content/images/demosky/demosky-1.png';
 import paletteThumb from '../../content/images/palette/extractor.png';
 ---
@@ -24,6 +25,15 @@ import paletteThumb from '../../content/images/palette/extractor.png';
         <h3><a href="/tools/twitch-partner-calculator/">Twitch Partner Calculator</a></h3>
         <p class="entry-meta"><em>Foldster | Tool | free to use</em></p>
         <p>Work out how much longer — or how many more viewers — you need to hit Twitch's 75-viewer Partner average. Solve for time or viewers, live-updating from your current session.</p>
+      </div>
+    </li>
+
+    <li class="entry-block">
+      <Image src={pitchFieldThumb} alt="Pitch Field — the 2D pitch instrument mid-play with a chromatic spotlight and Roman numerals" class="entry-thumb"/>
+      <div class="entry-content">
+        <h3><a href="/tools/pitch-field/">Pitch Field</a></h3>
+        <p class="entry-meta"><em>Foldster | Tool | free to use</em></p>
+        <p>A 2D pitch-space instrument. The X axis picks a note or chord, the Y axis is the average pitch, and it sounds across every octave under an adjustable Gaussian spotlight. Chromatic, circle-of-fifths, thirds, and suspended-chord wheels — rotatable to any key, with live Roman-numeral analysis. Pure Web Audio, no dependencies.</p>
       </div>
     </li>
 
